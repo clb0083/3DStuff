@@ -11,6 +11,9 @@ public class WhiskerControl : MonoBehaviour
     private ConstantForce cForce;
     private Vector3 forceDirection;
     public int selectedIndex = 0;
+
+    // You can delete this variable--Jake added it to test the efficacy of the github pushes/pulls
+    public string demoVar;
     // Start is called before the first frame update
     void Start()
     {
