@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - whiskerClone
+  - Conductor
   layers:
   - Default
   - TransparentFX

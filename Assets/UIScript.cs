@@ -32,6 +32,8 @@ public class UIScript : MonoBehaviour
     public TMP_InputField vibrFreq;
     public TMP_InputField vibrDur;
     public GameObject whisker;
+    public TextMeshProUGUI totalBridges;
+    public int bridgesDetected;
     
     public float moveSpeed = 5f;
 
@@ -44,6 +46,8 @@ public class UIScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        totalBridges.text = "Bridges: " + bridgesDetected.ToString();
+        print(bridgesDetected);
         // Move the camera based on user input
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
