@@ -6,6 +6,8 @@ public class CameraControl : MonoBehaviour
 {
     public float moveSpeed = 4f;
     public float rotationSpeed = 90000000f;
+    public GameObject UIObject;
+    public UIScript uiScript;
 
     // Start is called before the first frame update
     void Start()
@@ -51,9 +53,16 @@ public class CameraControl : MonoBehaviour
     public void StandardView()
     {
         // Move the camera to the target position
-        transform.position = new Vector3(0, 2, 3);
+        transform.position = new Vector3(0, 3, 4);
 
         // Rotate the camera to the target rotation
-        transform.rotation = Quaternion.Euler(33,180,0);
+        transform.rotation = Quaternion.Euler(35,180,0);
+    }
+
+    public void SideView()
+    {
+        transform.position = new Vector3(3,1,0);
+        transform.rotation = Quaternion.Euler(5,-90,0);
+
     }
 }

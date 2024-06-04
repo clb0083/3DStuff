@@ -34,6 +34,14 @@ public class UIScript : MonoBehaviour
     public GameObject whisker;
     public TextMeshProUGUI totalBridges;
     public int bridgesDetected;
+    public TextMeshProUGUI bridgesEachRun;
+    public int bridgesPerRun;
+    //for monte carlo stuff \/
+     public float simtimeElapsed;
+    public bool startSim;
+    public int simIntComplete;
+    public float simTimeThresh;
+    public TMP_InputField totalRuns;
     
     public float moveSpeed = 5f;
 
@@ -46,7 +54,8 @@ public class UIScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        totalBridges.text = "Bridges: " + bridgesDetected.ToString();
+        totalBridges.text = "Total Bridges: " + bridgesDetected.ToString();
+        bridgesEachRun.text = "This Run: "+ bridgesPerRun.ToString();
         print(bridgesDetected);
         // Move the camera based on user input
         float horizontalInput = Input.GetAxis("Horizontal");
@@ -54,6 +63,29 @@ public class UIScript : MonoBehaviour
 
         Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
+//MONTECARLO
+        simtimeElapsed += Time.deltaTime;
+
+        if(startSim)
+        {   
+            
+            if(simIntComplete < Convert.ToInt32(totalRuns.text))
+            {
+                
+                if(simtimeElapsed > simTimeThresh)
+                {
+                    ReloadWhiskersButton();
+                                       
+                    simIntComplete +=1;
+                    simtimeElapsed = 0f;                    
+                }
+            }
+
+            if(simIntComplete == Convert.ToInt32(totalRuns.text))
+            {
+                startSim = false; 
+            }
+        }
     }
 
     public float LengthDistributionGenerate()
@@ -64,8 +96,8 @@ public class UIScript : MonoBehaviour
 
     public float WidthDistributionGenerate()
     {
-        float lenghtVal = RandomFromDistribution.RandomNormalDistribution(float.Parse(widthMu.text),float.Parse(widthSigma.text));
-        return (lenghtVal); 
+        float widthVal = RandomFromDistribution.RandomNormalDistribution(float.Parse(widthMu.text),float.Parse(widthSigma.text));
+        return (widthVal); 
     }
 
     public void MakeWhiskerButton()
@@ -89,15 +121,11 @@ public class UIScript : MonoBehaviour
     {
         GameObject[] allWhiskers;
         allWhiskers = GameObject.FindGameObjectsWithTag("whiskerClone");
-       
         foreach (GameObject whisk in allWhiskers)
         {
             Destroy(whisk.gameObject); // Remove the object from the scene
         }
-
+        bridgesPerRun = 0;
         MakeWhiskerButton();
-
     }
-
-    
 }

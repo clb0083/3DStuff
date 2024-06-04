@@ -19,18 +19,12 @@ public class Colliderstuff : MonoBehaviour
 
         foreach (GameObject obj in allObjects)
         {
-            //print("yo");
             Renderer renderer = obj.GetComponent<Renderer>();
             //Material mat1 = renderer.sharedMaterial;
             if (renderer != null)
             {
-                //print("yo2");
-                //print(renderer);//print(mat1);
-                //print(targetMaterial);
-
                 if(renderer.material.name == targetMaterial.name + " (Instance)")
                 {
-                    //print("yo3");
                     // Assign the specified tag to the GameObject
                     obj.tag = "Conductor";
                 }
