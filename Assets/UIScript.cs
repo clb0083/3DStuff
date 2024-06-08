@@ -36,8 +36,9 @@ public class UIScript : MonoBehaviour
     public int bridgesDetected;
     public TextMeshProUGUI bridgesEachRun;
     public int bridgesPerRun;
+    
     //for monte carlo stuff \/
-     public float simtimeElapsed;
+    public float simtimeElapsed;
     public bool startSim;
     public int simIntComplete;
     public float simTimeThresh;
@@ -48,7 +49,7 @@ public class UIScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+       // Time.timeScale = 5f;
     }
 
     // Update is called once per frame
@@ -71,7 +72,7 @@ public class UIScript : MonoBehaviour
             
             if(simIntComplete < Convert.ToInt32(totalRuns.text))
             {
-                
+                              
                 if(simtimeElapsed > simTimeThresh)
                 {
                     ReloadWhiskersButton();

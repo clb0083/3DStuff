@@ -53,7 +53,7 @@ public class Colliderstuff : MonoBehaviour
                 // Add mesh collider to the child object
                 MeshCollider meshCollider = child.gameObject.AddComponent<MeshCollider>();
                 // Set the mesh collider to be convex if the mesh is convex
-                meshCollider.convex = true; // Set to false if you don't want convex collider
+                meshCollider.convex = true; // Set to false if you don't want convex collider 
             }
 
             // Recursively call this function for all children
@@ -71,6 +71,7 @@ public class Colliderstuff : MonoBehaviour
                 // Add Rigidbody to the child object
                 rb = child.gameObject.AddComponent<Rigidbody>();
                 rb.constraints = RigidbodyConstraints.FreezeAll;
+                rb.collisionDetectionMode = CollisionDetectionMode.Continuous;//new
             }
 
             // Recursively call this function for all children

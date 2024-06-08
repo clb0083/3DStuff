@@ -80,47 +80,6 @@ public void ApplyGravity(int val)
         cForce.force = forceDirection;
     }
 }
-    /*public void ConfirmButtonPressed()
-    {
-        GetGravitySelection(gravity.value);
-    }
-    public void GetGravitySelection(int val)
-    {
-        ApplyGravity(val); //selectedIndex
-    }
-
-    public void ApplyGravity(int val)
-    {
-        GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("whiskerClone");
-
-        foreach (GameObject obj in objectsWithTag)
-        {
-            Rigidbody rb = obj.GetComponent<Rigidbody>();
-            if (val == 0)
-            {
-                cForce = GetComponent<ConstantForce>();
-                forceDirection = new Vector3(0,-10,0);
-                cForce.force = forceDirection;
-                
-            }
-
-            if (val == 1)
-            {
-                cForce = GetComponent<ConstantForce>();
-                forceDirection = new Vector3(0,-2,0);
-                cForce.force = forceDirection;
-                
-            }
-
-            if (val == 2)
-            {
-                cForce = GetComponent<ConstantForce>();
-                forceDirection = new Vector3(0,-4,0);
-                cForce.force = forceDirection;
-            
-            }
-        }
-    }*/
     public void ResetGravity()
     {
         GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("whiskerClone");
