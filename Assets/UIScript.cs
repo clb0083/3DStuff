@@ -43,12 +43,16 @@ public class UIScript : MonoBehaviour
     public int simIntComplete;
     public float simTimeThresh;
     public TMP_InputField totalRuns;
-    
     public float moveSpeed = 5f;
+    public DistributionType distributionType = DistributionType.Lognormal;
+    private List<float> lengths;
+    private List<float> widths;
 
     // Start is called before the first frame update
     void Start()
     {
+        lengths = new List<float>();
+        widths = new List<float>();
        // Time.timeScale = 5f;
     }
 
@@ -89,16 +93,58 @@ public class UIScript : MonoBehaviour
         }
     }
 
+//LogNormalStuff
+private float GenerateLogNormalValue(float mu, float sigma)
+    {
+        float mu_log = Mathf.Log(Mathf.Pow(mu, 2) / Mathf.Sqrt(Mathf.Pow(sigma, 2) + Mathf.Pow(mu, 2)));
+        float sigma_log = Mathf.Sqrt(Mathf.Log(Mathf.Pow(sigma, 2) / Mathf.Pow(mu, 2) + 1));
+
+        float normalVal = RandomFromDistribution.RandomNormalDistribution(mu_log, sigma_log);
+        float logNormalVal = Mathf.Exp(normalVal);
+        return logNormalVal;
+    }
+
+    private float GenerateNormalValue(float mu, float sigma)
+    {
+        return RandomFromDistribution.RandomNormalDistribution(mu, sigma);
+    }
+
     public float LengthDistributionGenerate()
     {
-        float lenghtVal = RandomFromDistribution.RandomNormalDistribution(float.Parse(lengthMu.text),float.Parse(lengthSigma.text));
-        return (lenghtVal);
+        float mu = float.Parse(lengthMu.text);
+        float sigma = float.Parse(lengthSigma.text);
+        float lengthVal;
+
+        if (distributionType == DistributionType.Lognormal)
+        {
+            lengthVal = GenerateLogNormalValue(mu, sigma);
+        }
+        else
+        {
+            lengthVal = GenerateNormalValue(mu, sigma);
+        }
+
+        //Debug.Log($"Generated Length: {lengthVal} (mu: {mu}, sigma: {sigma})");
+        return lengthVal;
     }
 
     public float WidthDistributionGenerate()
     {
-        float widthVal = RandomFromDistribution.RandomNormalDistribution(float.Parse(widthMu.text),float.Parse(widthSigma.text));
-        return (widthVal); 
+        float mu = float.Parse(widthMu.text);
+        float sigma = float.Parse(widthSigma.text);
+        float widthVal;
+
+        if (distributionType == DistributionType.Lognormal)
+        {
+            widthVal = GenerateLogNormalValue(mu, sigma);
+        }
+        else
+        {
+            widthVal = GenerateNormalValue(mu, sigma);
+        }
+
+        //Debug.Log($"Generated Width: {widthVal} (mu: {mu}, sigma: {sigma})");
+        return widthVal;
     }
 
     public void MakeWhiskerButton()
@@ -106,6 +152,7 @@ public class UIScript : MonoBehaviour
         for(int i = 0; i < Convert.ToInt32(numWhiskers.text); i++)
             {
                 float diameter = WidthDistributionGenerate();
+                float length = LengthDistributionGenerate();
                 float spawnPointX = UnityEngine.Random.Range(-float.Parse(xCoord.text),float.Parse(xCoord.text));
                 float spawnPointY = UnityEngine.Random.Range(1,Convert.ToInt32(yCoord.text)); //can remove range to this if needed.
                 float spawnPointZ = UnityEngine.Random.Range(-float.Parse(zCoord.text),float.Parse(zCoord.text));
@@ -114,9 +161,12 @@ public class UIScript : MonoBehaviour
 
                 GameObject whiskerClone = Instantiate(whisker,spawnPos,Quaternion.Euler(UnityEngine.Random.Range(0, 360),  UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360)));
                 whiskerClone.tag = "whiskerClone";
-
-                whiskerClone.transform.localScale = new Vector3(diameter,LengthDistributionGenerate(),diameter);
+                
+                whiskerClone.transform.localScale = new Vector3(diameter,length,diameter);
+                lengths.Add(length);
+                widths.Add(diameter);
             }
+            //SaveListsToCSV("D:/Unity/LogNormal.csv");
     }
     public void ReloadWhiskersButton()
     {
@@ -128,5 +178,17 @@ public class UIScript : MonoBehaviour
         }
         bridgesPerRun = 0;
         MakeWhiskerButton();
+    }
+
+    public void SaveListsToCSV(string filePath)
+    {
+        using (StreamWriter writer = new StreamWriter(filePath))
+        {
+            writer.WriteLine("Length,Width");
+            for (int i = 0; i < lengths.Count; i++)
+            {
+                writer.WriteLine($"{lengths[i]},{widths[i]}");
+            }
+        }
     }
 }

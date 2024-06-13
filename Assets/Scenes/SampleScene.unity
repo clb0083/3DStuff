@@ -1740,7 +1740,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Option A
+  m_text: Normal
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2866,7 +2866,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 230131760}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8d2ad5a0681d5704093806f63a6f4ea7, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -8770,6 +8770,7 @@ MonoBehaviour:
   simTimeThresh: 10
   totalRuns: {fileID: 166620094}
   moveSpeed: 5
+  distributionType: 1
 --- !u!4 &734999897
 Transform:
   m_ObjectHideFlags: 0
@@ -12848,6 +12849,7 @@ GameObject:
   - component: {fileID: 1184046052}
   - component: {fileID: 1184046051}
   - component: {fileID: 1184046050}
+  - component: {fileID: 1184046053}
   m_Layer: 5
   m_Name: distSelect
   m_TagString: Untagged
@@ -12927,11 +12929,9 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: Option A
+    - m_Text: Normal
       m_Image: {fileID: 0}
-    - m_Text: Option B
-      m_Image: {fileID: 0}
-    - m_Text: Option C
+    - m_Text: LogNormal
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12975,6 +12975,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1184046048}
   m_CullTransparentMesh: 1
+--- !u!114 &1184046053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1184046048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7581584fb66bcd746851830e45fd3f46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dropdown: {fileID: 1184046050}
+  uiScript: {fileID: 734999896}
 --- !u!1 &1185955211
 GameObject:
   m_ObjectHideFlags: 0
@@ -14187,7 +14201,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -13.3
+      value: -8.35
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
       propertyPath: m_LocalRotation.w
@@ -14400,6 +14414,7 @@ MonoBehaviour:
   durationInputField: {fileID: 1648562179}
   frequencyInputField: {fileID: 1185955213}
   circuitBoard: {fileID: 85906170}
+  ActualBoard: {fileID: 2116296479}
 --- !u!4 &1278349940
 Transform:
   m_ObjectHideFlags: 0

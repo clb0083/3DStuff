@@ -9,6 +9,7 @@ public class VibrationManager : MonoBehaviour
     public TMP_InputField durationInputField;  // Input field for vibration duration
     public TMP_InputField frequencyInputField; // Input field for vibration frequency
     public Transform circuitBoard; // Reference to the circuit board transform
+    public GameObject ActualBoard;
 
     private Rigidbody circuitBoardRigidbody; // Rigidbody of the circuit board
     private Vector3 originalBoardPosition; // Original position of the circuit board
@@ -43,7 +44,7 @@ public class VibrationManager : MonoBehaviour
                 float offsetX = sineValue * amplitude;
 
                 // Move the circuit board
-                Vector3 targetBoardPosition = new Vector3(originalBoardPosition.x + offsetX, originalBoardPosition.y, 0);
+                Vector3 targetBoardPosition = new Vector3(originalBoardPosition.x + offsetX, originalBoardPosition.y, originalBoardPosition.z);
                 if (circuitBoardRigidbody != null)
                 {
                     circuitBoardRigidbody.MovePosition(targetBoardPosition);
@@ -61,6 +62,7 @@ public class VibrationManager : MonoBehaviour
                 }
             }
         }
+        //ActualBoard.transform.position = new Vector3(circuitBoard.position.x, circuitBoard.position.y + 1, circuitBoard.position.z);
     }
 
     public void StartVibration()

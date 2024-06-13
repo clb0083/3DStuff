@@ -7,13 +7,13 @@ public class Colliderstuff : MonoBehaviour
 {
     public Material targetMaterial;
     public List<GameObject> targetObjects = new List<GameObject>();//For accessing targetObjects list
-     
+    public Rigidbody rb;
     // Start is called before the first frame update
     void Start()
     {
         AddMeshCollidersRecursively(transform);
-        AddRigidbodyRecursively(transform);
-
+        rb = gameObject.AddComponent<Rigidbody>();
+        rb.isKinematic = true;
         // Find all GameObjects with the specified material
         GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
 
@@ -60,22 +60,5 @@ public class Colliderstuff : MonoBehaviour
             AddMeshCollidersRecursively(child);
         }
     }
-    public void AddRigidbodyRecursively(Transform parent)
-    {
-        foreach (Transform child in parent)
-                {
-            Rigidbody rb = child.GetComponent<Rigidbody>();
-            // Check if the child already has a Rigidbody component
-            if (child.GetComponent<Rigidbody>() == null)
-            {
-                // Add Rigidbody to the child object
-                rb = child.gameObject.AddComponent<Rigidbody>();
-                rb.constraints = RigidbodyConstraints.FreezeAll;
-                rb.collisionDetectionMode = CollisionDetectionMode.Continuous;//new
-            }
-
-            // Recursively call this function for all children
-            AddRigidbodyRecursively(child);
-        }
-    }
+  
 }
