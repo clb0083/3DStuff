@@ -25,11 +25,7 @@ public class VibrationManager : MonoBehaviour
 
     private void Start()
     {
-        // Find the Rigidbody2D component of the circuit board
-        circuitBoardRigidbody = circuitBoard.GetComponent<Rigidbody>();
         
-        // Store the original position of the circuit board
-        originalBoardPosition = circuitBoard.position;
     }
 
     private void FixedUpdate()
@@ -67,6 +63,12 @@ public class VibrationManager : MonoBehaviour
 
     public void StartVibration()
     {
+        // Find the Rigidbody component of the circuit board
+        circuitBoardRigidbody = circuitBoard.GetComponent<Rigidbody>();
+        
+        // Store the original position of the circuit board
+        originalBoardPosition = circuitBoard.position;
+        
         // Parse user inputs for amplitude, duration, and frequency
         if (float.TryParse(amplitudeInputField.text, out amplitude) &&
             float.TryParse(durationInputField.text, out duration) &&

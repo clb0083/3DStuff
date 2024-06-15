@@ -99,7 +99,6 @@ public void ApplyGravity(int val)
     public bool haveMadeSecondConnection;
     public string secondConnection;
     public int connectionsMade;
-    //private int conductorCollisions = 0; // Counter to track Conductor collisions UNCOMMENT THIS IF IT FUCKED UP
     private HashSet<string> currentConnections = new HashSet<string>();
     public GameObject UIObject;
     public UIScript uiScript;
@@ -115,7 +114,7 @@ public void ApplyGravity(int val)
         {
             // Add the conductor to the set of current connections
             currentConnections.Add(collision.gameObject.name);
-
+            print(currentConnections);//debugs
             // Check if we have two or more connections
             if (currentConnections.Count >= 2)
             {

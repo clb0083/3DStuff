@@ -10,11 +10,17 @@ public class Colliderstuff : MonoBehaviour
     public Rigidbody rb;
     // Start is called before the first frame update
     void Start()
-    {
-        AddMeshCollidersRecursively(transform);
+    {   
+        //setting whole board as rigidbody + fix settings
         rb = gameObject.AddComponent<Rigidbody>();
         rb.isKinematic = true;
-        // Find all GameObjects with the specified material
+        rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
+        //Adding Colliders to all objects
+        AddMeshCollidersRecursively(transform);   
+
+        //Find all GameObjects with the specified material
         GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
 
         foreach (GameObject obj in allObjects)
@@ -53,12 +59,11 @@ public class Colliderstuff : MonoBehaviour
                 // Add mesh collider to the child object
                 MeshCollider meshCollider = child.gameObject.AddComponent<MeshCollider>();
                 // Set the mesh collider to be convex if the mesh is convex
-                meshCollider.convex = true; // Set to false if you don't want convex collider 
+                meshCollider.convex = true; // Set to false if you don't want convex collider    
             }
 
             // Recursively call this function for all children
             AddMeshCollidersRecursively(child);
         }
     }
-  
 }

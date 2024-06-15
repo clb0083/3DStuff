@@ -559,7 +559,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -577,6 +577,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &16443019
 GameObject:
   m_ObjectHideFlags: 0
@@ -1970,7 +1971,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -1988,6 +1989,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &166620093
 GameObject:
   m_ObjectHideFlags: 0
@@ -2518,7 +2520,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -2536,6 +2538,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &197577233
 GameObject:
   m_ObjectHideFlags: 0
@@ -3715,7 +3718,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -3733,6 +3736,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1001 &282433764
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4261,7 +4265,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -4279,6 +4283,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &306672829
 GameObject:
   m_ObjectHideFlags: 0
@@ -5169,7 +5174,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -5187,6 +5192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &377539574
 GameObject:
   m_ObjectHideFlags: 0
@@ -5340,7 +5346,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -5358,6 +5364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &377582431
 GameObject:
   m_ObjectHideFlags: 0
@@ -6112,7 +6119,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &458897384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6127,6 +6134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!4 &458897385
 Transform:
   m_ObjectHideFlags: 0
@@ -6666,6 +6674,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 0}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &496073534
 GameObject:
   m_ObjectHideFlags: 0
@@ -8956,6 +8965,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 0}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &755319599
 GameObject:
   m_ObjectHideFlags: 0
@@ -9889,7 +9899,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -9907,6 +9917,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &852818603
 GameObject:
   m_ObjectHideFlags: 0
@@ -11527,7 +11538,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -11545,6 +11556,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &1044224625
 GameObject:
   m_ObjectHideFlags: 0
@@ -12239,7 +12251,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -12257,6 +12269,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &1146174716
 GameObject:
   m_ObjectHideFlags: 0
@@ -13513,7 +13526,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -13531,6 +13544,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &1207988692
 GameObject:
   m_ObjectHideFlags: 0
@@ -14201,7 +14215,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -8.35
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
       propertyPath: m_LocalRotation.w
@@ -14240,7 +14254,8 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 243041194690276544, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
@@ -14413,8 +14428,8 @@ MonoBehaviour:
   amplitudeInputField: {fileID: 1966419009}
   durationInputField: {fileID: 1648562179}
   frequencyInputField: {fileID: 1185955213}
-  circuitBoard: {fileID: 85906170}
-  ActualBoard: {fileID: 2116296479}
+  circuitBoard: {fileID: 2116296481}
+  ActualBoard: {fileID: 0}
 --- !u!4 &1278349940
 Transform:
   m_ObjectHideFlags: 0
@@ -15626,7 +15641,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -15644,6 +15659,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &1403810155
 GameObject:
   m_ObjectHideFlags: 0
@@ -17056,7 +17072,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -17074,6 +17090,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &1607190985
 GameObject:
   m_ObjectHideFlags: 0
@@ -17227,7 +17244,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -17245,6 +17262,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &1610089305
 GameObject:
   m_ObjectHideFlags: 0
@@ -17390,6 +17408,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &1635322362
 GameObject:
   m_ObjectHideFlags: 0
@@ -20130,7 +20149,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -20148,6 +20167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &1896060393
 GameObject:
   m_ObjectHideFlags: 0
@@ -20376,7 +20396,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -20394,6 +20414,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &1918868754
 GameObject:
   m_ObjectHideFlags: 0
@@ -20943,7 +20964,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -20961,6 +20982,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &2066491835
 GameObject:
   m_ObjectHideFlags: 0
@@ -21114,7 +21136,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -21132,6 +21154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &2073188036
 GameObject:
   m_ObjectHideFlags: 0
@@ -21285,7 +21308,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -21303,6 +21326,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &2081031929
 GameObject:
   m_ObjectHideFlags: 0
@@ -21876,8 +21900,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c10ff03e248172f4297122d5febb3512, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetMaterial: {fileID: 0}
+  targetMaterial: {fileID: 5407429153165912631, guid: 21792645f24161a47b4814cd1ea419eb, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
+--- !u!4 &2116296481 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
+  m_PrefabInstance: {fileID: 1254929709}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2137447261
 GameObject:
   m_ObjectHideFlags: 0
@@ -22110,7 +22140,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 2
@@ -22128,6 +22158,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   targetObjects: []
+  rb: {fileID: 0}
 --- !u!1 &2139495033
 GameObject:
   m_ObjectHideFlags: 0
