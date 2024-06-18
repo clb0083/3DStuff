@@ -38,12 +38,11 @@ public class WhiskerControl : MonoBehaviour
 
     //gravityStuff
     public void ConfirmButtonPressed()
-{
+    {
     GetGravitySelection(gravity.value);
     confirmGravity = true;
     UIObject.GetComponent<UIScript>().startSim = true;//NEW
-    
-}
+    }
 
 public void GetGravitySelection(int val)
 {
@@ -108,12 +107,12 @@ public void ApplyGravity(int val)
     public Color defaultColor = Color.white; // for highlighting
     
     // BRIDGING DETECTION
-    private void OnCollisionStay(Collision collision)
+    private void OnTriggerStay(Collider trigger) // OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Conductor"))
+        if (trigger.gameObject.CompareTag("Conductor")) // collision // trigger
         {
             // Add the conductor to the set of current connections
-            currentConnections.Add(collision.gameObject.name);
+            currentConnections.Add(trigger.gameObject.name); //collision // trigger
             print(currentConnections);//debugs
             // Check if we have two or more connections
             if (currentConnections.Count >= 2)
@@ -135,12 +134,12 @@ public void ApplyGravity(int val)
         }
     }
 
-    private void OnCollisionExit(Collision collision)
+    private void OnTriggerExit(Collider trigger) //OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Conductor"))
+        if (trigger.gameObject.CompareTag("Conductor")) //collision
         {
             // Remove the conductor from the set of current connections
-            currentConnections.Remove(collision.gameObject.name);
+            currentConnections.Remove(trigger.gameObject.name); //collision
 
             // Reset state if there are fewer than 2 connections
             if (currentConnections.Count < 2 && haveLoggedConnection)
@@ -165,7 +164,7 @@ public void ApplyGravity(int val)
     {
         if(UIObject.GetComponent<UIScript>().bridgesDetected < 1)
         {
-            Debug.Log("No whiskers are currently bridged.");
+            print("No whiskers are currently bridged.");
         }
 
         if(UIObject.GetComponent<UIScript>().bridgesDetected >= 1)

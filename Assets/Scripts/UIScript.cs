@@ -48,6 +48,7 @@ public class UIScript : MonoBehaviour
     public DistributionType distributionType = DistributionType.Lognormal;
     private List<float> lengths;
     private List<float> widths;
+   
 
     // Start is called before the first frame update
     void Start()
@@ -95,7 +96,57 @@ public class UIScript : MonoBehaviour
     }
 
 //LogNormalStuff
-private float GenerateLogNormalValue(float mu, float sigma)
+//FXN
+private float GenerateLogNormalValue(float mu_log, float sigma_log)
+    {
+        float normalVal = RandomFromDistribution.RandomNormalDistribution(mu_log, sigma_log);
+        float logNormalVal = Mathf.Exp(normalVal);
+        return logNormalVal;
+    }
+
+    private float GenerateNormalValue(float mu, float sigma)
+    {
+        return RandomFromDistribution.RandomNormalDistribution(mu, sigma);
+    }
+
+    public float LengthDistributionGenerate()
+    {
+        float mu_log = float.Parse(lengthMu.text);
+        float sigma_log = float.Parse(lengthSigma.text);
+        float lengthVal;
+
+        if (distributionType == DistributionType.Lognormal)
+        {
+            lengthVal = GenerateLogNormalValue(mu_log, sigma_log);
+        }
+        else
+        {
+            lengthVal = GenerateNormalValue(mu_log, sigma_log);
+        }
+
+        return lengthVal;
+    }
+
+    public float WidthDistributionGenerate()
+    {
+        float mu_log = float.Parse(widthMu.text);
+        float sigma_log = float.Parse(widthSigma.text);
+        float widthVal;
+
+        if (distributionType == DistributionType.Lognormal)
+        {
+            widthVal = GenerateLogNormalValue(mu_log, sigma_log);
+        }
+        else
+        {
+            widthVal = GenerateNormalValue(mu_log, sigma_log);
+        }
+
+        return widthVal;
+    }
+
+//ORIGINAl
+/*private float GenerateLogNormalValue(float mu, float sigma)
     {
         float mu_log = Mathf.Log(Mathf.Pow(mu, 2) / Mathf.Sqrt(Mathf.Pow(sigma, 2) + Mathf.Pow(mu, 2)));
         float sigma_log = Mathf.Sqrt(Mathf.Log(Mathf.Pow(sigma, 2) / Mathf.Pow(mu, 2) + 1));
@@ -146,7 +197,7 @@ private float GenerateLogNormalValue(float mu, float sigma)
 
         //Debug.Log($"Generated Width: {widthVal} (mu: {mu}, sigma: {sigma})");
         return widthVal;
-    }
+    }*/
     
     public void MakeWhiskerButton()
     {
@@ -192,4 +243,9 @@ private float GenerateLogNormalValue(float mu, float sigma)
             }
         }
     }
+    /*public enum DistributionType
+    {
+        Normal,
+        Lognormal
+    }*/
 }

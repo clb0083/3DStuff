@@ -14,7 +14,7 @@ public class Colliderstuff : MonoBehaviour
         //setting whole board as rigidbody + fix settings
         rb = gameObject.AddComponent<Rigidbody>();
         rb.isKinematic = true;
-        rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+        rb.constraints = RigidbodyConstraints.FreezeRotation; //| RigidbodyConstraints.FreezePositionY;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
         //Adding Colliders to all objects
@@ -33,12 +33,24 @@ public class Colliderstuff : MonoBehaviour
                 {
                     // Assign the specified tag to the GameObject
                     obj.tag = "Conductor";
+                    MeshCollider meshTriggerCollider = obj.GetComponent<MeshCollider>();
+                    if (meshTriggerCollider != null)
+                    {
+                    meshTriggerCollider = obj.AddComponent<MeshCollider>();
+                    meshTriggerCollider.convex = true;
+                    meshTriggerCollider.isTrigger = true;
+                    }
+                    
                 }
             }
 
             if (obj.CompareTag("Conductor"))
             {
                 targetObjects.Add(obj);
+                //Collider triggerCollider = obj.AddComponent<BoxCollider>(); //MeshCollider triggerCollider = obj.AddComponent<BoxComponent>();
+                //print("hey");
+                //triggerCollider.convex = true;
+                //triggerCollider.isTrigger = true;
             }
         }
     }
