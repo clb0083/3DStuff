@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public class Colliderstuff : MonoBehaviour
     public Material targetMaterial;
     public List<GameObject> targetObjects = new List<GameObject>();//For accessing targetObjects list
     public Rigidbody rb;
+
     // Start is called before the first frame update
     void Start()
     {   
@@ -18,7 +20,8 @@ public class Colliderstuff : MonoBehaviour
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
         //Adding Colliders to all objects
-        AddMeshCollidersRecursively(transform);   
+        AddMeshCollidersRecursively(transform);
+      
 
         //Find all GameObjects with the specified material
         GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
@@ -26,35 +29,33 @@ public class Colliderstuff : MonoBehaviour
         foreach (GameObject obj in allObjects)
         {
             Renderer renderer = obj.GetComponent<Renderer>();
-            //Material mat1 = renderer.sharedMaterial;
             if (renderer != null)
             {
                 if(renderer.material.name == targetMaterial.name + " (Instance)")
                 {
                     // Assign the specified tag to the GameObject
                     obj.tag = "Conductor";
-                    MeshCollider meshTriggerCollider = obj.GetComponent<MeshCollider>();
+                                        
+                    //AddTriggerMeshCollider(obj);
+                    //ORIGINAL    
+                    MeshCollider meshTriggerCollider = obj.GetComponent<MeshCollider>(); 
                     if (meshTriggerCollider != null)
                     {
                     meshTriggerCollider = obj.AddComponent<MeshCollider>();
                     meshTriggerCollider.convex = true;
                     meshTriggerCollider.isTrigger = true;
                     }
-                    
                 }
             }
 
             if (obj.CompareTag("Conductor"))
             {
                 targetObjects.Add(obj);
-                //Collider triggerCollider = obj.AddComponent<BoxCollider>(); //MeshCollider triggerCollider = obj.AddComponent<BoxComponent>();
-                //print("hey");
-                //triggerCollider.convex = true;
-                //triggerCollider.isTrigger = true;
+
             }
         }
     }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -78,4 +79,5 @@ public class Colliderstuff : MonoBehaviour
             AddMeshCollidersRecursively(child);
         }
     }
+
 }

@@ -20,10 +20,10 @@ public class DistributionSelector : MonoBehaviour
         switch (change.value)
         {
             case 0:
-                uiScript.distributionType = DistributionType.Normal;
+                uiScript.distributionType = DistributionType.Lognormal;
                 break;
             case 1:
-                uiScript.distributionType = DistributionType.Lognormal;
+                uiScript.distributionType = DistributionType.Normal;
                 break;
         }
     }

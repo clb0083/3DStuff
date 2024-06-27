@@ -14,6 +14,7 @@ using UnityEngine.UIElements;
 public class UIScript : MonoBehaviour
 {
     private System.Random rand = new System.Random();//NEW
+    public Dropdown distributionDropdown;
     public TMP_InputField lengthMu;
     public TMP_InputField widthMu;
     public TMP_InputField lengthSigma;
@@ -55,9 +56,8 @@ public class UIScript : MonoBehaviour
     {
         lengths = new List<float>();
         widths = new List<float>();
-       // Time.timeScale = 5f;
     }
-
+  
     // Update is called once per frame
     void Update()
     {
@@ -94,9 +94,8 @@ public class UIScript : MonoBehaviour
             }
         }
     }
-
+ 
 //LogNormalStuff
-//FXN
 private float GenerateLogNormalValue(float mu_log, float sigma_log)
     {
         float normalVal = RandomFromDistribution.RandomNormalDistribution(mu_log, sigma_log);
@@ -104,24 +103,24 @@ private float GenerateLogNormalValue(float mu_log, float sigma_log)
         return logNormalVal;
     }
 
-    private float GenerateNormalValue(float mu, float sigma)
+    private float GenerateNormalValue(float mu_norm, float sigma_norm)
     {
-        return RandomFromDistribution.RandomNormalDistribution(mu, sigma);
+        return RandomFromDistribution.RandomNormalDistribution(mu_norm, sigma_norm);
     }
 
     public float LengthDistributionGenerate()
     {
-        float mu_log = float.Parse(lengthMu.text);
-        float sigma_log = float.Parse(lengthSigma.text);
+        float mu = float.Parse(lengthMu.text);///10;
+        float sigma = float.Parse(lengthSigma.text);///10;
         float lengthVal;
 
         if (distributionType == DistributionType.Lognormal)
         {
-            lengthVal = GenerateLogNormalValue(mu_log, sigma_log);
+            lengthVal = GenerateLogNormalValue(mu, sigma);
         }
         else
         {
-            lengthVal = GenerateNormalValue(mu_log, sigma_log);
+            lengthVal = GenerateNormalValue(mu, sigma);
         }
 
         return lengthVal;
@@ -129,8 +128,8 @@ private float GenerateLogNormalValue(float mu_log, float sigma_log)
 
     public float WidthDistributionGenerate()
     {
-        float mu_log = float.Parse(widthMu.text);
-        float sigma_log = float.Parse(widthSigma.text);
+        float mu_log = float.Parse(widthMu.text);///10;
+        float sigma_log = float.Parse(widthSigma.text);///10;
         float widthVal;
 
         if (distributionType == DistributionType.Lognormal)
@@ -144,67 +143,13 @@ private float GenerateLogNormalValue(float mu_log, float sigma_log)
 
         return widthVal;
     }
-
-//ORIGINAl
-/*private float GenerateLogNormalValue(float mu, float sigma)
-    {
-        float mu_log = Mathf.Log(Mathf.Pow(mu, 2) / Mathf.Sqrt(Mathf.Pow(sigma, 2) + Mathf.Pow(mu, 2)));
-        float sigma_log = Mathf.Sqrt(Mathf.Log(Mathf.Pow(sigma, 2) / Mathf.Pow(mu, 2) + 1));
-
-        float normalVal = RandomFromDistribution.RandomNormalDistribution(mu_log, sigma_log);
-        float logNormalVal = Mathf.Exp(normalVal);
-        return logNormalVal;
-    }
-
-    private float GenerateNormalValue(float mu, float sigma)
-    {
-        return RandomFromDistribution.RandomNormalDistribution(mu, sigma);
-    }
-
-    public float LengthDistributionGenerate()
-    {
-        float mu = float.Parse(lengthMu.text);
-        float sigma = float.Parse(lengthSigma.text);
-        float lengthVal;
-
-        if (distributionType == DistributionType.Lognormal)
-        {
-            lengthVal = GenerateLogNormalValue(mu, sigma);
-        }
-        else
-        {
-            lengthVal = GenerateNormalValue(mu, sigma);
-        }
-
-        //Debug.Log($"Generated Length: {lengthVal} (mu: {mu}, sigma: {sigma})");
-        return lengthVal;
-    }
-
-    public float WidthDistributionGenerate()
-    {
-        float mu = float.Parse(widthMu.text);
-        float sigma = float.Parse(widthSigma.text);
-        float widthVal;
-
-        if (distributionType == DistributionType.Lognormal)
-        {
-            widthVal = GenerateLogNormalValue(mu, sigma);
-        }
-        else
-        {
-            widthVal = GenerateNormalValue(mu, sigma);
-        }
-
-        //Debug.Log($"Generated Width: {widthVal} (mu: {mu}, sigma: {sigma})");
-        return widthVal;
-    }*/
-    
+ 
     public void MakeWhiskerButton()
     {
         for(int i = 0; i < Convert.ToInt32(numWhiskers.text); i++)
             {
-                float diameter = WidthDistributionGenerate();
-                float length = LengthDistributionGenerate();
+                float diameter = WidthDistributionGenerate()/1000; //NEW STUFF /1000;
+                float length = LengthDistributionGenerate()/1000;
                 float spawnPointX = UnityEngine.Random.Range(-float.Parse(xCoord.text),float.Parse(xCoord.text));
                 float spawnPointY = UnityEngine.Random.Range(1,Convert.ToInt32(yCoord.text)); //can remove range to this if needed.
                 float spawnPointZ = UnityEngine.Random.Range(-float.Parse(zCoord.text),float.Parse(zCoord.text));
@@ -213,12 +158,13 @@ private float GenerateLogNormalValue(float mu_log, float sigma_log)
 
                 GameObject whiskerClone = Instantiate(whisker,spawnPos,Quaternion.Euler(UnityEngine.Random.Range(0, 360),  UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360)));
                 whiskerClone.tag = "whiskerClone";
+                //whiskerClone.AddComponent<TriggerCounterManager>();
                 
                 whiskerClone.transform.localScale = new Vector3(diameter,length,diameter);
-                lengths.Add(length);
-                widths.Add(diameter);
+                lengths.Add(length);//*10);
+                widths.Add(diameter);//*10);
             }
-            SaveListsToCSV("D:/Unity/LogNormal.csv");
+        SaveListsToCSV("D:/Unity/LogNormal.csv");
     }
     public void ReloadWhiskersButton()
     {
@@ -243,9 +189,5 @@ private float GenerateLogNormalValue(float mu_log, float sigma_log)
             }
         }
     }
-    /*public enum DistributionType
-    {
-        Normal,
-        Lognormal
-    }*/
+   
 }

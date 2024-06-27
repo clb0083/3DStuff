@@ -5,6 +5,7 @@ using TMPro;
 using System;
 using UnityEngine.UI;
 using System.Data;
+using System.Linq; // Add this namespace for LINQ functionality
 
 public class WhiskerControl : MonoBehaviour
 {
@@ -28,21 +29,26 @@ public class WhiskerControl : MonoBehaviour
     }
 
     // Update is called once per frame
+    public float detectionRadius = 0.5f; // Adjust this value based on your requirements
+    public float rayDistance = 1.0f;
+    public LayerMask conductorLayer; // Set this layer to the layer of your conductor objects
+
     void Update()
     {
-     if(confirmGravity)
-     {
-        GetGravitySelection(gravity.value);
-     }
+        print(currentConnections);
+        if(confirmGravity)
+        {
+            GetGravitySelection(gravity.value);
+        }
     }
-
+ 
     //gravityStuff
-    public void ConfirmButtonPressed()
-    {
+public void ConfirmButtonPressed()
+{
     GetGravitySelection(gravity.value);
     confirmGravity = true;
     UIObject.GetComponent<UIScript>().startSim = true;//NEW
-    }
+}
 
 public void GetGravitySelection(int val)
 {
@@ -98,22 +104,23 @@ public void ApplyGravity(int val)
     public bool haveMadeSecondConnection;
     public string secondConnection;
     public int connectionsMade;
-    private HashSet<string> currentConnections = new HashSet<string>();
     public GameObject UIObject;
     public UIScript uiScript;
     public static Dictionary<string, int> bridgesPerConductor = new Dictionary<string, int>(); 
     private Renderer objectRenderer; // for highlighting
     public Color bridgeDetectedColor = Color.red; // for highlighting
     public Color defaultColor = Color.white; // for highlighting
+    public HashSet<string> currentConnections = new HashSet<string>();
     
-    // BRIDGING DETECTION
-    private void OnTriggerStay(Collider trigger) // OnCollisionStay(Collision collision)
+
+    // BRIDGING DETECTION ORIGINAL
+    private void  OnTriggerStay(Collider trigger) // OnCollisionStay(Collision collision)// OnTriggerStay(Collider trigger)
     {
         if (trigger.gameObject.CompareTag("Conductor")) // collision // trigger
         {
+            print("triggered a conductor");
             // Add the conductor to the set of current connections
             currentConnections.Add(trigger.gameObject.name); //collision // trigger
-            print(currentConnections);//debugs
             // Check if we have two or more connections
             if (currentConnections.Count >= 2)
             {
@@ -121,7 +128,7 @@ public void ApplyGravity(int val)
                 if (!haveLoggedConnection)
                 {
                     objectRenderer = GetComponent<Renderer>();
-
+                    print("TRIGGER");
                     bridgesPerConductor[gameObject.name]++;
                     UIObject.GetComponent<UIScript>().bridgesDetected++;
                     UIObject.GetComponent<UIScript>().bridgesPerRun++;
@@ -134,7 +141,7 @@ public void ApplyGravity(int val)
         }
     }
 
-    private void OnTriggerExit(Collider trigger) //OnCollisionExit(Collision collision)
+     private void OnTriggerExit(Collider trigger)//OnCollisionExit(Collision collision)//OnTriggerExit(Collider trigger) 
     {
         if (trigger.gameObject.CompareTag("Conductor")) //collision
         {
@@ -158,20 +165,6 @@ public void ApplyGravity(int val)
         UIObject.GetComponent<UIScript>().bridgesPerRun--;
         objectRenderer.material.color = defaultColor;
     }
-    
-    /*//Function to move camera to bridges
-    public void ViewBridges()
-    {
-        if(UIObject.GetComponent<UIScript>().bridgesDetected < 1)
-        {
-            print("No whiskers are currently bridged.");
-        }
 
-        if(UIObject.GetComponent<UIScript>().bridgesDetected >= 1)
-        {
-            
-        }
-
-    }*/
 }
 

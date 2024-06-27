@@ -419,7 +419,7 @@ GameObject:
   - component: {fileID: 15140053}
   m_Layer: 0
   m_Name: Pad (9)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1100,8 +1100,8 @@ Transform:
   m_GameObject: {fileID: 85906166}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.56, z: 0.06688857}
-  m_LocalScale: {x: 25, y: 1, z: 25}
+  m_LocalPosition: {x: 0, y: -5, z: 0.06688857}
+  m_LocalScale: {x: 2500, y: 1, z: 2500}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1804,7 +1804,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Normal
+  m_text: LogNormal
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1894,7 +1894,7 @@ GameObject:
   - component: {fileID: 159377439}
   m_Layer: 0
   m_Name: Pad (3)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2493,7 +2493,7 @@ GameObject:
   - component: {fileID: 179585663}
   m_Layer: 0
   m_Name: Pad (5)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3151,6 +3151,11 @@ MonoBehaviour:
   selectedIndex: 0
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
   bridges: 0
+  detectionRadius: 0.5
+  rayDistance: 1
+  conductorLayer:
+    serializedVersion: 2
+    m_Bits: 0
   haveLoggedConnection: 0
   haveMadeOneConnection: 0
   firstConnection: 
@@ -3810,7 +3815,7 @@ GameObject:
   - component: {fileID: 279490628}
   m_Layer: 0
   m_Name: Pad (8)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4268,7 +4273,7 @@ GameObject:
   - component: {fileID: 301929297}
   m_Layer: 0
   m_Name: Pad (19)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5061,7 +5066,7 @@ GameObject:
   - component: {fileID: 377446420}
   m_Layer: 0
   m_Name: Pad (15)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5144,7 +5149,7 @@ GameObject:
   - component: {fileID: 377539576}
   m_Layer: 0
   m_Name: Pad (12)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5806,29 +5811,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 458897385}
-  - component: {fileID: 458897384}
+  - component: {fileID: 458897386}
   m_Layer: 0
   m_Name: PadTestManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &458897384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 458897383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c10ff03e248172f4297122d5febb3512, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
-  targetObjects: []
-  rb: {fileID: 0}
+  m_IsActive: 0
 --- !u!4 &458897385
 Transform:
   m_ObjectHideFlags: 0
@@ -5864,6 +5854,24 @@ Transform:
   - {fileID: 1578924424}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &458897386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458897383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e9607700a3dcd24789912f1fa87a5e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetMaterial: {fileID: 5407429153165912631, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+  targetObjects: []
+  rb: {fileID: 0}
+  offset: {x: 0, y: 0.005, z: 0}
+  maxDepth: 5
+  newScale: {x: 1, y: 1, z: 1}
 --- !u!1 &464695136
 GameObject:
   m_ObjectHideFlags: 0
@@ -8538,6 +8546,71 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 718754355}
   m_CullTransparentMesh: 1
+--- !u!1001 &724774635
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_Name
+      value: 3x3nomerge
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects:
+    - {fileID: 243041194690276544, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2120891072}
+  m_SourcePrefab: {fileID: 100100000, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
 --- !u!1 &726847252
 GameObject:
   m_ObjectHideFlags: 0
@@ -8833,6 +8906,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 357f8cde0019be44c9b06f2850eab651, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  distributionDropdown: {fileID: 0}
   lengthMu: {fileID: 1347738115}
   widthMu: {fileID: 1207988694}
   lengthSigma: {fileID: 10229097}
@@ -9764,7 +9838,7 @@ GameObject:
   - component: {fileID: 852298093}
   m_Layer: 0
   m_Name: Pad (6)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10555,7 +10629,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.953717, z: -0.30070576, w: 0}
-  m_LocalPosition: {x: 0, y: 3, z: 4}
+  m_LocalPosition: {x: 0, y: 48, z: 68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10573,7 +10647,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d387b5a0b4972e0479537ef32159baac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
+  moveSpeed: 15
   rotationSpeed: 5
   UIObject: {fileID: 734999895}
   uiScript: {fileID: 0}
@@ -11214,7 +11288,7 @@ GameObject:
   - component: {fileID: 1041153465}
   m_Layer: 0
   m_Name: Pad (10)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11913,7 +11987,7 @@ GameObject:
   - component: {fileID: 1117708376}
   m_Layer: 0
   m_Name: Pad (17)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -12655,9 +12729,9 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: Normal
-      m_Image: {fileID: 0}
     - m_Text: LogNormal
+      m_Image: {fileID: 0}
+    - m_Text: Normal
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
@@ -13147,7 +13221,7 @@ GameObject:
   - component: {fileID: 1202736430}
   m_Layer: 0
   m_Name: Pad (14)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13974,7 +14048,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -6.91
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
       propertyPath: m_LocalRotation.w
@@ -14010,16 +14084,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 243041194690276544, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
+    - {fileID: -8074540253633919429, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2116296480}
+      addedObject: {fileID: 2116296482}
   m_SourcePrefab: {fileID: 100100000, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
 --- !u!1 &1275746597
 GameObject:
@@ -14187,7 +14262,7 @@ MonoBehaviour:
   amplitudeInputField: {fileID: 1966419009}
   durationInputField: {fileID: 1648562179}
   frequencyInputField: {fileID: 1185955213}
-  circuitBoard: {fileID: 2116296481}
+  circuitBoard: {fileID: 2120891071}
   fAxis: {fileID: 166145069}
 --- !u!4 &1278349940
 Transform:
@@ -15472,7 +15547,7 @@ GameObject:
   - component: {fileID: 1394818570}
   m_Layer: 0
   m_Name: Pad (2)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17127,7 +17202,7 @@ GameObject:
   - component: {fileID: 1578924422}
   m_Layer: 0
   m_Name: Pad (20)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17210,7 +17285,7 @@ GameObject:
   - component: {fileID: 1607190987}
   m_Layer: 0
   m_Name: Pad (4)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -19553,7 +19628,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   forceInputField: {fileID: 1403810157}
-  circuitBoard: {fileID: 2116296481}
+  circuitBoard: {fileID: 2120891071}
   duration: 0.1
 --- !u!4 &1825818224
 Transform:
@@ -20481,7 +20556,7 @@ GameObject:
   - component: {fileID: 1888756050}
   m_Layer: 0
   m_Name: Pad (18)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -20747,7 +20822,7 @@ GameObject:
   - component: {fileID: 1914280414}
   m_Layer: 0
   m_Name: Pad (13)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -21376,7 +21451,7 @@ GameObject:
   - component: {fileID: 2045108455}
   m_Layer: 0
   m_Name: Pad (7)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -21459,7 +21534,7 @@ GameObject:
   - component: {fileID: 2066491837}
   m_Layer: 0
   m_Name: Pad (1)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -21542,7 +21617,7 @@ GameObject:
   - component: {fileID: 2073188038}
   m_Layer: 0
   m_Name: Pad (11)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -22209,7 +22284,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
   m_PrefabInstance: {fileID: 1254929709}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2116296480
+--- !u!114 &2116296482
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -22218,17 +22293,43 @@ MonoBehaviour:
   m_GameObject: {fileID: 2116296479}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c10ff03e248172f4297122d5febb3512, type: 3}
+  m_Script: {fileID: 11500000, guid: 1e9607700a3dcd24789912f1fa87a5e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetMaterial: {fileID: 5407429153165912631, guid: 21792645f24161a47b4814cd1ea419eb, type: 3}
+  targetMaterial: {fileID: 5407429153165912631, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
   targetObjects: []
   rb: {fileID: 0}
---- !u!4 &2116296481 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: db15ed50fbdf3e8408019ced89665a39, type: 3}
-  m_PrefabInstance: {fileID: 1254929709}
+  offset: {x: 0, y: 0, z: 0.005}
+  maxDepth: 5
+  newScale: {x: 10, y: 10, z: 10}
+--- !u!1 &2120891069 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+  m_PrefabInstance: {fileID: 724774635}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &2120891071 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+  m_PrefabInstance: {fileID: 724774635}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2120891072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120891069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e9607700a3dcd24789912f1fa87a5e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetMaterial: {fileID: 5407429153165912631, guid: 51b9d85ac72bd8c41969247b671a02bd, type: 3}
+  targetObjects: []
+  rb: {fileID: 0}
+  offset: {x: 0, y: 0, z: 0.005}
+  maxDepth: 5
+  newScale: {x: 10, y: 10, z: 10}
 --- !u!1 &2137447261
 GameObject:
   m_ObjectHideFlags: 0
@@ -22321,7 +22422,7 @@ GameObject:
   - component: {fileID: 2138272218}
   m_Layer: 0
   m_Name: Pad (16)
-  m_TagString: Conductor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -22769,3 +22870,4 @@ SceneRoots:
   - {fileID: 931962804}
   - {fileID: 282433764}
   - {fileID: 1254929709}
+  - {fileID: 724774635}

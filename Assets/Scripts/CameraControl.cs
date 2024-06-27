@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
-    public float moveSpeed = 4f;
+    public float moveSpeed = 10f;
     public float rotationSpeed = 90000000f;
     public GameObject UIObject;
     public UIScript uiScript;
@@ -44,7 +44,7 @@ public class CameraControl : MonoBehaviour
     public void TopDownView()
     {
         // Move the camera to the target position
-        transform.position = new Vector3(0, 6, 0);
+        transform.position = new Vector3(0, 85, 0);
 
         // Rotate the camera to the target rotation
         transform.rotation = Quaternion.Euler(90,180,0);
@@ -53,15 +53,15 @@ public class CameraControl : MonoBehaviour
     public void StandardView()
     {
         // Move the camera to the target position
-        transform.position = new Vector3(0, 3, 4);
+        transform.position = new Vector3(0, 48, 68);
 
         // Rotate the camera to the target rotation
-        transform.rotation = Quaternion.Euler(35,180,0);
+        transform.rotation = Quaternion.Euler(36,180,0);
     }
 
     public void SideView()
     {
-        transform.position = new Vector3(3,1,0);
+        transform.position = new Vector3(73,5,0);
         transform.rotation = Quaternion.Euler(5,-90,0);
 
     }
