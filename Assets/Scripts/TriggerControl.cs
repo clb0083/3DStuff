@@ -7,11 +7,13 @@ using UnityEngine;
 public class TriggerControl : MonoBehaviour
 {
     public Material targetMaterial;
+    public Material triggerMaterial;
     public List<GameObject> targetObjects = new List<GameObject>();//For accessing targetObjects list
     public Rigidbody rb;
     public Vector3 offset = new Vector3(0, 0, 0.005f); // Offset to place the new objects slightly above the originals
     public int maxDepth = 5; // Maximum depth of recursion to avoid freezing
     public Vector3 newScale = new Vector3(10, 10, 10);
+    public Color[] colors;
 
  
     void Start()
@@ -103,57 +105,23 @@ IEnumerator CopyMeshCollidersToEmptyObjects(Transform parent, int depth)
                 // Assign "Conductor" tag if the original child has it
                 if (child.CompareTag("Conductor"))
                 {
-                    emptyObject.tag = "Conductor";
+                    emptyObject.tag = "ConductorTrigger";
                 }
+
+                // Add a visual
+                Renderer renderer = emptyObject.AddComponent<MeshRenderer>();
+                MeshFilter meshFilter = emptyObject.AddComponent<MeshFilter>();
+                meshFilter.mesh = originalMeshCollider.sharedMesh;
+                renderer.material = new Material(triggerMaterial);
+
+                //add heatmap tracker script
+                emptyObject.AddComponent<TriggerTracker>();
+                
             }
 
             // Recursively call this function for all children
             yield return StartCoroutine(CopyMeshCollidersToEmptyObjects(child, depth + 1));
         }
     }
-//ORIG
- /*IEnumerator CopyMeshCollidersToEmptyObjects(Transform parent, int depth)
-    {
-        if (depth > maxDepth)
-        {
-            yield break;
-        }
 
-        List<Transform> children = new List<Transform>();
-        foreach (Transform child in parent)
-        {
-            children.Add(child);
-        }
-
-        foreach (Transform child in children)
-        {
-            // Check if the child has a Mesh Collider
-            MeshCollider originalMeshCollider = child.GetComponent<MeshCollider>();
-            if (originalMeshCollider != null)
-            {
-                // Create an empty GameObject
-                GameObject emptyObject = new GameObject(child.name + "_ColliderCopy");
-                emptyObject.transform.position = child.position + offset;
-                emptyObject.transform.rotation = child.rotation;
-                emptyObject.transform.localScale = child.localScale;
-                
-                // Copy the Mesh Collider to the new GameObject
-                MeshCollider newMeshCollider = emptyObject.AddComponent<MeshCollider>();
-                newMeshCollider.sharedMesh = originalMeshCollider.sharedMesh;
-                newMeshCollider.convex = originalMeshCollider.convex;
-                newMeshCollider.isTrigger = true;
-
-                // Set the new GameObject as a child of the parent
-                emptyObject.transform.SetParent(parent);
-                // Assign "Conductor" tag if the original child has it
-                if (child.CompareTag("Conductor"))
-                {
-                    emptyObject.tag = "Conductor";
-                }
-            }
-
-            // Recursively call this function for all children
-            yield return StartCoroutine(CopyMeshCollidersToEmptyObjects(child, depth + 1));
-        }
-    }*/
 }

@@ -35,7 +35,6 @@ public class WhiskerControl : MonoBehaviour
 
     void Update()
     {
-        print(currentConnections);
         if(confirmGravity)
         {
             GetGravitySelection(gravity.value);
@@ -111,16 +110,20 @@ public void ApplyGravity(int val)
     public Color bridgeDetectedColor = Color.red; // for highlighting
     public Color defaultColor = Color.white; // for highlighting
     public HashSet<string> currentConnections = new HashSet<string>();
+    public Color[] colors;
+    //public HeatMapTracker heatMapTracker;
+    private Dictionary<GameObject, int> triggerInteractionCounts = new Dictionary<GameObject, int>();
     
 
     // BRIDGING DETECTION ORIGINAL
     private void  OnTriggerStay(Collider trigger) // OnCollisionStay(Collision collision)// OnTriggerStay(Collider trigger)
     {
-        if (trigger.gameObject.CompareTag("Conductor")) // collision // trigger
+        if (trigger.gameObject.CompareTag("ConductorTrigger")) // collision // trigger
         {
-            print("triggered a conductor");
             // Add the conductor to the set of current connections
-            currentConnections.Add(trigger.gameObject.name); //collision // trigger
+            currentConnections.Add(trigger.gameObject.name);
+            // Increment interaction count for this trigger
+            //IncrementInteractionCount(trigger.gameObject);
             // Check if we have two or more connections
             if (currentConnections.Count >= 2)
             {
@@ -133,9 +136,9 @@ public void ApplyGravity(int val)
                     UIObject.GetComponent<UIScript>().bridgesDetected++;
                     UIObject.GetComponent<UIScript>().bridgesPerRun++;
                     objectRenderer.material.color = bridgeDetectedColor;
-                    //print(connectionsMade);
-
                     haveLoggedConnection = true;
+                    //UpdateTriggerColor(trigger.transform);
+                    //heatMapTracker.RegisterInteraction(trigger.gameObject);
                 }
             }
         }
@@ -143,7 +146,7 @@ public void ApplyGravity(int val)
 
      private void OnTriggerExit(Collider trigger)//OnCollisionExit(Collision collision)//OnTriggerExit(Collider trigger) 
     {
-        if (trigger.gameObject.CompareTag("Conductor")) //collision
+        if (trigger.gameObject.CompareTag("ConductorTrigger")) //collision
         {
             // Remove the conductor from the set of current connections
             currentConnections.Remove(trigger.gameObject.name); //collision
@@ -155,7 +158,7 @@ public void ApplyGravity(int val)
             }
         }
     }
-
+    
     private void ResetConnectionState()
     {
         currentConnections.Clear();
@@ -165,6 +168,4 @@ public void ApplyGravity(int val)
         UIObject.GetComponent<UIScript>().bridgesPerRun--;
         objectRenderer.material.color = defaultColor;
     }
-
 }
-

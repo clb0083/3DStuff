@@ -14,6 +14,7 @@ using UnityEngine.UIElements;
 public class UIScript : MonoBehaviour
 {
     private System.Random rand = new System.Random();//NEW
+    public TMP_Dropdown whiskMat;
     public Dropdown distributionDropdown;
     public TMP_InputField lengthMu;
     public TMP_InputField widthMu;
@@ -24,7 +25,7 @@ public class UIScript : MonoBehaviour
     public TMP_InputField yCoord;
     public TMP_InputField zCoord;
     public TMP_InputField numIterations;
-    public TextMeshProUGUI whiskerMat;
+    //public TextMeshProUGUI whiskerMat;
     public TextMeshProUGUI distributionSelect;
     public TextMeshProUGUI gravSelect;
     public TMP_InputField shockAmp;
@@ -38,6 +39,7 @@ public class UIScript : MonoBehaviour
     public int bridgesDetected;
     public TextMeshProUGUI bridgesEachRun;
     public int bridgesPerRun;
+    public TextMeshProUGUI bridgesCount;
     
     //for monte carlo stuff \/
     public float simtimeElapsed;
@@ -49,6 +51,14 @@ public class UIScript : MonoBehaviour
     public DistributionType distributionType = DistributionType.Lognormal;
     private List<float> lengths;
     private List<float> widths;
+    public MaterialType currentMaterial = MaterialType.Tin;
+
+    private Dictionary<MaterialType, MaterialProperties> materialProperties = new Dictionary<MaterialType, MaterialProperties>()
+    { //density (kg/cm^3), resistivity (ohm*cm), coefficient of friction (unitless)
+        { MaterialType.Tin, new MaterialProperties(0.0073f, 1.09e-5f, 0.32f) },
+        { MaterialType.Zinc, new MaterialProperties(0.00714f, 5.9e-6f, 0.6f) },
+        { MaterialType.Cadmium, new MaterialProperties(0.00865f, 7.0e-6f, 0.5f) }
+    };
    
 
     // Start is called before the first frame update
@@ -56,6 +66,53 @@ public class UIScript : MonoBehaviour
     {
         lengths = new List<float>();
         widths = new List<float>();
+
+        whiskMat.onValueChanged.AddListener(delegate {
+            WhiskMatDropdownValueChanged(whiskMat);
+        });
+
+        UpdateMaterialPropertiesUI(currentMaterial);
+    }
+
+    public void UpdateMaterialPropertiesUI(MaterialType materialType)
+    {
+        switch (materialType)
+        {
+            case MaterialType.Tin:
+                whiskMat.captionText.text = "Tin";
+                break;
+            case MaterialType.Zinc:
+                whiskMat.captionText.text = "Zinc";
+                break;
+            case MaterialType.Cadmium:
+                whiskMat.captionText.text = "Cadmium";
+                break;
+            default:
+                break;
+        }
+
+        Debug.Log($"UI updated for material: {materialType}");
+    }
+
+    // Method to handle whiskMat dropdown value change
+    public void WhiskMatDropdownValueChanged(TMP_Dropdown change)
+    {
+        currentMaterial = (MaterialType)change.value;
+        UpdateMaterialPropertiesUI(currentMaterial);
+
+        // Added to close dropdown after a short delay
+        StartCoroutine(CloseDropdownAfterDelay());
+    }
+
+    // Coroutine to close dropdown after a short delay
+    private IEnumerator CloseDropdownAfterDelay()
+    {
+        // Yielding for one frame to ensure dropdown update is complete
+        yield return null;
+
+        // Close the dropdown
+        TMP_Dropdown dropdown = whiskMat.GetComponent<TMP_Dropdown>();
+        dropdown.Hide();
     }
   
     // Update is called once per frame
@@ -70,7 +127,7 @@ public class UIScript : MonoBehaviour
 
         Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
-//MONTECARLO
+    //MONTECARLO
         simtimeElapsed += Time.deltaTime;
 
         if(startSim)
@@ -158,9 +215,19 @@ private float GenerateLogNormalValue(float mu_log, float sigma_log)
 
                 GameObject whiskerClone = Instantiate(whisker,spawnPos,Quaternion.Euler(UnityEngine.Random.Range(0, 360),  UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360)));
                 whiskerClone.tag = "whiskerClone";
-                //whiskerClone.AddComponent<TriggerCounterManager>();
-                
-                whiskerClone.transform.localScale = new Vector3(diameter,length,diameter);
+
+                /*//whiskerClone.AddComponent<TriggerCounterManager>();
+                Rigidbody whiskerRigidbody = whiskerClone.GetComponent<Rigidbody>();
+                // Calculate mass based on material properties and dimensions
+                MaterialProperties currentProps = materialProperties[currentMaterial];
+                float volume = Mathf.PI * Mathf.Pow(diameter / 2, 2) * length;
+                float mass = volume * currentProps.density;
+
+                // Set the mass of the whisker Rigidbody
+                whiskerRigidbody.mass = mass;*/
+
+                        
+                whiskerClone.transform.localScale = new Vector3(diameter,length/2,diameter);
                 lengths.Add(length);//*10);
                 widths.Add(diameter);//*10);
             }
@@ -177,6 +244,12 @@ private float GenerateLogNormalValue(float mu_log, float sigma_log)
         bridgesPerRun = 0;
         MakeWhiskerButton();
     }
+    public Text conductorName;
+
+    public void UpdateConductorBridge(string conductorName, int pingCount)
+    {
+        bridgesCount.text = conductorName + ": " + pingCount; // prints UI instead of component name. Correct ping count though.
+    }
 
     public void SaveListsToCSV(string filePath)
     {
@@ -187,6 +260,37 @@ private float GenerateLogNormalValue(float mu_log, float sigma_log)
             {
                 writer.WriteLine($"{lengths[i]},{widths[i]}");
             }
+        }
+    }
+    public class WhiskerData
+    {
+        public float Length { get; set; }
+        public float Width { get; set; }
+        public float Volume { get; set; }
+        public float Mass { get; set; }
+        public float Resistance { get; set; }
+
+        public WhiskerData(float length, float width, float volume, float mass, float resistance)
+        {
+            Length = length;
+            Width = width;
+            Volume = volume;
+            Mass = mass;
+            Resistance = resistance;
+        }
+    }
+
+    public class MaterialProperties
+    {
+        public float density;
+        public float resistivity;
+        public float coefficientOfFriction;
+
+        public MaterialProperties(float density, float resistivity, float coefficientOfFriction)
+        {
+            this.density = density;
+            this.resistivity = resistivity;
+            this.coefficientOfFriction = coefficientOfFriction;
         }
     }
    
