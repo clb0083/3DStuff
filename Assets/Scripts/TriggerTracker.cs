@@ -45,7 +45,7 @@ public class TriggerTracker : MonoBehaviour
     }
     
     //Onclick to show bridge counter // NOT FINISHED
-    private void Update()
+    /*private void Update()
     {
         if (Input.GetMouseButtonDown(0)) // 0 is the left mouse button
         {
@@ -67,5 +67,5 @@ public class TriggerTracker : MonoBehaviour
         // This method gets called when the object is clicked
         uiScript.UpdateConductorBridge(gameObject.name, pingCount);
         // Add your custom functionality here
-    }
+    }*/
 } 

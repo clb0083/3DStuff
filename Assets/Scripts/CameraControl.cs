@@ -39,6 +39,16 @@ public class CameraControl : MonoBehaviour
 
         Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
+
+         // Move the camera vertically with Q and E
+        if (Input.GetKey(KeyCode.Q))
+        {
+            transform.Translate(Vector3.down * moveSpeed * Time.deltaTime, Space.World);
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            transform.Translate(Vector3.up * moveSpeed * Time.deltaTime, Space.World);
+        }
     }
 
     public void TopDownView()

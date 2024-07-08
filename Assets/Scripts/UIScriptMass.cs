@@ -5,7 +5,7 @@ using UnityEngine;
 using TMPro;
 using System.IO;
 
-public class newScript : MonoBehaviour
+public class UIScriptMass : MonoBehaviour
 {
     private System.Random rand = new System.Random();
     public TMP_Dropdown whiskMat;
@@ -18,7 +18,6 @@ public class newScript : MonoBehaviour
     public TMP_InputField yCoord;
     public TMP_InputField zCoord;
     public TMP_InputField numIterations;
-    public TextMeshProUGUI whiskerMat;
     public TMP_InputField shockAmp;
     public TMP_InputField shockFreq;
     public TMP_InputField shockDur;
@@ -40,10 +39,10 @@ public class newScript : MonoBehaviour
     public DistributionType distributionType = DistributionType.Lognormal;
 
     private Dictionary<MaterialType, MaterialProperties> materialProperties = new Dictionary<MaterialType, MaterialProperties>()
-    { //density (kg/cm^3), resistivity (ohm*cm), coefficient of friction (unitless)
-        { MaterialType.Tin, new MaterialProperties(0.0073f, 1.09e-5f, 0.32f) },
-        { MaterialType.Zinc, new MaterialProperties(0.00714f, 5.9e-6f, 0.6f) },
-        { MaterialType.Cadmium, new MaterialProperties(0.00865f, 7.0e-6f, 0.5f) }
+    { //density (kg/um^3), resistivity (ohm*um), coefficient of friction (unitless)
+        { MaterialType.Tin, new MaterialProperties(7.3e-15f, 1.09e-1f, 0.32f) },
+        { MaterialType.Zinc, new MaterialProperties(7.14e-15f, 5.9e-2f, 0.6f) },
+        { MaterialType.Cadmium, new MaterialProperties(8.65e-15f, 7.0e-2f, 0.5f) }
     };
 
     public MaterialType currentMaterial = MaterialType.Tin;
@@ -67,6 +66,11 @@ public class newScript : MonoBehaviour
         });
 
         UpdateMaterialPropertiesUI(currentMaterial);
+
+        // Adjust physics settings
+        Time.fixedDeltaTime = 0.005f; // Increase the frequency of physics updates
+        Physics.defaultSolverIterations = 10; // Default is 6
+        Physics.defaultSolverVelocityIterations = 10; // Default is 1
     }
 
     public void UpdateMaterialPropertiesUI(MaterialType materialType)
@@ -74,13 +78,13 @@ public class newScript : MonoBehaviour
         switch (materialType)
         {
             case MaterialType.Tin:
-                whiskerMat.text = "Tin";
+                whiskMat.captionText.text = "Tin";
                 break;
             case MaterialType.Zinc:
-                whiskerMat.text = "Zinc";
+                whiskMat.captionText.text = "Zinc";
                 break;
             case MaterialType.Cadmium:
-                whiskerMat.text = "Cadmium";
+                whiskMat.captionText.text = "Cadmium";
                 break;
             default:
                 break;
@@ -90,25 +94,25 @@ public class newScript : MonoBehaviour
     }
 
     // Method to handle whiskMat dropdown value change
-void WhiskMatDropdownValueChanged(TMP_Dropdown change)
-{
-    currentMaterial = (MaterialType)change.value;
-    UpdateMaterialPropertiesUI(currentMaterial);
+    void WhiskMatDropdownValueChanged(TMP_Dropdown change)
+    {
+        currentMaterial = (MaterialType)change.value;
+        UpdateMaterialPropertiesUI(currentMaterial);
 
-    // Added to close dropdown after a short delay
-    StartCoroutine(CloseDropdownAfterDelay());
-}
+        // Added to close dropdown after a short delay
+        StartCoroutine(CloseDropdownAfterDelay());
+    }
 
-// Coroutine to close dropdown after a short delay
-private IEnumerator CloseDropdownAfterDelay()
-{
-    // Yielding for one frame to ensure dropdown update is complete
-    yield return null;
+    // Coroutine to close dropdown after a short delay
+    private IEnumerator CloseDropdownAfterDelay()
+    {
+        // Yielding for one frame to ensure dropdown update is complete
+        yield return null;
 
-    // Close the dropdown
-    TMP_Dropdown dropdown = whiskMat.GetComponent<TMP_Dropdown>();
-    dropdown.Hide();
-}
+        // Close the dropdown
+        TMP_Dropdown dropdown = whiskMat.GetComponent<TMP_Dropdown>();
+        dropdown.Hide();
+    }
 
     void Update()
     {
@@ -194,6 +198,9 @@ private IEnumerator CloseDropdownAfterDelay()
 {
     lengths.Clear();
     widths.Clear();
+    volumes.Clear();
+    masses.Clear();
+    resistances.Clear();
 
     int numWhiskersToCreate = Convert.ToInt32(numWhiskers.text);
     for (int i = 0; i < numWhiskersToCreate; i++)
@@ -221,9 +228,24 @@ private IEnumerator CloseDropdownAfterDelay()
         MaterialProperties currentProps = materialProperties[currentMaterial];
         float volume = Mathf.PI * Mathf.Pow(diameter / 2, 2) * length;
         float mass = volume * currentProps.density;
+        float resistance = (currentProps.resistivity * length) / (Mathf.PI * Mathf.Pow(diameter / 2, 2));
 
-        // Set the mass of the whisker Rigidbody
-        whiskerRigidbody.mass = mass;
+        // Set a minimum mass limit
+        if (mass < 1f)
+        {
+            whiskerRigidbody.mass = 0.22f;
+            whiskerRigidbody.drag = 20f;
+            whiskerRigidbody.angularDrag = 2f;
+        }
+        else
+        {
+            whiskerRigidbody.mass = mass;
+            whiskerRigidbody.drag = 20f;
+            whiskerRigidbody.angularDrag = 2f;
+        }
+
+        // Enable continuous collision detection
+        whiskerRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
         // Scale whisker and update lists
         whiskerClone.transform.localScale = new Vector3(diameter, length / 2, diameter);
@@ -251,13 +273,14 @@ private IEnumerator CloseDropdownAfterDelay()
         whiskerPhysicsMaterial.dynamicFriction = currentProps.coefficientOfFriction;
 
         // Optionally, save whisker data if needed
-        WhiskerData data = new WhiskerData(length, diameter, volume, mass, 0); // Update this line as per your needs
+        WhiskerData data = new WhiskerData(length, diameter, volume, mass, resistance);
         SaveWhiskerData(data);
 
         // Debug log for verification
-        Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}");
+        Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}, Resistance: {resistance}");
     }
 }
+
 
     public void ReloadWhiskersButton()
     {
