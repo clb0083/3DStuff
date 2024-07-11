@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class VibrationManager : MonoBehaviour
 {
@@ -11,7 +12,6 @@ public class VibrationManager : MonoBehaviour
     public Transform circuitBoard; // Reference to the circuit board transform
     private Rigidbody circuitBoardRigidbody; // Rigidbody of the circuit board
     private Vector3 originalBoardPosition; // Original position of the circuit board
-
     private float amplitude;
     private float duration;
     private float frequency;
@@ -20,7 +20,7 @@ public class VibrationManager : MonoBehaviour
     private bool isVibratingY = false;
     private bool isVibratingZ = false;
     public TMP_Dropdown fAxis;
-
+    public Button vibrateButton;
     //private GameObject[] conductors; // Array of conductors
     //private Vector2[] originalConductorPositions; // Array to store original positions of conductors
 
@@ -51,7 +51,7 @@ public class VibrationManager : MonoBehaviour
             {
                 isVibratingX = false; // Stop vibrating after the duration
                 Debug.Log("Vibration finished.");
-
+                VibrationFinished();
                 // Reset the position of the circuit board
                 if (circuitBoard != null)
                 {
@@ -80,7 +80,7 @@ public class VibrationManager : MonoBehaviour
             {
                 isVibratingY = false; // Stop vibrating after the duration
                 Debug.Log("Vibration finished.");
-
+                VibrationFinished();
                 // Reset the position of the circuit board
                 if (circuitBoard != null)
                 {
@@ -109,7 +109,7 @@ public class VibrationManager : MonoBehaviour
             {
                 isVibratingZ = false; // Stop vibrating after the duration
                 Debug.Log("Vibration finished.");
-
+                VibrationFinished();
                 // Reset the position of the circuit board
                 if (circuitBoard != null)
                 {
@@ -193,6 +193,8 @@ public class VibrationManager : MonoBehaviour
     }
     public void vibratePressed()
     {
+        vibrateButton.interactable = false;
+
         int selectedAxis = fAxis.value;
         switch (selectedAxis)
         {
@@ -206,5 +208,9 @@ public class VibrationManager : MonoBehaviour
                 StartVibrationZ();
                 break;
         }
+    }
+    private void VibrationFinished()
+    {
+        vibrateButton.interactable = true; // Re-enable the Vibrate button
     }
 }   

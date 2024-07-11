@@ -19,9 +19,6 @@ public class HeatMap : MonoBehaviour
         }
         else
         {   
-            //Color color = triggerMaterial.color;
-            //color.a = 0;
-            //triggerMaterial.color = color;
             HeatUI.SetActive(!HeatUI.activeSelf);
             toggleColorOn = true;
         }
@@ -87,22 +84,7 @@ public class HeatMap : MonoBehaviour
                     }
                     Debug.Log("done");
                 }
-                /*if (renderer != null)
-                {
-                    if (pingCount >= 3)
-                    {
-                        renderer.material.color = Color.red;
-                    }
-                    else if (pingCount >= 1)
-                    {
-                        renderer.material.color = Color.yellow;
-                    }
-                    else
-                    {
-                        renderer.material.color = Color.green;
-                    }
-                    Debug.Log("done");
-                }*/
+                
             }
         }
         toggleColorOn = true;

@@ -21,6 +21,12 @@ public class WhiskerControl : MonoBehaviour
     private List<WhiskerData> bridgedWhiskers = new List<WhiskerData>();
     public GameObject UIObject;
     public UIScript uiScript;
+    // Add new fields for file path and file name input and save button
+    public TMP_InputField filePathInputField;
+    public TMP_InputField fileNameInputField;
+    public Button saveButton;
+    private string directoryPath;
+    private string fileName;
  
     
     // Start is called before the first frame update
@@ -116,7 +122,6 @@ public void ApplyGravity(int val)
     public HashSet<string> currentConnections = new HashSet<string>();
     public Color[] colors;
     private Dictionary<GameObject, int> triggerInteractionCounts = new Dictionary<GameObject, int>();
-    
 
     // BRIDGING DETECTION ORIGINAL
     private void  OnTriggerStay(Collider trigger) 
@@ -183,10 +188,10 @@ public void ApplyGravity(int val)
 
         float resistance = CalculateResistance(length, diameter, currentProps);
 
-        WhiskerData data = new WhiskerData(length*1000, diameter*1000, resistance);
+        WhiskerData data = new WhiskerData(length, diameter, resistance); // *1000?
         bridgedWhiskers.Add(data);
 
-        SaveBridgedWhiskerData(data);
+        //SaveBridgedWhiskerData(data);//remove
     }
     private float CalculateResistance(float length, float diameter, UIScript.MaterialProperties materialProps)
     {
@@ -198,8 +203,8 @@ public void ApplyGravity(int val)
 
     private void SaveBridgedWhiskerData(WhiskerData data)
     {
-        string directoryPath = @"D:/Unity";
-        string filePath = Path.Combine(directoryPath, "bridged_whisker_data.csv");
+        //string directoryPath = @"D:/Unity";//remove
+        string filePath = Path.Combine(directoryPath, fileName + ".csv");
 
         try
         {
@@ -207,16 +212,61 @@ public void ApplyGravity(int val)
             {
                 Directory.CreateDirectory(directoryPath);
             }
+            var lines = File.ReadAllLines(filePath).ToList();
 
-            using (StreamWriter writer = new StreamWriter(filePath, true))
+        // Start modifying lines from the third line (index 2) to skip headers
+        for (int i = 2; i < lines.Count; i++)
+        {
+            var columns = lines[i].Split(',').ToList();
+
+            // Check if the bridged whisker data is already present in this line
+            if (columns.Count < 8)
             {
-                writer.WriteLine($"{data.Length},{data.Diameter},{data.Resistance}");
+                // Add empty cells if necessary
+                while (columns.Count < 5)
+                {
+                    columns.Add(string.Empty);
+                }
+                // Append bridged whisker data
+                columns.Add(data.Length.ToString());
+                columns.Add(data.Diameter.ToString());
+                columns.Add(data.Resistance.ToString());
+
+                // Join the columns back into a single line
+                lines[i] = string.Join(",", columns);
+
+                // Write back to the file
+                File.WriteAllLines(filePath, lines);
+
+                Debug.Log($"Bridged whisker data saved successfully to {filePath}");
+                return; // Exit after saving the data
             }
+        }
+                // If the lines do not exist, append them
+                lines.Add($",,,,,{data.Length/1000},{data.Diameter/1000},{data.Resistance/1000}");
+            
+        File.WriteAllLines(filePath, lines);
+            /*using (StreamWriter writer = new StreamWriter(filePath, true))
+            {
+                writer.WriteLine($",,,,,{data.Length},{data.Diameter},{data.Resistance}");
+            }*/
             Debug.Log($"Bridged whisker data saved successfully to {filePath}");
         }
         catch (Exception ex)
         {
             Debug.LogError($"Failed to save bridged whisker data: {ex.Message}");
+        }
+    }
+
+    public void SaveButtonClicked()
+    {
+        directoryPath = filePathInputField.text;
+        fileName = fileNameInputField.text;
+
+        // Save all the bridged whiskers data to the specified path
+        foreach (WhiskerData data in bridgedWhiskers)
+        {
+            SaveBridgedWhiskerData(data);
         }
     }
 

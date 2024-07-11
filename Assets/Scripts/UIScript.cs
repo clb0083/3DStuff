@@ -33,14 +33,15 @@ public class UIScript : MonoBehaviour
     public TextMeshProUGUI bridgesEachRun;
     public int bridgesPerRun;
     public TextMeshProUGUI errorMessage;
-
     public float simtimeElapsed;
-    public bool startSim;
+    public bool startSim = false;
     public int simIntComplete;
     public float simTimeThresh;
     public TMP_InputField totalRuns;
     public float moveSpeed = 5f;
     public DistributionType distributionType = DistributionType.Lognormal;
+    public bool UIisOn = true;
+    public GameObject UIui;
 
     public Dictionary<MaterialType, MaterialProperties> materialProperties = new Dictionary<MaterialType, MaterialProperties>()
     { //density (kg/um^3), resistivity (ohm*um), coefficient of friction (unitless)
@@ -110,10 +111,7 @@ public class UIScript : MonoBehaviour
     // Coroutine to close dropdown after a short delay
     private IEnumerator CloseDropdownAfterDelay()
     {
-        // Yielding for one frame to ensure dropdown update is complete
         yield return null;
-
-        // Close the dropdown
         TMP_Dropdown dropdown = whiskMat.GetComponent<TMP_Dropdown>();
         dropdown.Hide();
     }
@@ -129,10 +127,11 @@ public class UIScript : MonoBehaviour
         Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
 
-        simtimeElapsed += Time.deltaTime;
+        
 
         if (startSim)
         {
+            simtimeElapsed += Time.deltaTime;
             if (simIntComplete < Convert.ToInt32(totalRuns.text))
             {
                 if (simtimeElapsed > simTimeThresh)
@@ -168,7 +167,7 @@ public class UIScript : MonoBehaviour
         return lengthVal;
     }
 
-    public float WidthDistributionGenerate()
+    public float WidthDistributionGenerate() //xx_log = xx_width
     {
         float mu_log = float.Parse(widthMu.text);
         float sigma_log = float.Parse(widthSigma.text);
@@ -201,29 +200,73 @@ public class UIScript : MonoBehaviour
 
 public void MakeWhiskerButton()
 {
-    //error handling
+    //error handling | Limits are subject to change |
     float mu_log = float.Parse(widthMu.text);
     float sigma_log = float.Parse(widthSigma.text);
     float mu = float.Parse(lengthMu.text);
     float sigma = float.Parse(lengthSigma.text);
-    if (mu_log > 1000)
+    int numWhiskersToCreate = Convert.ToInt32(numWhiskers.text);
+    //float x = float.TryParse(xCoord.text);
+    float x = Convert.ToSingle(xCoord.text);
+    float y = Convert.ToSingle(yCoord.text);
+    float z = Convert.ToSingle(zCoord.text);
+
+    if (distributionType == DistributionType.Lognormal)
+        {
+           if (mu_log > 9)
+            {
+                SetErrorMessage("Width Mu value outside acceptable range.");
+                return;
+            }
+            if (sigma_log > 4)
+            {
+                SetErrorMessage("Width Sigma value is outside acceptable range.");
+                return;
+            }
+            if (mu > 20)
+            {
+                SetErrorMessage("Length Mu value outside acceptable range.");
+                return;
+            }
+            if (sigma > 15)
+            {
+                SetErrorMessage("Length Sigma value is outside acceptable range.");
+                return;
+            } 
+        }
+    else
+        {
+           if (mu_log > 10000)
+            {
+                SetErrorMessage("Width Mu value outside acceptable range.");
+                return;
+            }
+            if (sigma_log > 10000)
+            {
+                SetErrorMessage("Width Sigma value is outside acceptable range.");
+                return;
+            }
+            if (mu > 30000)
+            {
+                SetErrorMessage("Length Mu value outside acceptable range.");
+                return;
+            }
+            if (sigma > 10000)
+            {
+                SetErrorMessage("Length Sigma value is outside acceptable range.");
+                return;
+            } 
+        }
+
+    if(numWhiskersToCreate > 2000)
     {
-        SetErrorMessage("Width Mu value outside acceptable range");
+        SetErrorMessage("Whisker count too high. Upper limit is 2000");
         return;
     }
-    if (sigma_log > 50)
+    
+    if (x < 0 || y < 0 || z < 0)
     {
-        SetErrorMessage("Width Sigma value is outside acceptable range");
-        return;
-    }
-    if (mu > 9999)
-    {
-        SetErrorMessage("Length Mu value outside acceptable range");
-        return;
-    }
-    if (sigma > 500)
-    {
-        SetErrorMessage("Length Sigma value is outside acceptable range");
+        SetErrorMessage("Coordinates cannot be negative.");
         return;
     }
 
@@ -233,7 +276,7 @@ public void MakeWhiskerButton()
     masses.Clear();
     resistances.Clear();
 
-    int numWhiskersToCreate = Convert.ToInt32(numWhiskers.text);
+    //int numWhiskersToCreate = Convert.ToInt32(numWhiskers.text);
     for (int i = 0; i < numWhiskersToCreate; i++)
     {
         // Generate dimensions and spawn position
@@ -355,16 +398,20 @@ public void MakeWhiskerButton()
                 if (!fileExists)
                 {
                     // Write the column titles
-                    writer.WriteLine("Length,Width,Volume,Mass,Resistance");
+                    writer.WriteLine("All Whiskers,,,,,Bridged Whiskers");
+                    writer.WriteLine("Length,Width,Volume,Mass,Resistance,Length,Width,Resistance");
                 }
 
                 writer.WriteLine($"{data.Length},{data.Width},{data.Volume},{data.Mass},{data.Resistance}");
+                DataSaveManager.CurrentRowIndex++;
             }
             Debug.Log($"Whisker data saved successfully to {filePath}");
+            
         }
         catch (Exception ex)
         {
             Debug.LogError($"Failed to save whisker data: {ex.Message}");
+            
         }
     }
     public TextMeshProUGUI bridgesCount;
@@ -373,6 +420,19 @@ public void MakeWhiskerButton()
     public void UpdateConductorBridge(string conductorName, int pingCount)
     {
         bridgesCount.text = conductorName + ": " + pingCount; // prints UI instead of component name. Correct ping count though.
+    }
+    public void toggleUI()
+    {           
+        if(UIisOn)
+        {
+            UIui.SetActive(false);
+            UIisOn = false;
+        }
+        else
+        {   
+            UIui.SetActive(!UIui.activeSelf);
+            UIisOn = true;
+        }
     }
 
     public class WhiskerData
@@ -407,296 +467,4 @@ public void MakeWhiskerButton()
         }
     }
 }
-/*original
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using System;
-using System.IO;
-using UnityEngine.UI;
 
-public class UIScript : MonoBehaviour
-{
-    private System.Random rand = new System.Random();//NEW
-    public TMP_Dropdown whiskMat;
-    public Dropdown distributionDropdown;
-    public TMP_InputField lengthMu;
-    public TMP_InputField widthMu;
-    public TMP_InputField lengthSigma;
-    public TMP_InputField widthSigma;
-    public TMP_InputField numWhiskers;
-    public TMP_InputField xCoord;
-    public TMP_InputField yCoord;
-    public TMP_InputField zCoord;
-    public TMP_InputField numIterations;
-    public TextMeshProUGUI distributionSelect;
-    public TextMeshProUGUI gravSelect;
-    public TMP_InputField shockAmp;
-    public TMP_InputField shockFreq;
-    public TMP_InputField shockDur;
-    public TMP_InputField vibrAmp;
-    public TMP_InputField vibrFreq;
-    public TMP_InputField vibrDur;
-    public GameObject whisker;
-    public TextMeshProUGUI totalBridges;
-    public int bridgesDetected;
-    public TextMeshProUGUI bridgesEachRun;
-    public int bridgesPerRun;
-    public TextMeshProUGUI bridgesCount;
-    
-    //for monte carlo stuff \/
-    public float simtimeElapsed;
-    public bool startSim;
-    public int simIntComplete;
-    public float simTimeThresh;
-    public TMP_InputField totalRuns;
-    public float moveSpeed = 5f;
-    public DistributionType distributionType = DistributionType.Lognormal;
-    private List<float> lengths;
-    private List<float> widths;
-    public MaterialType currentMaterial = MaterialType.Tin;
-
-    private Dictionary<MaterialType, MaterialProperties> materialProperties = new Dictionary<MaterialType, MaterialProperties>()
-    { //density (kg/cm^3), resistivity (ohm*cm), coefficient of friction (unitless)
-        { MaterialType.Tin, new MaterialProperties(0.0073f, 1.09e-5f, 0.32f) },
-        { MaterialType.Zinc, new MaterialProperties(0.00714f, 5.9e-6f, 0.6f) },
-        { MaterialType.Cadmium, new MaterialProperties(0.00865f, 7.0e-6f, 0.5f) }
-    };
-   
-
-    // Start is called before the first frame C
-    void Start()
-    {
-        lengths = new List<float>();
-        widths = new List<float>();
-
-        whiskMat.onValueChanged.AddListener(delegate {
-            WhiskMatDropdownValueChanged(whiskMat);
-        });
-
-        UpdateMaterialPropertiesUI(currentMaterial);
-    }
-
-    public void UpdateMaterialPropertiesUI(MaterialType materialType)
-    {
-        switch (materialType)
-        {
-            case MaterialType.Tin:
-                whiskMat.captionText.text = "Tin";
-                break;
-            case MaterialType.Zinc:
-                whiskMat.captionText.text = "Zinc";
-                break;
-            case MaterialType.Cadmium:
-                whiskMat.captionText.text = "Cadmium";
-                break;
-            default:
-                break;
-        }
-
-        Debug.Log($"UI updated for material: {materialType}");
-    }
-
-    // Method to handle whiskMat dropdown value change
-    public void WhiskMatDropdownValueChanged(TMP_Dropdown change)
-    {
-        currentMaterial = (MaterialType)change.value;
-        UpdateMaterialPropertiesUI(currentMaterial);
-
-        // Added to close dropdown after a short delay
-        StartCoroutine(CloseDropdownAfterDelay());
-    }
-
-    // Coroutine to close dropdown after a short delay
-    private IEnumerator CloseDropdownAfterDelay()
-    {
-        // Yielding for one frame to ensure dropdown update is complete
-        yield return null;
-
-        // Close the dropdown
-        TMP_Dropdown dropdown = whiskMat.GetComponent<TMP_Dropdown>();
-        dropdown.Hide();
-    }
-  
-    // Update is called once per frame
-    void Update()
-    {
-        totalBridges.text = "Total Bridges: " + bridgesDetected.ToString();
-        bridgesEachRun.text = "This Run: "+ bridgesPerRun.ToString();
-        print(bridgesDetected);
-        // Move the camera based on user input
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-
-        Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
-        transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
-    //MONTECARLO
-        simtimeElapsed += Time.deltaTime;
-
-        if(startSim)
-        {   
-            
-            if(simIntComplete < Convert.ToInt32(totalRuns.text))
-            {
-                              
-                if(simtimeElapsed > simTimeThresh)
-                {
-                    ReloadWhiskersButton();
-                                       
-                    simIntComplete +=1;
-                    simtimeElapsed = 0f;                    
-                }
-            }
-
-            if(simIntComplete == Convert.ToInt32(totalRuns.text))
-            {
-                startSim = false; 
-            }
-        }
-    }
- 
-//LogNormalStuff
-private float GenerateLogNormalValue(float mu_log, float sigma_log)
-    {
-        float normalVal = RandomFromDistribution.RandomNormalDistribution(mu_log, sigma_log);
-        float logNormalVal = Mathf.Exp(normalVal);
-        return logNormalVal;
-    }
-
-    private float GenerateNormalValue(float mu_norm, float sigma_norm)
-    {
-        return RandomFromDistribution.RandomNormalDistribution(mu_norm, sigma_norm);
-    }
-
-    public float LengthDistributionGenerate()
-    {
-        float mu = float.Parse(lengthMu.text);///10;
-        float sigma = float.Parse(lengthSigma.text);///10;
-        float lengthVal;
-
-        if (distributionType == DistributionType.Lognormal)
-        {
-            lengthVal = GenerateLogNormalValue(mu, sigma);
-        }
-        else
-        {
-            lengthVal = GenerateNormalValue(mu, sigma);
-        }
-
-        return lengthVal;
-    }
-
-    public float WidthDistributionGenerate()
-    {
-        float mu_log = float.Parse(widthMu.text);///10;
-        float sigma_log = float.Parse(widthSigma.text);///10;
-        float widthVal;
-
-        if (distributionType == DistributionType.Lognormal)
-        {
-            widthVal = GenerateLogNormalValue(mu_log, sigma_log);
-        }
-        else
-        {
-            widthVal = GenerateNormalValue(mu_log, sigma_log);
-        }
-
-        return widthVal;
-    }
- 
-    public void MakeWhiskerButton()
-    {
-        for(int i = 0; i < Convert.ToInt32(numWhiskers.text); i++)
-            {
-                float diameter = WidthDistributionGenerate()/1000; //NEW STUFF /1000;
-                float length = LengthDistributionGenerate()/1000;
-                float spawnPointX = UnityEngine.Random.Range(-float.Parse(xCoord.text),float.Parse(xCoord.text));
-                float spawnPointY = UnityEngine.Random.Range(1,Convert.ToInt32(yCoord.text)); //can remove range to this if needed.
-                float spawnPointZ = UnityEngine.Random.Range(-float.Parse(zCoord.text),float.Parse(zCoord.text));
-
-                Vector3 spawnPos = new Vector3(spawnPointX,spawnPointY,spawnPointZ);
-
-                GameObject whiskerClone = Instantiate(whisker,spawnPos,Quaternion.Euler(UnityEngine.Random.Range(0, 360),  UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360)));
-                whiskerClone.tag = "whiskerClone";
-
-                //whiskerClone.AddComponent<TriggerCounterManager>();
-                Rigidbody whiskerRigidbody = whiskerClone.GetComponent<Rigidbody>();
-                // Calculate mass based on material properties and dimensions
-                MaterialProperties currentProps = materialProperties[currentMaterial];
-                float volume = Mathf.PI * Mathf.Pow(diameter / 2, 2) * length;
-                float mass = volume * currentProps.density;
-
-                // Set the mass of the whisker Rigidbody
-                whiskerRigidbody.mass = mass;
-
-                        
-                whiskerClone.transform.localScale = new Vector3(diameter,length/2,diameter);
-                lengths.Add(length);//*10);
-                widths.Add(diameter);//*10);
-            }
-        SaveListsToCSV("D:/Unity/LogNormal.csv");
-        //ApplyMacro("D:/Unity/LogNormal.xlsx");
-    }
-    public void ReloadWhiskersButton()
-    {
-        GameObject[] allWhiskers;
-        allWhiskers = GameObject.FindGameObjectsWithTag("whiskerClone");
-        foreach (GameObject whisk in allWhiskers)
-        {
-            Destroy(whisk.gameObject); // Remove the object from the scene
-        }
-        bridgesPerRun = 0;
-        MakeWhiskerButton();
-    }
-    public Text conductorName;
-
-    public void UpdateConductorBridge(string conductorName, int pingCount)
-    {
-        bridgesCount.text = conductorName + ": " + pingCount; // prints UI instead of component name. Correct ping count though.
-    }
-
-    public void SaveListsToCSV(string filePath)
-    {
-        using (StreamWriter writer = new StreamWriter(filePath))
-        {
-            writer.WriteLine("Length,Width");
-            for (int i = 0; i < lengths.Count; i++)
-            {
-                writer.WriteLine($"{lengths[i]},{widths[i]}");
-            }
-        }
-    }
-    public class WhiskerData
-    {
-        public float Length { get; set; }
-        public float Width { get; set; }
-        public float Volume { get; set; }
-        public float Mass { get; set; }
-        public float Resistance { get; set; }
-
-        public WhiskerData(float length, float width, float volume, float mass, float resistance)
-        {
-            Length = length;
-            Width = width;
-            Volume = volume;
-            Mass = mass;
-            Resistance = resistance;
-        }
-    }
-
-    public class MaterialProperties
-    {
-        public float density;
-        public float resistivity;
-        public float coefficientOfFriction;
-
-        public MaterialProperties(float density, float resistivity, float coefficientOfFriction)
-        {
-            this.density = density;
-            this.resistivity = resistivity;
-            this.coefficientOfFriction = coefficientOfFriction;
-        }
-    }
-    
-}*/

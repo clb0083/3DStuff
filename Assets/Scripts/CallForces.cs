@@ -37,4 +37,5 @@ public class CallForces : MonoBehaviour
     {
         VibrationUI.SetActive(false);
     }
+  
 }

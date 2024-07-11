@@ -123,5 +123,4 @@ IEnumerator CopyMeshCollidersToEmptyObjects(Transform parent, int depth)
             yield return StartCoroutine(CopyMeshCollidersToEmptyObjects(child, depth + 1));
         }
     }
-
 }

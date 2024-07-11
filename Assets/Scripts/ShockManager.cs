@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class ShockManager : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class ShockManager : MonoBehaviour
     private bool isShockingY = false;
     private bool isShockingZ = false;
     public TMP_Dropdown shockAxis;
+    public Button shockButton;
 
     private void Start()
     {
@@ -46,7 +48,7 @@ public class ShockManager : MonoBehaviour
             {
                 isShockingX = false; // Stop shocking after the duration
                 Debug.Log("Shock finished.");
-
+                ShockFinished();
                 // Reset the position of the circuit board
                 if (circuitBoard != null)
                 {
@@ -75,7 +77,7 @@ public class ShockManager : MonoBehaviour
             {
                 isShockingY = false; // Stop shocking after the duration
                 Debug.Log("Shock finished.");
-
+                ShockFinished();
                 // Reset the position of the circuit board
                 if (circuitBoard != null)
                 {
@@ -104,7 +106,7 @@ public class ShockManager : MonoBehaviour
             {
                 isShockingZ = false; // Stop shocking after the duration
                 Debug.Log("Shock finished.");
-
+                ShockFinished();
                 // Reset the position of the circuit board
                 if (circuitBoard != null)
                 {
@@ -179,6 +181,7 @@ public class ShockManager : MonoBehaviour
 
     public void shockPressed()
     {
+        shockButton.interactable = false;
         int selectedAxis = shockAxis.value;
         switch (selectedAxis)
         {
@@ -193,69 +196,10 @@ public class ShockManager : MonoBehaviour
                 break;
         }
     }
+    private void ShockFinished()
+    {
+        shockButton.interactable = true; // Re-enable the Vibrate button
+    }
 }
 
-/*using UnityEngine;
-using TMPro;
-using System;
-using System.Collections;
-
-public class SimpleShockManager3D : MonoBehaviour
-{
-    public TMP_InputField forceInputField; // Input field for shock force
-    public Transform circuitBoard; // Reference to the circuit board transform
-    private Rigidbody circuitBoardRigidbody; // Rigidbody of the circuit board
-    public float duration = 0.1f; // Duration of the movement
-    private Vector3 originalPosition; // Original position of the circuit board
-
-    private void Start()
-    {
-        // Store the original position of the circuit board
-        originalPosition = circuitBoard.position;
-    }
-
-    public void ApplyShock()
-    {
-        // Convert the input field text to an integer
-        float force;
-        if (float.TryParse(forceInputField.text, out force))
-        {
-            // Start the coroutine to move the board and return it back
-            StartCoroutine(MoveBoard(force));
-        }
-        else
-        {
-            Debug.LogError("Invalid input for force. Please enter a valid integer.");
-        }
-    }
-
-    private IEnumerator MoveBoard(float force)
-    {
-        Vector3 targetPosition = originalPosition + Vector3.right * force;
-        float elapsedTime = 0;
-
-        // Move to the target position
-        while (elapsedTime < duration)
-        {
-            circuitBoard.position = Vector3.Lerp(originalPosition, targetPosition, elapsedTime / duration);
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-        circuitBoard.position = targetPosition;
-
-        // Wait for a short period at the target position
-        yield return new WaitForSeconds(0.01f);
-
-        elapsedTime = 0;
-
-        // Move back to the original position
-        while (elapsedTime < duration)
-        {
-            circuitBoard.position = Vector3.Lerp(targetPosition, originalPosition, elapsedTime / duration);
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-        circuitBoard.position = originalPosition;
-    }
-}*/
 

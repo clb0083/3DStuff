@@ -44,28 +44,4 @@ public class TriggerTracker : MonoBehaviour
         }
     }
     
-    //Onclick to show bridge counter // NOT FINISHED
-    /*private void Update()
-    {
-        if (Input.GetMouseButtonDown(0)) // 0 is the left mouse button
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.collider != null && hit.collider.gameObject == gameObject)
-                {
-                    OnObjectClicked();
-                }
-            }
-        }
-    }
-
-    private void OnObjectClicked()
-    {
-        // This method gets called when the object is clicked
-        uiScript.UpdateConductorBridge(gameObject.name, pingCount);
-        // Add your custom functionality here
-    }*/
 } 
