@@ -6,6 +6,7 @@ using TMPro;
 using System.IO;
 using UnityEngine.UI;
 using Unity.VisualScripting;
+using System.Data.Common;
 
 public class UIScript : MonoBehaviour
 {
@@ -57,6 +58,7 @@ public class UIScript : MonoBehaviour
     private List<float> volumes;
     private List<float> masses;
     private List<float> resistances;
+    public WhiskerControl whiskerControl;   //new
 
     void Start()
     {
@@ -206,6 +208,10 @@ public void MakeWhiskerButton()
     float mu = float.Parse(lengthMu.text);
     float sigma = float.Parse(lengthSigma.text);
     int numWhiskersToCreate = Convert.ToInt32(numWhiskers.text);
+
+    string directoryPathCheck = whiskerControl.directoryPath;
+    string fileNameCheck = whiskerControl.fileName;
+
     //float x = float.TryParse(xCoord.text);
     float x = Convert.ToSingle(xCoord.text);
     float y = Convert.ToSingle(yCoord.text);
@@ -267,6 +273,12 @@ public void MakeWhiskerButton()
     if (x < 0 || y < 0 || z < 0)
     {
         SetErrorMessage("Coordinates cannot be negative.");
+        return;
+    }
+
+    if(directoryPathCheck == null || fileNameCheck == null)
+    {
+        SetErrorMessage("Failed to save data - Path or Filename cannot be empty");
         return;
     }
 
@@ -347,7 +359,6 @@ public void MakeWhiskerButton()
         whiskerPhysicsMaterial.staticFriction = currentProps.coefficientOfFriction;
         whiskerPhysicsMaterial.dynamicFriction = currentProps.coefficientOfFriction;
 
-        // Optionally, save whisker data if needed
         WhiskerData data = new WhiskerData(length, diameter, volume, mass, resistance);
         SaveWhiskerData(data);
 
@@ -379,11 +390,14 @@ public void MakeWhiskerButton()
         yield return new WaitForSeconds(delay);
         errorMessage.text = "";
     }
-
+    //saving whiskers data;
+    
     public void SaveWhiskerData(WhiskerData data)
-    {
-        string directoryPath = @"D:/Unity";
-        string filePath = Path.Combine(directoryPath, "whisker_data.csv");
+    {   
+        string directoryPath = whiskerControl.directoryPath;
+        string filePath = Path.Combine(directoryPath, whiskerControl.fileName + ".csv");
+        //string directoryPath = @"D:/Unity";
+        //string filePath = Path.Combine(directoryPath, "whisker_data.csv");
 
         try
         {
@@ -402,7 +416,7 @@ public void MakeWhiskerButton()
                     writer.WriteLine("Length,Width,Volume,Mass,Resistance,Length,Width,Resistance");
                 }
 
-                writer.WriteLine($"{data.Length},{data.Width},{data.Volume},{data.Mass},{data.Resistance}");
+                writer.WriteLine($"{data.Length*1000},{data.Width*1000},{data.Volume*1000},{data.Mass*1000},{data.Resistance*1000}");
                 DataSaveManager.CurrentRowIndex++;
             }
             Debug.Log($"Whisker data saved successfully to {filePath}");

@@ -25,8 +25,8 @@ public class WhiskerControl : MonoBehaviour
     public TMP_InputField filePathInputField;
     public TMP_InputField fileNameInputField;
     public Button saveButton;
-    private string directoryPath;
-    private string fileName;
+    public string directoryPath;
+    public string fileName;
  
     
     // Start is called before the first frame update
@@ -188,15 +188,15 @@ public void ApplyGravity(int val)
 
         float resistance = CalculateResistance(length, diameter, currentProps);
 
-        WhiskerData data = new WhiskerData(length, diameter, resistance); // *1000?
+        WhiskerData data = new WhiskerData(length*1000, diameter*1000, resistance);
         bridgedWhiskers.Add(data);
-
-        //SaveBridgedWhiskerData(data);//remove
+        foreach (WhiskerData whiskerdata in bridgedWhiskers)
+        {
+            SaveBridgedWhiskerData(whiskerdata);
+        }
     }
     private float CalculateResistance(float length, float diameter, UIScript.MaterialProperties materialProps)
     {
-        // Implement your resistance calculation here.
-        // This is a placeholder formula. Replace with your actual calculation.
         float area = Mathf.PI * Mathf.Pow((diameter*1000)/2, 2);
         return materialProps.resistivity * (length*1000)/area;
     }
@@ -264,10 +264,10 @@ public void ApplyGravity(int val)
         fileName = fileNameInputField.text;
 
         // Save all the bridged whiskers data to the specified path
-        foreach (WhiskerData data in bridgedWhiskers)
+        /*foreach (WhiskerData data in bridgedWhiskers)
         {
             SaveBridgedWhiskerData(data);
-        }
+        }*/
     }
 
     public class WhiskerData

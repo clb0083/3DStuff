@@ -3409,6 +3409,8 @@ MonoBehaviour:
   filePathInputField: {fileID: 1795202879}
   fileNameInputField: {fileID: 717979618}
   saveButton: {fileID: 0}
+  directoryPath: 
+  fileName: 
   detectionRadius: 0.5
   rayDistance: 1
   conductorLayer:
@@ -10316,6 +10318,7 @@ MonoBehaviour:
   UIisOn: 1
   UIui: {fileID: 169663204}
   currentMaterial: 0
+  whiskerControl: {fileID: 230131766}
   bridgesCount: {fileID: 837250430}
   conductorName: {fileID: 0}
 --- !u!4 &734999897
