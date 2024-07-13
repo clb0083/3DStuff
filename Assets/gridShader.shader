@@ -1,4 +1,4 @@
-Shader "Unlit/gridShader"
+Shader "Custom/GridShader"
 {
     Properties
     {
@@ -50,12 +50,11 @@ Shader "Unlit/gridShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // Calculate the grid lines
                 float lineWidth = _LineThickness;
                 float2 uv = i.uv * 100.0; // Scale UVs to 100x100 for 1cm grid in 1m
                 float2 grid = abs(frac(uv - 0.5) - 0.5) / fwidth(uv);
                 float minGrid = min(grid.x, grid.y);
-                float lineAlpha = smoothstep(1.0 - lineWidth, 1.0, minGrid);
+                float lineAlpha = 1.0 - smoothstep(1.0 - lineWidth, 1.0, minGrid);
                 fixed4 col = _LineColor;
                 col.a = lineAlpha; // Make the line alpha match the line color alpha
                 return col;

@@ -25,29 +25,30 @@ public class CameraControl : MonoBehaviour
 
             transform.Rotate(Vector3.up, horizontalRotation);
             transform.Rotate(Vector3.left, verticalRotation);
-        }
+        
 
+            // Move the camera based on user input
+            float horizontalInput = Input.GetAxis("Horizontal");
+            float verticalInput = Input.GetAxis("Vertical");
+
+            Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
+            transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
+
+            // Move the camera vertically with Q and E
+            if (Input.GetKey(KeyCode.Q))
+            {
+                transform.Translate(Vector3.down * moveSpeed * Time.deltaTime, Space.World);
+            }
+            if (Input.GetKey(KeyCode.E))
+            {
+                transform.Translate(Vector3.up * moveSpeed * Time.deltaTime, Space.World);
+            }
+        }
+        
         if (Input.GetMouseButtonDown(1))
         {
             Quaternion currentRotation = transform.rotation;
             transform.rotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentRotation.eulerAngles.y,0);
-        }
-
-        // Move the camera based on user input
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-
-        Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
-        transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
-
-         // Move the camera vertically with Q and E
-        if (Input.GetKey(KeyCode.Q))
-        {
-            transform.Translate(Vector3.down * moveSpeed * Time.deltaTime, Space.World);
-        }
-        if (Input.GetKey(KeyCode.E))
-        {
-            transform.Translate(Vector3.up * moveSpeed * Time.deltaTime, Space.World);
         }
     }
 

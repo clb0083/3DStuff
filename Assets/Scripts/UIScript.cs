@@ -36,13 +36,17 @@ public class UIScript : MonoBehaviour
     public TextMeshProUGUI errorMessage;
     public float simtimeElapsed;
     public bool startSim = false;
-    public int simIntComplete;
+    public int simIntComplete = 0;
     public float simTimeThresh;
     public TMP_InputField totalRuns;
     public float moveSpeed = 5f;
     public DistributionType distributionType = DistributionType.Lognormal;
     public bool UIisOn = true;
     public GameObject UIui;
+    public bool GridIsOn = true;
+    public GameObject grid;
+    public TextMeshProUGUI iterationCounter;
+    public TextMeshProUGUI iterationCompleteMessage;
 
     public Dictionary<MaterialType, MaterialProperties> materialProperties = new Dictionary<MaterialType, MaterialProperties>()
     { //density (kg/um^3), resistivity (ohm*um), coefficient of friction (unitless)
@@ -52,7 +56,6 @@ public class UIScript : MonoBehaviour
     };
 
     public MaterialType currentMaterial = MaterialType.Tin;
-
     private List<float> lengths;
     private List<float> widths;
     private List<float> volumes;
@@ -129,24 +132,24 @@ public class UIScript : MonoBehaviour
         Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
 
-        
-
         if (startSim)
         {
             simtimeElapsed += Time.deltaTime;
             if (simIntComplete < Convert.ToInt32(totalRuns.text))
             {
+                iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
                 if (simtimeElapsed > simTimeThresh)
                 {
                     ReloadWhiskersButton();
-                    simIntComplete += 1;
                     simtimeElapsed = 0f;
                 }
             }
 
             if (simIntComplete == Convert.ToInt32(totalRuns.text))
             {
+                iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
                 startSim = false;
+                iterationCompleteMessage.text = "Simulation Complete!";
             }
         }
     }
@@ -207,7 +210,8 @@ public void MakeWhiskerButton()
     float sigma_log = float.Parse(widthSigma.text);
     float mu = float.Parse(lengthMu.text);
     float sigma = float.Parse(lengthSigma.text);
-    int numWhiskersToCreate = Convert.ToInt32(numWhiskers.text);
+    float numWhiskersToCreate = float.Parse(numWhiskers.text);
+    float numberIterations = float.Parse(totalRuns.text);
 
     string directoryPathCheck = whiskerControl.directoryPath;
     string fileNameCheck = whiskerControl.fileName;
@@ -216,6 +220,8 @@ public void MakeWhiskerButton()
     float x = Convert.ToSingle(xCoord.text);
     float y = Convert.ToSingle(yCoord.text);
     float z = Convert.ToSingle(zCoord.text);
+
+    simIntComplete++;
 
     if (distributionType == DistributionType.Lognormal)
         {
@@ -264,11 +270,11 @@ public void MakeWhiskerButton()
             } 
         }
 
-    if(numWhiskersToCreate > 2000)
+    if (numWhiskersToCreate > 2000 || numWhiskersToCreate < 0 || !Mathf.Approximately(numWhiskersToCreate, Mathf.Round(numWhiskersToCreate)))
     {
-        SetErrorMessage("Whisker count too high. Upper limit is 2000");
+        SetErrorMessage("Whisker count too high or invalid. Limit is 2000 and must be a positive integer.");
         return;
-    }
+    }   
     
     if (x < 0 || y < 0 || z < 0)
     {
@@ -279,6 +285,11 @@ public void MakeWhiskerButton()
     if(directoryPathCheck == null || fileNameCheck == null)
     {
         SetErrorMessage("Failed to save data - Path or Filename cannot be empty");
+        return;
+    }
+    if(numberIterations < 0 || !Mathf.Approximately(numberIterations, Mathf.Round(numberIterations)) )
+    {
+        SetErrorMessage("Iteration value must be a positive integer.");
         return;
     }
 
@@ -315,7 +326,7 @@ public void MakeWhiskerButton()
         MaterialProperties currentProps = materialProperties[currentMaterial];
         float volume = Mathf.PI * Mathf.Pow(diameter / 2, 2) * length;
         float mass = volume * currentProps.density;
-        float resistance = (currentProps.resistivity * length) / (Mathf.PI * Mathf.Pow(diameter / 2, 2));
+        float resistance = (currentProps.resistivity * length * 1000) / (Mathf.PI * Mathf.Pow(diameter * 1000 / 2, 2));
 
         // Set a minimum mass limit
         if (mass < 1f)
@@ -333,6 +344,16 @@ public void MakeWhiskerButton()
 
         // Enable continuous collision detection
         whiskerRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
+//UPSIZING WIDTHS
+        Transform visual = whiskerClone.transform.Find("visual");
+        Transform collider = whiskerClone.transform.Find("collider");
+        if(diameter < 10) //can be changed to whatever 
+        {
+            visual.localScale = new Vector3(5, 1, 5); // scales relative to the parent object 
+        } // so this is saying if the diameter is less than 50, it takes the diameter of the orignal whisker and *5.
+
+        collider.localScale = new Vector3(1, 1, 1); // keeps it all the same as the original.
 
         // Scale whisker and update lists
         whiskerClone.transform.localScale = new Vector3(diameter, length / 2, diameter);
@@ -359,7 +380,7 @@ public void MakeWhiskerButton()
         whiskerPhysicsMaterial.staticFriction = currentProps.coefficientOfFriction;
         whiskerPhysicsMaterial.dynamicFriction = currentProps.coefficientOfFriction;
 
-        WhiskerData data = new WhiskerData(length, diameter, volume, mass, resistance);
+        WhiskerData data = new WhiskerData(length, diameter, volume, mass, resistance, simIntComplete); // Pass simIntComplete as iteration count
         SaveWhiskerData(data);
 
         // Debug log for verification
@@ -396,8 +417,6 @@ public void MakeWhiskerButton()
     {   
         string directoryPath = whiskerControl.directoryPath;
         string filePath = Path.Combine(directoryPath, whiskerControl.fileName + ".csv");
-        //string directoryPath = @"D:/Unity";
-        //string filePath = Path.Combine(directoryPath, "whisker_data.csv");
 
         try
         {
@@ -412,11 +431,11 @@ public void MakeWhiskerButton()
                 if (!fileExists)
                 {
                     // Write the column titles
-                    writer.WriteLine("All Whiskers,,,,,Bridged Whiskers");
-                    writer.WriteLine("Length,Width,Volume,Mass,Resistance,Length,Width,Resistance");
+                    writer.WriteLine("All Whiskers,,,,Bridged Whiskers");
+                    writer.WriteLine("Length (um),Width (um),Resistance (ohm),Iteration,Length (um),Width (um),Resistance (ohm),Iteration");
                 }
 
-                writer.WriteLine($"{data.Length*1000},{data.Width*1000},{data.Volume*1000},{data.Mass*1000},{data.Resistance*1000}");
+                writer.WriteLine($"{data.Length*1000},{data.Width*1000},{data.Resistance},{data.Iteration}");
                 DataSaveManager.CurrentRowIndex++;
             }
             Debug.Log($"Whisker data saved successfully to {filePath}");
@@ -449,21 +468,37 @@ public void MakeWhiskerButton()
         }
     }
 
+    public void toggleGrid()
+    {           
+        if(GridIsOn)
+        {
+            grid.SetActive(false);
+            GridIsOn = false;
+        }
+        else
+        {   
+            grid.SetActive(!grid.activeSelf);
+            GridIsOn = true;
+        }
+    }
+
     public class WhiskerData
-    {
+        {
         public float Length { get; set; }
         public float Width { get; set; }
         public float Volume { get; set; }
         public float Mass { get; set; }
         public float Resistance { get; set; }
+        public int Iteration { get; set; } // New property for iteration count
 
-        public WhiskerData(float length, float width, float volume, float mass, float resistance)
+        public WhiskerData(float length, float width, float volume, float mass, float resistance, int iteration)
         {
             Length = length;
             Width = width;
             Volume = volume;
             Mass = mass;
             Resistance = resistance;
+            Iteration = iteration; // Initialize iteration count
         }
     }
 
