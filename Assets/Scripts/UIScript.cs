@@ -213,8 +213,6 @@ public void MakeWhiskerButton()
     float numWhiskersToCreate = float.Parse(numWhiskers.text);
     float numberIterations = float.Parse(totalRuns.text);
 
-    string directoryPathCheck = whiskerControl.directoryPath;
-    string fileNameCheck = whiskerControl.fileName;
 
     //float x = float.TryParse(xCoord.text);
     float x = Convert.ToSingle(xCoord.text);
@@ -282,11 +280,6 @@ public void MakeWhiskerButton()
         return;
     }
 
-    if(directoryPathCheck == null || fileNameCheck == null)
-    {
-        SetErrorMessage("Failed to save data - Path or Filename cannot be empty");
-        return;
-    }
     if(numberIterations < 0 || !Mathf.Approximately(numberIterations, Mathf.Round(numberIterations)) )
     {
         SetErrorMessage("Iteration value must be a positive integer.");
@@ -417,6 +410,15 @@ public void MakeWhiskerButton()
     {   
         string directoryPath = whiskerControl.directoryPath;
         string filePath = Path.Combine(directoryPath, whiskerControl.fileName + ".csv");
+
+        string directoryPathCheck = whiskerControl.directoryPath;
+        string fileNameCheck = whiskerControl.fileName;
+        // Check directory path and file name
+    if (string.IsNullOrEmpty(directoryPath) || string.IsNullOrEmpty(whiskerControl.fileName))
+    {
+        SetErrorMessage("Failed to save data - Path or Filename cannot be empty");
+        return;
+    }
 
         try
         {
