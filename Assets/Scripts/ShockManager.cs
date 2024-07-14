@@ -23,7 +23,11 @@ public class ShockManager : MonoBehaviour
 
     private void Start()
     {
-        // Empty Start method
+        GameObject circuitBoardObject = GameObject.FindGameObjectWithTag("CircuitBoard");
+        if (circuitBoardObject != null)
+        {
+            circuitBoard = circuitBoardObject.transform;
+        }
     }
 
     private void FixedUpdate()

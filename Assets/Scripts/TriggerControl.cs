@@ -7,7 +7,7 @@ using TMPro;
 using System.Linq;
 using JetBrains.Annotations;
 
-public class TriggerControlGithub : MonoBehaviour
+public class TriggerControl : MonoBehaviour
 {
     // public Material targetMaterial;
     public List<GameObject> targetObjects = new List<GameObject>();//For accessing targetObjects list
@@ -22,15 +22,24 @@ public class TriggerControlGithub : MonoBehaviour
     public TMP_InputField material_input;
     public List<GameObject> objectvalues_ = new List<GameObject>();
     public List<GameObject> testerfill = new List<GameObject>();
+    
  
     void Start()
     {   
+        gameObject.tag ="CircuitBoard";
+        
+        Transform topTransform = transform.Find("Top");
+        if (topTransform != null)
+        {
+            Destroy(topTransform.gameObject);
+        }
         // Setting whole board as rigidbody + fix settings  
         rb = gameObject.AddComponent<Rigidbody>();
         rb.isKinematic = true;
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         transform.localScale = newScale;
+        transform.position = Vector3.zero;
 
         // Adding Colliders to all objects
         AddMeshCollidersRecursively(transform);

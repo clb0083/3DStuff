@@ -82,7 +82,7 @@ public class HeatMap : MonoBehaviour
                     {
                         renderer.material.color = Color.green;
                     }
-                    Debug.Log("done");
+                    //Debug.Log("done");
                 }
                 
             }

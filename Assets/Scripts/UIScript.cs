@@ -36,7 +36,7 @@ public class UIScript : MonoBehaviour
     public TextMeshProUGUI errorMessage;
     public float simtimeElapsed;
     public bool startSim = false;
-    public int simIntComplete = 0;
+    public int simIntComplete = 1;
     public float simTimeThresh;
     public TMP_InputField totalRuns;
     public float moveSpeed = 5f;
@@ -47,6 +47,8 @@ public class UIScript : MonoBehaviour
     public GameObject grid;
     public TextMeshProUGUI iterationCounter;
     public TextMeshProUGUI iterationCompleteMessage;
+    public TMP_InputField material_input;
+    public TriggerControl triggerControl;
 
     public Dictionary<MaterialType, MaterialProperties> materialProperties = new Dictionary<MaterialType, MaterialProperties>()
     { //density (kg/um^3), resistivity (ohm*um), coefficient of friction (unitless)
@@ -81,6 +83,8 @@ public class UIScript : MonoBehaviour
         Time.fixedDeltaTime = 0.005f; // Increase the frequency of physics updates
         Physics.defaultSolverIterations = 10; // Default is 6
         Physics.defaultSolverVelocityIterations = 10; // Default is 1
+
+        //material_input.onValueChanged.AddListener(OnMaterialInputChanged);
     }
 
     public void UpdateMaterialPropertiesUI(MaterialType materialType)
@@ -135,11 +139,12 @@ public class UIScript : MonoBehaviour
         if (startSim)
         {
             simtimeElapsed += Time.deltaTime;
-            if (simIntComplete < Convert.ToInt32(totalRuns.text))
+            if (simIntComplete <= Convert.ToInt32(totalRuns.text) - 1)
             {
                 iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
                 if (simtimeElapsed > simTimeThresh)
                 {
+                    simIntComplete++;
                     ReloadWhiskersButton();
                     simtimeElapsed = 0f;
                 }
@@ -154,6 +159,14 @@ public class UIScript : MonoBehaviour
         }
     }
 
+    public void resetSim()
+    {
+        simIntComplete = 1;
+        bridgesDetected = 0;
+        bridgesPerRun = 0;
+        iterationCompleteMessage.text = "";
+        iterationCounter.text = "";
+    }
     public float LengthDistributionGenerate()
     {
         float mu = float.Parse(lengthMu.text);
@@ -219,7 +232,9 @@ public void MakeWhiskerButton()
     float y = Convert.ToSingle(yCoord.text);
     float z = Convert.ToSingle(zCoord.text);
 
-    simIntComplete++;
+    
+    //simIntComplete++;
+
 
     if (distributionType == DistributionType.Lognormal)
         {
@@ -307,6 +322,9 @@ public void MakeWhiskerButton()
         // Instantiate whisker clone
         GameObject whiskerClone = Instantiate(whisker, spawnPos, Quaternion.Euler(UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360)));
         whiskerClone.tag = "whiskerClone";
+        
+        //Transform colliderChild = whiskerClone.transform.Find("collider");
+        //colliderChild.gameObject.tag = "whiskerClone";
 
         // Ensure Rigidbody component exists and set mass
         Rigidbody whiskerRigidbody = whiskerClone.GetComponent<Rigidbody>();
@@ -481,6 +499,21 @@ public void MakeWhiskerButton()
         {   
             grid.SetActive(!grid.activeSelf);
             GridIsOn = true;
+        }
+    }
+    public void RaiseGrid()
+    {
+        if (grid != null)
+        {
+            grid.transform.position += new Vector3(0, 0.1f, 0);
+        }
+    }
+
+    public void LowerGrid()
+    {
+        if (grid != null)
+        {
+            grid.transform.position -= new Vector3(0, 0.1f, 0);
         }
     }
 
