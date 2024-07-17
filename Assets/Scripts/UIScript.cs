@@ -64,6 +64,12 @@ public class UIScript : MonoBehaviour
     private List<float> masses;
     private List<float> resistances;
     public WhiskerControl whiskerControl;   //new
+    public bool isVibrationActive = false;
+    public bool isShockActive = false;
+    public VibrationManager vibrationManager;
+    public ShockManager shockManager;
+    public float shockPressTimer = 0f;
+    public float shockPressInterval = 2f;
 
     void Start()
     {
@@ -138,6 +144,21 @@ public class UIScript : MonoBehaviour
 
         if (startSim)
         {
+            if (isShockActive && shockManager.shockButton.interactable)
+            {
+                shockPressTimer += Time.deltaTime;
+                if (shockPressTimer >= shockPressInterval)
+                {
+                    shockManager.shockPressed();
+                    shockPressTimer = 0f; // Reset the timer after calling shockPressed
+                }
+            }
+
+            if(isVibrationActive && vibrationManager.vibrateButton.interactable)
+            {
+                vibrationManager.vibratePressed();
+            }
+
             simtimeElapsed += Time.deltaTime;
             if (simIntComplete <= Convert.ToInt32(totalRuns.text) - 1)
             {
@@ -166,6 +187,7 @@ public class UIScript : MonoBehaviour
         bridgesPerRun = 0;
         iterationCompleteMessage.text = "";
         iterationCounter.text = "";
+        startSim = false;
     }
     public float LengthDistributionGenerate()
     {
@@ -216,188 +238,193 @@ public class UIScript : MonoBehaviour
         return RandomFromDistribution.RandomNormalDistribution(mu_norm, sigma_norm);
     }
 
-public void MakeWhiskerButton()
-{
-    //error handling | Limits are subject to change |
-    float mu_log = float.Parse(widthMu.text);
-    float sigma_log = float.Parse(widthSigma.text);
-    float mu = float.Parse(lengthMu.text);
-    float sigma = float.Parse(lengthSigma.text);
-    float numWhiskersToCreate = float.Parse(numWhiskers.text);
-    float numberIterations = float.Parse(totalRuns.text);
-
-
-    //float x = float.TryParse(xCoord.text);
-    float x = Convert.ToSingle(xCoord.text);
-    float y = Convert.ToSingle(yCoord.text);
-    float z = Convert.ToSingle(zCoord.text);
-
-    
-    //simIntComplete++;
-
-
-    if (distributionType == DistributionType.Lognormal)
-        {
-           if (mu_log > 9)
-            {
-                SetErrorMessage("Width Mu value outside acceptable range.");
-                return;
-            }
-            if (sigma_log > 4)
-            {
-                SetErrorMessage("Width Sigma value is outside acceptable range.");
-                return;
-            }
-            if (mu > 20)
-            {
-                SetErrorMessage("Length Mu value outside acceptable range.");
-                return;
-            }
-            if (sigma > 15)
-            {
-                SetErrorMessage("Length Sigma value is outside acceptable range.");
-                return;
-            } 
-        }
-    else
-        {
-           if (mu_log > 10000)
-            {
-                SetErrorMessage("Width Mu value outside acceptable range.");
-                return;
-            }
-            if (sigma_log > 10000)
-            {
-                SetErrorMessage("Width Sigma value is outside acceptable range.");
-                return;
-            }
-            if (mu > 30000)
-            {
-                SetErrorMessage("Length Mu value outside acceptable range.");
-                return;
-            }
-            if (sigma > 10000)
-            {
-                SetErrorMessage("Length Sigma value is outside acceptable range.");
-                return;
-            } 
-        }
-
-    if (numWhiskersToCreate > 2000 || numWhiskersToCreate < 0 || !Mathf.Approximately(numWhiskersToCreate, Mathf.Round(numWhiskersToCreate)))
+    public void MakeWhiskerButton()
     {
-        SetErrorMessage("Whisker count too high or invalid. Limit is 2000 and must be a positive integer.");
-        return;
-    }   
-    
-    if (x < 0 || y < 0 || z < 0)
-    {
-        SetErrorMessage("Coordinates cannot be negative.");
-        return;
-    }
+        //error handling | Limits are subject to change |
+        float mu_log = float.Parse(widthMu.text);
+        float sigma_log = float.Parse(widthSigma.text);
+        float mu = float.Parse(lengthMu.text);
+        float sigma = float.Parse(lengthSigma.text);
+        float numWhiskersToCreate = float.Parse(numWhiskers.text);
+        float numberIterations = float.Parse(totalRuns.text);
 
-    if(numberIterations < 0 || !Mathf.Approximately(numberIterations, Mathf.Round(numberIterations)) )
-    {
-        SetErrorMessage("Iteration value must be a positive integer.");
-        return;
-    }
 
-    lengths.Clear();
-    widths.Clear();
-    volumes.Clear();
-    masses.Clear();
-    resistances.Clear();
-
-    //int numWhiskersToCreate = Convert.ToInt32(numWhiskers.text);
-    for (int i = 0; i < numWhiskersToCreate; i++)
-    {
-        // Generate dimensions and spawn position
-        float diameter = WidthDistributionGenerate() / 1000;
-        float length = LengthDistributionGenerate() / 1000;
-        float spawnPointX = UnityEngine.Random.Range(-float.Parse(xCoord.text)*10, float.Parse(xCoord.text)*10);
-        float spawnPointY = UnityEngine.Random.Range(1, Convert.ToInt32(yCoord.text)*10);
-        float spawnPointZ = UnityEngine.Random.Range(-float.Parse(zCoord.text)*10, float.Parse(zCoord.text)*10);
-        Vector3 spawnPos = new Vector3(spawnPointX, spawnPointY, spawnPointZ);
+        //float x = float.TryParse(xCoord.text);
+        float x = Convert.ToSingle(xCoord.text);
+        float y = Convert.ToSingle(yCoord.text);
+        float z = Convert.ToSingle(zCoord.text);
 
         
-        // Instantiate whisker clone
-        GameObject whiskerClone = Instantiate(whisker, spawnPos, Quaternion.Euler(UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360)));
-        whiskerClone.tag = "whiskerClone";
-        
-        //Transform colliderChild = whiskerClone.transform.Find("collider");
-        //colliderChild.gameObject.tag = "whiskerClone";
+        //simIntComplete++;
 
-        // Ensure Rigidbody component exists and set mass
-        Rigidbody whiskerRigidbody = whiskerClone.GetComponent<Rigidbody>();
-        if (whiskerRigidbody == null)
-        {
-            whiskerRigidbody = whiskerClone.AddComponent<Rigidbody>();
-        }
 
-        // Calculate mass based on material properties and dimensions
-        MaterialProperties currentProps = materialProperties[currentMaterial];
-        float volume = Mathf.PI * Mathf.Pow(diameter / 2, 2) * length;
-        float mass = volume * currentProps.density;
-        float resistance = (currentProps.resistivity * length * 1000) / (Mathf.PI * Mathf.Pow(diameter * 1000 / 2, 2));
-
-        // Set a minimum mass limit
-        if (mass < 1f)
-        {
-            whiskerRigidbody.mass = 0.22f;
-            whiskerRigidbody.drag = 20f;
-            whiskerRigidbody.angularDrag = 2f;
-        }
+        if (distributionType == DistributionType.Lognormal)
+            {
+            if (mu_log > 9 || mu_log < 0 )
+                {
+                    SetErrorMessage("Width Mu value outside acceptable range.");
+                    return;
+                }
+                if (sigma_log > 4 || sigma_log < 0 )
+                {
+                    SetErrorMessage("Width Sigma value is outside acceptable range.");
+                    return;
+                }
+                if (mu > 20 || mu < 0 )
+                {
+                    SetErrorMessage("Length Mu value outside acceptable range.");
+                    return;
+                }
+                if (sigma > 15 || sigma < 0)
+                {
+                    SetErrorMessage("Length Sigma value is outside acceptable range.");
+                    return;
+                } 
+            }
         else
+            {
+            if (mu_log > 10000 || mu_log < 0 )
+                {
+                    SetErrorMessage("Width Mu value outside acceptable range.");
+                    return;
+                }
+                if (sigma_log > 10000 || sigma_log < 0 )
+                {
+                    SetErrorMessage("Width Sigma value is outside acceptable range.");
+                    return;
+                }
+                if (mu > 30000 || mu < 0 )
+                {
+                    SetErrorMessage("Length Mu value outside acceptable range.");
+                    return;
+                }
+                if (sigma > 10000 || sigma < 0)
+                {
+                    SetErrorMessage("Length Sigma value is outside acceptable range.");
+                    return;
+                } 
+            }
+
+        if (numWhiskersToCreate > 2000 || numWhiskersToCreate < 0 || !Mathf.Approximately(numWhiskersToCreate, Mathf.Round(numWhiskersToCreate)))
         {
-            whiskerRigidbody.mass = mass;
-            whiskerRigidbody.drag = 20f;
-            whiskerRigidbody.angularDrag = 2f;
-        }
-
-        // Enable continuous collision detection
-        whiskerRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
-
-//UPSIZING WIDTHS
-        Transform visual = whiskerClone.transform.Find("visual");
-        Transform collider = whiskerClone.transform.Find("collider");
-        if(diameter < 10) //can be changed to whatever 
+            SetErrorMessage("Whisker count too high or invalid. Limit is 2000 and must be a positive integer.");
+            return;
+        }   
+        
+        if (x < 0 || y < 0 || z < 0)
         {
-            visual.localScale = new Vector3(5, 1, 5); // scales relative to the parent object 
-        } // so this is saying if the diameter is less than 50, it takes the diameter of the orignal whisker and *5.
-
-        collider.localScale = new Vector3(1, 1, 1); // keeps it all the same as the original.
-
-        // Scale whisker and update lists
-        whiskerClone.transform.localScale = new Vector3(diameter, length / 2, diameter);
-        lengths.Add(length);
-        widths.Add(diameter);
-
-        // Ensure Collider component exists and set physics material
-        Collider whiskerCollider = whiskerClone.GetComponent<Collider>();
-        if (whiskerCollider == null)
-        {
-            Debug.LogError("Whisker prefab must have a Collider component.");
+            SetErrorMessage("Coordinates cannot be negative.");
             return;
         }
 
-        // Get or create physics material and set its friction properties
-        PhysicMaterial whiskerPhysicsMaterial = whiskerCollider.sharedMaterial;
-        if (whiskerPhysicsMaterial == null)
+        if(numberIterations < 0 || !Mathf.Approximately(numberIterations, Mathf.Round(numberIterations)) )
         {
-            whiskerPhysicsMaterial = new PhysicMaterial();
-            whiskerCollider.sharedMaterial = whiskerPhysicsMaterial;
+            SetErrorMessage("Iteration value must be a positive integer.");
+            return;
         }
 
-        // Update friction properties based on selected material type
-        whiskerPhysicsMaterial.staticFriction = currentProps.coefficientOfFriction;
-        whiskerPhysicsMaterial.dynamicFriction = currentProps.coefficientOfFriction;
+        lengths.Clear();
+        widths.Clear();
+        volumes.Clear();
+        masses.Clear();
+        resistances.Clear();
 
-        WhiskerData data = new WhiskerData(length, diameter, volume, mass, resistance, simIntComplete); // Pass simIntComplete as iteration count
-        SaveWhiskerData(data);
+        //int numWhiskersToCreate = Convert.ToInt32(numWhiskers.text);
+        for (int i = 0; i < numWhiskersToCreate; i++)
+        {
+            // Generate dimensions and spawn position
+            float diameter = WidthDistributionGenerate() / 1000;
+            float length = LengthDistributionGenerate() / 1000;
+            float spawnPointX = UnityEngine.Random.Range(-float.Parse(xCoord.text)*10, float.Parse(xCoord.text)*10);
+            float spawnPointY = UnityEngine.Random.Range(1, Convert.ToInt32(yCoord.text)*10);
+            float spawnPointZ = UnityEngine.Random.Range(-float.Parse(zCoord.text)*10, float.Parse(zCoord.text)*10);
+            Vector3 spawnPos = new Vector3(spawnPointX, spawnPointY, spawnPointZ);
 
-        // Debug log for verification
-        Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}, Resistance: {resistance}");
+            
+            // Instantiate whisker clone
+            GameObject whiskerClone = Instantiate(whisker, spawnPos, Quaternion.Euler(UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360)));
+            whiskerClone.tag = "whiskerClone";
+            
+            //Transform colliderChild = whiskerClone.transform.Find("collider");
+            //colliderChild.gameObject.tag = "whiskerClone";
+
+            // Ensure Rigidbody component exists and set mass
+            Rigidbody whiskerRigidbody = whiskerClone.GetComponent<Rigidbody>();
+            if (whiskerRigidbody == null)
+            {
+                whiskerRigidbody = whiskerClone.AddComponent<Rigidbody>();
+            }
+
+            // Calculate mass based on material properties and dimensions
+            MaterialProperties currentProps = materialProperties[currentMaterial];
+            float volume = Mathf.PI * Mathf.Pow(diameter / 2, 2) * length;
+            float mass = volume * currentProps.density;
+            float resistance = (currentProps.resistivity * length * 1000) / (Mathf.PI * Mathf.Pow(diameter * 1000 / 2, 2));
+
+            // Set a minimum mass limit
+            if (mass < 1f)
+            {
+                whiskerRigidbody.mass = 0.22f;
+                whiskerRigidbody.drag = 20f;
+                whiskerRigidbody.angularDrag = 2f;
+            }
+            else
+            {
+                whiskerRigidbody.mass = mass;
+                whiskerRigidbody.drag = 20f;
+                whiskerRigidbody.angularDrag = 2f;
+            }
+
+            // Enable continuous collision detection
+            whiskerRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
+    //UPSIZING WIDTHS
+            Transform visual = whiskerClone.transform.Find("visual");
+            Transform collider = whiskerClone.transform.Find("collider");
+            if(diameter*1000 < 10) //can be changed to whatever 
+            {
+                visual.localScale = new Vector3(10, 1, 10); // scales relative to the parent object 
+            } // so this is saying if the diameter is less than 50, it takes the diameter of the orignal whisker and *5.
+
+            collider.localScale = new Vector3(1, 1, 1); // keeps it all the same as the original.
+
+            // Scale whisker and update lists
+            whiskerClone.transform.localScale = new Vector3(diameter, length / 2, diameter);
+            lengths.Add(length);
+            widths.Add(diameter);
+
+            // Ensure Collider component exists and set physics material
+            Collider whiskerCollider = whiskerClone.GetComponent<Collider>();
+            if (whiskerCollider == null)
+            {
+                Debug.LogError("Whisker prefab must have a Collider component.");
+                return;
+            }
+
+            // Get or create physics material and set its friction properties
+            PhysicMaterial whiskerPhysicsMaterial = whiskerCollider.sharedMaterial;
+            if (whiskerPhysicsMaterial == null)
+            {
+                whiskerPhysicsMaterial = new PhysicMaterial();
+                whiskerCollider.sharedMaterial = whiskerPhysicsMaterial;
+            }
+
+            // Update friction properties based on selected material type
+            UpdatePhysicsMaterialFriction(whiskerPhysicsMaterial);
+           
+            WhiskerData data = new WhiskerData(length, diameter, volume, mass, resistance, simIntComplete); // Pass simIntComplete as iteration count
+            SaveWhiskerData(data);
+
+            // Debug log for verification
+            Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}, Resistance: {resistance}");
+        }
     }
-}
+    private void UpdatePhysicsMaterialFriction(PhysicMaterial material)
+    {
+        MaterialProperties currentProps = materialProperties[currentMaterial];
+        material.staticFriction = currentProps.coefficientOfFriction;
+        material.dynamicFriction = currentProps.coefficientOfFriction;
+    }
 
 
     public void ReloadWhiskersButton()
@@ -514,6 +541,29 @@ public void MakeWhiskerButton()
         if (grid != null)
         {
             grid.transform.position -= new Vector3(0, 0.1f, 0);
+        }
+    }
+
+    public void toggleShock()
+    {
+        if(!isShockActive)
+        {
+            isShockActive = true;
+        }
+        else
+        {
+            isShockActive = false;
+        }
+    }
+    public void toggleVibration()
+    {
+        if(!isVibrationActive)
+        {
+            isVibrationActive = true;
+        }
+        else
+        {
+            isVibrationActive = false;
         }
     }
 

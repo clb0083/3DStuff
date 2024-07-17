@@ -52,6 +52,7 @@ public void ConfirmButtonPressed()
 {
     GetGravitySelection(gravity.value);
     confirmGravity = true;
+    uiScript.ReloadWhiskersButton();
     UIObject.GetComponent<UIScript>().startSim = true;//NEW
 }
 

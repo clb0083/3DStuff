@@ -26,11 +26,11 @@ public class VibrationManager : MonoBehaviour
 
     private void Start()
     {
-        GameObject circuitBoardObject = GameObject.FindGameObjectWithTag("CircuitBoard");
+        /*GameObject circuitBoardObject = GameObject.FindGameObjectWithTag("CircuitBoard");
         if (circuitBoardObject != null)
         {
             circuitBoard = circuitBoardObject.transform;
-        }
+        }*/
     }
 
     private void FixedUpdate()
@@ -197,6 +197,11 @@ public class VibrationManager : MonoBehaviour
     }
     public void vibratePressed()
     {
+        GameObject circuitBoardObject = GameObject.FindGameObjectWithTag("CircuitBoard");
+        if (circuitBoardObject != null)
+        {
+            circuitBoard = circuitBoardObject.transform;
+        }
         vibrateButton.interactable = false;
 
         int selectedAxis = fAxis.value;

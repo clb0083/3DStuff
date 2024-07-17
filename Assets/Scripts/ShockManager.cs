@@ -23,11 +23,11 @@ public class ShockManager : MonoBehaviour
 
     private void Start()
     {
-        GameObject circuitBoardObject = GameObject.FindGameObjectWithTag("CircuitBoard");
+        /*GameObject circuitBoardObject = GameObject.FindGameObjectWithTag("CircuitBoard");
         if (circuitBoardObject != null)
         {
             circuitBoard = circuitBoardObject.transform;
-        }
+        }*/
     }
 
     private void FixedUpdate()
@@ -185,6 +185,11 @@ public class ShockManager : MonoBehaviour
 
     public void shockPressed()
     {
+        GameObject circuitBoardObject = GameObject.FindGameObjectWithTag("CircuitBoard");
+        if (circuitBoardObject != null)
+        {
+            circuitBoard = circuitBoardObject.transform;
+        }
         shockButton.interactable = false;
         int selectedAxis = shockAxis.value;
         switch (selectedAxis)
