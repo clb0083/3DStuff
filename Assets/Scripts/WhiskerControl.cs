@@ -116,9 +116,10 @@ public void ApplyGravity(int val)
     public HashSet<string> currentConnections = new HashSet<string>();
     public Color[] colors;
     private Dictionary<GameObject, int> triggerInteractionCounts = new Dictionary<GameObject, int>();
+    public bool haveBridgedBefore;
 
     // BRIDGING DETECTION ORIGINAL
-    private void  OnTriggerStay(Collider trigger) 
+    private void OnTriggerStay(Collider trigger) 
     {
         if (trigger.gameObject.CompareTag("ConductorTrigger")) 
         {
@@ -126,13 +127,12 @@ public void ApplyGravity(int val)
 
             if (currentConnections.Count >= 2)
             {
-                if (!haveLoggedConnection)
+                if (!haveLoggedConnection && !haveBridgedBefore)
                 {
                     Transform visualChild = transform.Find("visual");//new
                     Renderer childRenderer = visualChild.GetComponent<Renderer>();//new
 
                     objectRenderer = GetComponent<Renderer>();
-                    print("TRIGGER");
                     bridgesPerConductor[gameObject.name]++;
                     UIObject.GetComponent<UIScript>().bridgesDetected++;
                     UIObject.GetComponent<UIScript>().bridgesPerRun++;
@@ -140,17 +140,18 @@ public void ApplyGravity(int val)
                     haveLoggedConnection = true;
 
                     TrackBridgedWhiskers(gameObject);
+                    haveBridgedBefore = true; //uncomment for limit of one bridge.
                     
                 }
             }
         }
     }
 
-     private void OnTriggerExit(Collider trigger)//OnCollisionExit(Collision collision)//OnTriggerExit(Collider trigger) 
+    private void OnTriggerExit(Collider trigger)
     {
-        if (trigger.gameObject.CompareTag("ConductorTrigger")) //collision
+        if (trigger.gameObject.CompareTag("ConductorTrigger")) 
         {
-            currentConnections.Remove(trigger.gameObject.name); //collision
+            currentConnections.Remove(trigger.gameObject.name); 
 
             if (currentConnections.Count < 2 && haveLoggedConnection)
             {
@@ -167,12 +168,12 @@ public void ApplyGravity(int val)
         currentConnections.Clear();
         haveLoggedConnection = false;
         bridgesPerConductor[gameObject.name]--; //NEW
-        UIObject.GetComponent<UIScript>().bridgesDetected--;
-        UIObject.GetComponent<UIScript>().bridgesPerRun--;
+        //UIObject.GetComponent<UIScript>().bridgesDetected--;// comment out for limit of one bridge.
+        //UIObject.GetComponent<UIScript>().bridgesPerRun--; //comment out ^
         childRenderer.material.color = defaultColor;//objectRenderer
     }
 
-     public void TrackBridgedWhiskers(GameObject whisker)
+    public void TrackBridgedWhiskers(GameObject whisker)
     {
         Vector3 scale = whisker.transform.localScale;
         float length = scale.y*2; // Y axis is the length
@@ -185,10 +186,10 @@ public void ApplyGravity(int val)
 
         WhiskerData data = new WhiskerData(length * 1000, diameter * 1000, resistance, uiScript.simIntComplete);
         bridgedWhiskers.Add(data);
-        foreach (WhiskerData whiskerdata in bridgedWhiskers)
-        {
-            SaveBridgedWhiskerData(whiskerdata);
-        }
+        //foreach (WhiskerData whiskerdata in bridgedWhiskers)
+        //{
+            SaveBridgedWhiskerData(data); //whiskerdata
+        //}
     }
     private float CalculateResistance(float length, float diameter, UIScript.MaterialProperties materialProps)
     {

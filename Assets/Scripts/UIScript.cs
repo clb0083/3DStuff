@@ -133,8 +133,8 @@ public class UIScript : MonoBehaviour
 
     void Update()
     {
-        totalBridges.text = "Total Bridges: " + bridgesDetected.ToString();
-        bridgesEachRun.text = "This Run: " + bridgesPerRun.ToString();
+        totalBridges.text = "Total Bridges: " + bridgesDetected.ToString(); //remove if needed.
+        bridgesEachRun.text = "Bridges for Current Run: " + bridgesPerRun.ToString();
 
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
@@ -385,6 +385,10 @@ public class UIScript : MonoBehaviour
             {
                 visual.localScale = new Vector3(10, 1, 10); // scales relative to the parent object 
             } // so this is saying if the diameter is less than 50, it takes the diameter of the orignal whisker and *5.
+            else
+            {
+                visual.localScale = new Vector3(1.2f, 1, 1.2f);
+            }
 
             collider.localScale = new Vector3(1, 1, 1); // keeps it all the same as the original.
 
@@ -438,7 +442,7 @@ public class UIScript : MonoBehaviour
         MakeWhiskerButton();
     }
 
-    private void SetErrorMessage(string message)
+    public void SetErrorMessage(string message)
     {
         errorMessage.text = message;
         StartCoroutine(ClearErrorMessageAfterDelay(6f));

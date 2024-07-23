@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System;
 
 public class VibrationManager : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class VibrationManager : MonoBehaviour
     private bool isVibratingZ = false;
     public TMP_Dropdown fAxis;
     public Button vibrateButton;
+    public UIScript uiScript;
     //private GameObject[] conductors; // Array of conductors
     //private Vector2[] originalConductorPositions; // Array to store original positions of conductors
 
@@ -197,6 +199,22 @@ public class VibrationManager : MonoBehaviour
     }
     public void vibratePressed()
     {
+        if(Convert.ToInt32(amplitudeInputField.text) > 35)
+        {
+            uiScript.SetErrorMessage("Vibration Amplitude is too high.");
+            return;
+        }
+        if(Convert.ToInt32(frequencyInputField.text) > 150)
+        {
+            uiScript.SetErrorMessage("Vibration frequnecy is too high.");
+            return;
+        }
+        if(Convert.ToInt32(durationInputField.text) > 30)
+        {
+            uiScript.SetErrorMessage("Vibration Amplitude is too high.");
+            return;
+        }
+        
         GameObject circuitBoardObject = GameObject.FindGameObjectWithTag("CircuitBoard");
         if (circuitBoardObject != null)
         {

@@ -35,7 +35,7 @@ public class TriggerTracker : MonoBehaviour
 
     private IEnumerator CheckConnectionDelayed(Collider other)
     {
-        yield return new WaitForSeconds(0.5f); // Adjust delay time as needed
+        yield return new WaitForSeconds(0.1f); // Adjust delay time as needed
 
         WhiskerControl whiskerControl = other.GetComponent<WhiskerControl>();
         if (whiskerControl != null && whiskerControl.haveLoggedConnection)

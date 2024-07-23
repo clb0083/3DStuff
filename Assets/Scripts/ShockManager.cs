@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System;
 
 public class ShockManager : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class ShockManager : MonoBehaviour
     private bool isShockingZ = false;
     public TMP_Dropdown shockAxis;
     public Button shockButton;
+    public UIScript uiScript;
 
     private void Start()
     {
@@ -185,6 +187,11 @@ public class ShockManager : MonoBehaviour
 
     public void shockPressed()
     {
+        if(Convert.ToInt32(amplitudeInputField.text) > 25)
+        {
+            uiScript.SetErrorMessage("Shock Amplitude is too high.");
+            return;
+        }
         GameObject circuitBoardObject = GameObject.FindGameObjectWithTag("CircuitBoard");
         if (circuitBoardObject != null)
         {
