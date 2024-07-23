@@ -416,8 +416,11 @@ public class UIScript : MonoBehaviour
             // Update friction properties based on selected material type
             UpdatePhysicsMaterialFriction(whiskerPhysicsMaterial);
            
-            WhiskerData data = new WhiskerData(length, diameter, volume, mass, resistance, simIntComplete); // Pass simIntComplete as iteration count
-            SaveWhiskerData(data);
+            if(whiskerControl.confirmGravity)
+            {
+                WhiskerData data = new WhiskerData(length, diameter, volume, mass, resistance, simIntComplete); // Pass simIntComplete as iteration count
+                SaveWhiskerData(data);
+            }
 
             // Debug log for verification
             Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}, Resistance: {resistance}");

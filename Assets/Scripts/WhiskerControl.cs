@@ -16,7 +16,7 @@ public class WhiskerControl : MonoBehaviour
     public int selectedIndex = 0;
     public Material targetMaterial;
     public int bridges = 0;
-    bool confirmGravity; // used to tell program if gravity has been added or not.
+    public bool confirmGravity; // used to tell program if gravity has been added or not.
     private List<WhiskerData> bridgedWhiskers = new List<WhiskerData>();
     public GameObject UIObject;
     public UIScript uiScript;
