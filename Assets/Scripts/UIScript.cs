@@ -1,3 +1,8 @@
+/*AU Team 1 (SP & SU 2024 used the help of Auburn graduate student Jake Botello
+to learn Unity and C# in integratinf design ideas. The team applied background
+knowledge of MATLAB and C++ coding languages to develop various tools and
+functions used throughout this script. ChatGPT was also used as a troubleshooting
+reference.*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +13,7 @@ using UnityEngine.UI;
 using Unity.VisualScripting;
 using System.Data.Common;
 
+//This is the main script that controls many of the objects on the interface, namely the user inputs.
 public class UIScript : MonoBehaviour
 {
     private System.Random rand = new System.Random();
@@ -49,14 +55,12 @@ public class UIScript : MonoBehaviour
     public TextMeshProUGUI iterationCompleteMessage;
     public TMP_InputField material_input;
     public TriggerControl triggerControl;
-
     public Dictionary<MaterialType, MaterialProperties> materialProperties = new Dictionary<MaterialType, MaterialProperties>()
     { //density (kg/um^3), resistivity (ohm*um), coefficient of friction (unitless)
         { MaterialType.Tin, new MaterialProperties(7.3e-15f, 1.09e-1f, 0.32f) },
         { MaterialType.Zinc, new MaterialProperties(7.14e-15f, 5.9e-2f, 0.6f) },
         { MaterialType.Cadmium, new MaterialProperties(8.65e-15f, 7.0e-2f, 0.5f) }
     };
-
     public MaterialType currentMaterial = MaterialType.Tin;
     private List<float> lengths;
     private List<float> widths;
@@ -71,6 +75,7 @@ public class UIScript : MonoBehaviour
     public float shockPressTimer = 0f;
     public float shockPressInterval = 2f;
 
+    //Sets the lists for the dimensions/data to be stored in, as well as sets material properties from the dropdown.
     void Start()
     {
         lengths = new List<float>();
@@ -85,14 +90,12 @@ public class UIScript : MonoBehaviour
 
         UpdateMaterialPropertiesUI(currentMaterial);
 
-        // Adjust physics settings
-        Time.fixedDeltaTime = 0.005f; // Increase the frequency of physics updates
-        Physics.defaultSolverIterations = 10; // Default is 6
-        Physics.defaultSolverVelocityIterations = 10; // Default is 1
-
-        //material_input.onValueChanged.AddListener(OnMaterialInputChanged);
+        Time.fixedDeltaTime = 0.005f;
+        Physics.defaultSolverIterations = 10;
+        Physics.defaultSolverVelocityIterations = 10;
     }
 
+    //Controls the dropdown for material selection.
     public void UpdateMaterialPropertiesUI(MaterialType materialType)
     {
         switch (materialType)
@@ -113,17 +116,16 @@ public class UIScript : MonoBehaviour
         Debug.Log($"UI updated for material: {materialType}");
     }
 
-    // Method to handle whiskMat dropdown value change
+    //Method to handle whiskMat dropdown value change
     void WhiskMatDropdownValueChanged(TMP_Dropdown change)
     {
         currentMaterial = (MaterialType)change.value;
         UpdateMaterialPropertiesUI(currentMaterial);
 
-        // Added to close dropdown after a short delay
         StartCoroutine(CloseDropdownAfterDelay());
     }
 
-    // Coroutine to close dropdown after a short delay
+    //Coroutine to close dropdown after a short delay
     private IEnumerator CloseDropdownAfterDelay()
     {
         yield return null;
@@ -131,6 +133,7 @@ public class UIScript : MonoBehaviour
         dropdown.Hide();
     }
 
+    //Controls the iteration counters/bridge counters/applys shock/vibration throughout simulation
     void Update()
     {
         totalBridges.text = "Total Bridges: " + bridgesDetected.ToString(); //remove if needed.
@@ -142,7 +145,7 @@ public class UIScript : MonoBehaviour
         Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
 
-        if (startSim)
+        if(startSim)
         {
             if (isShockActive && shockManager.shockButton.interactable)
             {
@@ -150,7 +153,7 @@ public class UIScript : MonoBehaviour
                 if (shockPressTimer >= shockPressInterval)
                 {
                     shockManager.shockPressed();
-                    shockPressTimer = 0f; // Reset the timer after calling shockPressed
+                    shockPressTimer = 0f; 
                 }
             }
 
@@ -160,7 +163,7 @@ public class UIScript : MonoBehaviour
             }
 
             simtimeElapsed += Time.deltaTime;
-            if (simIntComplete <= Convert.ToInt32(totalRuns.text) - 1)
+            if (simIntComplete <= Convert.ToInt32(totalRuns.text)-1)
             {
                 iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
                 if (simtimeElapsed > simTimeThresh)
@@ -173,22 +176,30 @@ public class UIScript : MonoBehaviour
 
             if (simIntComplete == Convert.ToInt32(totalRuns.text))
             {
+                
                 iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
-                startSim = false;
-                iterationCompleteMessage.text = "Simulation Complete!";
+                if (simtimeElapsed > simTimeThresh)
+                {
+                    iterationCompleteMessage.text = "Simulation Complete!";
+                    startSim = false;
+                }
             }
         }
     }
 
+    //Resets the simulation counters back to original value
     public void resetSim()
     {
         simIntComplete = 1;
+        simtimeElapsed = 0;
         bridgesDetected = 0;
         bridgesPerRun = 0;
         iterationCompleteMessage.text = "";
         iterationCounter.text = "";
         startSim = false;
     }
+
+    //Takes in Mu and Sigma values for Length to generate values.
     public float LengthDistributionGenerate()
     {
         float mu = float.Parse(lengthMu.text);
@@ -207,7 +218,8 @@ public class UIScript : MonoBehaviour
         return lengthVal;
     }
 
-    public float WidthDistributionGenerate() //xx_log = xx_width
+    //Takes in Mu and Sigma values for Width to generate values.
+    public float WidthDistributionGenerate()
     {
         float mu_log = float.Parse(widthMu.text);
         float sigma_log = float.Parse(widthSigma.text);
@@ -226,6 +238,7 @@ public class UIScript : MonoBehaviour
         return widthVal;
     }
 
+    //Generates a lognormal value based off mu/sigma inputs.
     private float GenerateLogNormalValue(float mu_log, float sigma_log)
     {
         float normalVal = RandomFromDistribution.RandomNormalDistribution(mu_log, sigma_log);
@@ -233,14 +246,16 @@ public class UIScript : MonoBehaviour
         return logNormalVal;
     }
 
+    //Generates a normal value based off mu/sigma inputs.
     private float GenerateNormalValue(float mu_norm, float sigma_norm)
     {
         return RandomFromDistribution.RandomNormalDistribution(mu_norm, sigma_norm);
     }
 
+    //Handles many error messages and generates whiskers
     public void MakeWhiskerButton()
     {
-        //error handling | Limits are subject to change |
+        //error handling | Limits are subject to change
         float mu_log = float.Parse(widthMu.text);
         float sigma_log = float.Parse(widthSigma.text);
         float mu = float.Parse(lengthMu.text);
@@ -248,15 +263,9 @@ public class UIScript : MonoBehaviour
         float numWhiskersToCreate = float.Parse(numWhiskers.text);
         float numberIterations = float.Parse(totalRuns.text);
 
-
-        //float x = float.TryParse(xCoord.text);
         float x = Convert.ToSingle(xCoord.text);
         float y = Convert.ToSingle(yCoord.text);
         float z = Convert.ToSingle(zCoord.text);
-
-        
-        //simIntComplete++;
-
 
         if (distributionType == DistributionType.Lognormal)
             {
@@ -329,10 +338,9 @@ public class UIScript : MonoBehaviour
         masses.Clear();
         resistances.Clear();
 
-        //int numWhiskersToCreate = Convert.ToInt32(numWhiskers.text);
         for (int i = 0; i < numWhiskersToCreate; i++)
         {
-            // Generate dimensions and spawn position
+            //Generate dimensions and spawn position
             float diameter = WidthDistributionGenerate() / 1000;
             float length = LengthDistributionGenerate() / 1000;
             float spawnPointX = UnityEngine.Random.Range(-float.Parse(xCoord.text)*10, float.Parse(xCoord.text)*10);
@@ -340,28 +348,22 @@ public class UIScript : MonoBehaviour
             float spawnPointZ = UnityEngine.Random.Range(-float.Parse(zCoord.text)*10, float.Parse(zCoord.text)*10);
             Vector3 spawnPos = new Vector3(spawnPointX, spawnPointY, spawnPointZ);
 
-            
-            // Instantiate whisker clone
             GameObject whiskerClone = Instantiate(whisker, spawnPos, Quaternion.Euler(UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360)));
             whiskerClone.tag = "whiskerClone";
-            
-            //Transform colliderChild = whiskerClone.transform.Find("collider");
-            //colliderChild.gameObject.tag = "whiskerClone";
-
-            // Ensure Rigidbody component exists and set mass
+ 
             Rigidbody whiskerRigidbody = whiskerClone.GetComponent<Rigidbody>();
             if (whiskerRigidbody == null)
             {
                 whiskerRigidbody = whiskerClone.AddComponent<Rigidbody>();
             }
 
-            // Calculate mass based on material properties and dimensions
+            //Calculates properties
             MaterialProperties currentProps = materialProperties[currentMaterial];
             float volume = Mathf.PI * Mathf.Pow(diameter / 2, 2) * length;
             float mass = volume * currentProps.density;
             float resistance = (currentProps.resistivity * length * 1000) / (Mathf.PI * Mathf.Pow(diameter * 1000 / 2, 2));
 
-            // Set a minimum mass limit
+            //Sets a minimum mass limit
             if (mass < 1f)
             {
                 whiskerRigidbody.mass = 0.22f;
@@ -375,13 +377,12 @@ public class UIScript : MonoBehaviour
                 whiskerRigidbody.angularDrag = 2f;
             }
 
-            // Enable continuous collision detection
             whiskerRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
     //UPSIZING WIDTHS
             Transform visual = whiskerClone.transform.Find("visual");
             Transform collider = whiskerClone.transform.Find("collider");
-            if(diameter*1000 < 10) //can be changed to whatever 
+            if(diameter*1000 < 10) 
             {
                 visual.localScale = new Vector3(10, 1, 10); // scales relative to the parent object 
             } // so this is saying if the diameter is less than 50, it takes the diameter of the orignal whisker and *5.
@@ -390,14 +391,12 @@ public class UIScript : MonoBehaviour
                 visual.localScale = new Vector3(1.2f, 1, 1.2f);
             }
 
-            collider.localScale = new Vector3(1, 1, 1); // keeps it all the same as the original.
+            collider.localScale = new Vector3(1, 1, 1);
 
-            // Scale whisker and update lists
             whiskerClone.transform.localScale = new Vector3(diameter, length / 2, diameter);
             lengths.Add(length);
             widths.Add(diameter);
 
-            // Ensure Collider component exists and set physics material
             Collider whiskerCollider = whiskerClone.GetComponent<Collider>();
             if (whiskerCollider == null)
             {
@@ -405,20 +404,18 @@ public class UIScript : MonoBehaviour
                 return;
             }
 
-            // Get or create physics material and set its friction properties
+            //Gets physics material and sets its friction properties
             PhysicMaterial whiskerPhysicsMaterial = whiskerCollider.sharedMaterial;
             if (whiskerPhysicsMaterial == null)
             {
                 whiskerPhysicsMaterial = new PhysicMaterial();
                 whiskerCollider.sharedMaterial = whiskerPhysicsMaterial;
             }
-
-            // Update friction properties based on selected material type
             UpdatePhysicsMaterialFriction(whiskerPhysicsMaterial);
            
             if(whiskerControl.confirmGravity)
             {
-                WhiskerData data = new WhiskerData(length, diameter, volume, mass, resistance, simIntComplete); // Pass simIntComplete as iteration count
+                WhiskerData data = new WhiskerData(length, diameter, volume, mass, resistance, simIntComplete); 
                 SaveWhiskerData(data);
             }
 
@@ -426,6 +423,8 @@ public class UIScript : MonoBehaviour
             Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}, Resistance: {resistance}");
         }
     }
+
+    //Updates the friction on the whiskers
     private void UpdatePhysicsMaterialFriction(PhysicMaterial material)
     {
         MaterialProperties currentProps = materialProperties[currentMaterial];
@@ -433,7 +432,7 @@ public class UIScript : MonoBehaviour
         material.dynamicFriction = currentProps.coefficientOfFriction;
     }
 
-
+    //Controls the Reload whiskers buttons. Clears out whiskers and generates new.
     public void ReloadWhiskersButton()
     {
         GameObject[] allWhiskers = GameObject.FindGameObjectsWithTag("whiskerClone");
@@ -445,19 +444,21 @@ public class UIScript : MonoBehaviour
         MakeWhiskerButton();
     }
 
+    //Function that sets the error message.
     public void SetErrorMessage(string message)
     {
         errorMessage.text = message;
         StartCoroutine(ClearErrorMessageAfterDelay(6f));
     }
 
+    //Clears the error message
     private IEnumerator ClearErrorMessageAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         errorMessage.text = "";
     }
-    //saving whiskers data;
-    
+
+    //Saving whiskers data;
     public void SaveWhiskerData(WhiskerData data)
     {   
         string directoryPath = whiskerControl.directoryPath;
@@ -465,7 +466,7 @@ public class UIScript : MonoBehaviour
 
         string directoryPathCheck = whiskerControl.directoryPath;
         string fileNameCheck = whiskerControl.fileName;
-        // Check directory path and file name
+
     if (string.IsNullOrEmpty(directoryPath) || string.IsNullOrEmpty(whiskerControl.fileName))
     {
         SetErrorMessage("Failed to save data - Path or Filename cannot be empty");
@@ -504,10 +505,13 @@ public class UIScript : MonoBehaviour
     public TextMeshProUGUI bridgesCount;
     public Text conductorName;
 
+    //Updates bridge counter
     public void UpdateConductorBridge(string conductorName, int pingCount)
     {
         bridgesCount.text = conductorName + ": " + pingCount; // prints UI instead of component name. Correct ping count though.
     }
+
+    //Hides or Shows the UI.
     public void toggleUI()
     {           
         if(UIisOn)
@@ -522,6 +526,7 @@ public class UIScript : MonoBehaviour
         }
     }
 
+    //Hides or Shows the Scale Grid
     public void toggleGrid()
     {           
         if(GridIsOn)
@@ -535,6 +540,8 @@ public class UIScript : MonoBehaviour
             GridIsOn = true;
         }
     }
+
+    //Allows users to raise grid to fit their board.
     public void RaiseGrid()
     {
         if (grid != null)
@@ -543,6 +550,7 @@ public class UIScript : MonoBehaviour
         }
     }
 
+    //Allows for lowering of grid.
     public void LowerGrid()
     {
         if (grid != null)
@@ -551,6 +559,7 @@ public class UIScript : MonoBehaviour
         }
     }
 
+    //Tells the progran to apply the shock throughout the simulation
     public void toggleShock()
     {
         if(!isShockActive)
@@ -562,6 +571,8 @@ public class UIScript : MonoBehaviour
             isShockActive = false;
         }
     }
+
+    //Tells the program to apply the vibration throughout the simulation
     public void toggleVibration()
     {
         if(!isVibrationActive)
@@ -574,6 +585,7 @@ public class UIScript : MonoBehaviour
         }
     }
 
+    //Class for whisker data to be stored.
     public class WhiskerData
         {
         public float Length { get; set; }
@@ -594,6 +606,7 @@ public class UIScript : MonoBehaviour
         }
     }
 
+    //Properties class
     public class MaterialProperties
     {
         public float density;

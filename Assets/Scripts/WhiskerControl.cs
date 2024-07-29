@@ -1,3 +1,8 @@
+/*AU Team 1 (SP & SU 2024 used the help of Auburn graduate student Jake Botello
+to learn Unity and C# in integratinf design ideas. The team applied background
+knowledge of MATLAB and C++ coding languages to develop various tools and
+functions used throughout this script. ChatGPT was also used as a troubleshooting
+reference.*/
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +13,7 @@ using System.Data;
 using System.Linq;
 using System.IO;
 
+//Handles most of script that goes along with the whiskers, such as setting colliders and handling their collisions.
 public class WhiskerControl : MonoBehaviour
 {
     public Dropdown gravity;
@@ -16,7 +22,7 @@ public class WhiskerControl : MonoBehaviour
     public int selectedIndex = 0;
     public Material targetMaterial;
     public int bridges = 0;
-    public bool confirmGravity; // used to tell program if gravity has been added or not.
+    public bool confirmGravity; 
     private List<WhiskerData> bridgedWhiskers = new List<WhiskerData>();
     public GameObject UIObject;
     public UIScript uiScript;
@@ -26,6 +32,7 @@ public class WhiskerControl : MonoBehaviour
     public string directoryPath;
     public string fileName;
  
+    //Initializes the UiScript
     void Start()
     {
         uiScript = UIObject.GetComponent<UIScript>();
@@ -35,10 +42,11 @@ public class WhiskerControl : MonoBehaviour
         }
     }
 
-    public float detectionRadius = 0.5f; // Adjust this value based on your requirements
+    public float detectionRadius = 0.5f; 
     public float rayDistance = 1.0f;
-    public LayerMask conductorLayer; // Set this layer to the layer of your conductor objects
+    public LayerMask conductorLayer;
 
+    //Turns on the gravity
     void Update()
     {
         if(confirmGravity)
@@ -47,53 +55,56 @@ public class WhiskerControl : MonoBehaviour
         }
     }
  
-    //gravityStuff
-public void ConfirmButtonPressed()
-{
-    GetGravitySelection(gravity.value);
-    confirmGravity = true;
-    uiScript.ReloadWhiskersButton();
-    UIObject.GetComponent<UIScript>().startSim = true;//NEW
-}
-
-public void GetGravitySelection(int val)
-{
-    ApplyGravity(val); //selectedIndex
-}
-
-public void ApplyGravity(int val)
-{
-    GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("whiskerClone");
-
-    Vector3 forceDirection = Vector3.zero;
-
-    switch (val)
+    //Confirm Gravity Button
+    public void ConfirmButtonPressed()
     {
-        case 0:
-            forceDirection = new Vector3(0, -10, 0);
-            break;
-        case 1:
-            forceDirection = new Vector3(0, -2, 0);
-            break;
-        case 2:
-            forceDirection = new Vector3(0, -4, 0);
-            break;
+        GetGravitySelection(gravity.value);
+        confirmGravity = true;
+        uiScript.ReloadWhiskersButton();
+        UIObject.GetComponent<UIScript>().startSim = true;
     }
 
-    foreach (GameObject obj in objectsWithTag)
+    //Gets gravity selection from dropdown
+    public void GetGravitySelection(int val)
     {
-        ConstantForce cForce = obj.GetComponent<ConstantForce>();
-        if (cForce == null)
-        {
-            cForce = obj.AddComponent<ConstantForce>();
-        }
-        cForce.force = forceDirection;
+        ApplyGravity(val);
     }
-}
-    public void ResetGravity()
+
+    //Applys correct gravity 
+    public void ApplyGravity(int val)
     {
         GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("whiskerClone");
 
+        Vector3 forceDirection = Vector3.zero;
+
+        switch (val)
+        {
+            case 0:
+                forceDirection = new Vector3(0, -10, 0);
+                break;
+            case 1:
+                forceDirection = new Vector3(0, -2, 0);
+                break;
+            case 2:
+                forceDirection = new Vector3(0, -4, 0);
+                break;
+        }
+
+        foreach (GameObject obj in objectsWithTag)
+        {
+            ConstantForce cForce = obj.GetComponent<ConstantForce>();
+            if (cForce == null)
+            {
+                cForce = obj.AddComponent<ConstantForce>();
+            }
+            cForce.force = forceDirection;
+        }
+    }
+
+    //Resets gravity /ResetButton
+    public void ResetGravity()        
+    {
+        GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("whiskerClone");
         foreach (GameObject obj in objectsWithTag)
         {
             cForce = GetComponent<ConstantForce>();
@@ -110,15 +121,15 @@ public void ApplyGravity(int val)
     public string secondConnection;
     public int connectionsMade;
     public static Dictionary<string, int> bridgesPerConductor = new Dictionary<string, int>(); 
-    private Renderer objectRenderer; // for highlighting
-    public Color bridgeDetectedColor = Color.red; // for highlighting
-    public Color defaultColor = Color.white; // for highlighting
+    private Renderer objectRenderer;
+    public Color bridgeDetectedColor = Color.red;
+    public Color defaultColor = Color.white;
     public HashSet<string> currentConnections = new HashSet<string>();
     public Color[] colors;
     private Dictionary<GameObject, int> triggerInteractionCounts = new Dictionary<GameObject, int>();
     public bool haveBridgedBefore;
 
-    // BRIDGING DETECTION ORIGINAL
+    // BRIDGING DETECTION
     private void OnTriggerStay(Collider trigger) 
     {
         if (trigger.gameObject.CompareTag("ConductorTrigger")) 
@@ -129,14 +140,14 @@ public void ApplyGravity(int val)
             {
                 if (!haveLoggedConnection && !haveBridgedBefore)
                 {
-                    Transform visualChild = transform.Find("visual");//new
-                    Renderer childRenderer = visualChild.GetComponent<Renderer>();//new
+                    Transform visualChild = transform.Find("visual");
+                    Renderer childRenderer = visualChild.GetComponent<Renderer>();
 
                     objectRenderer = GetComponent<Renderer>();
                     bridgesPerConductor[gameObject.name]++;
                     UIObject.GetComponent<UIScript>().bridgesDetected++;
                     UIObject.GetComponent<UIScript>().bridgesPerRun++;
-                    childRenderer.material.color = bridgeDetectedColor; //objectRenderer
+                    childRenderer.material.color = bridgeDetectedColor;
                     haveLoggedConnection = true;
 
                     TrackBridgedWhiskers(gameObject);
@@ -160,46 +171,45 @@ public void ApplyGravity(int val)
         }
     }
     
+    //Resets connection whenever the whisker stops being in contact
     private void ResetConnectionState()
     {
-        Transform visualChild = transform.Find("visual");//new
-        Renderer childRenderer = visualChild.GetComponent<Renderer>();//new
+        Transform visualChild = transform.Find("visual");
+        Renderer childRenderer = visualChild.GetComponent<Renderer>();
 
         currentConnections.Clear();
         haveLoggedConnection = false;
-        bridgesPerConductor[gameObject.name]--; //NEW
-        //UIObject.GetComponent<UIScript>().bridgesDetected--;// comment out for limit of one bridge.
-        //UIObject.GetComponent<UIScript>().bridgesPerRun--; //comment out ^
-        childRenderer.material.color = defaultColor;//objectRenderer
+        bridgesPerConductor[gameObject.name]--; 
+        childRenderer.material.color = defaultColor;
     }
 
+    //Saves Bridged Whiskers
     public void TrackBridgedWhiskers(GameObject whisker)
     {
         Vector3 scale = whisker.transform.localScale;
-        float length = scale.y*2; // Y axis is the length
-        float diameter = (scale.x + scale.z) / 2; // Average of X and Z axes for diameter
+        float length = scale.y*2;
+        float diameter = (scale.x + scale.z) / 2;
 
-        // Access material properties based on currentMaterial from UIScript
         UIScript.MaterialProperties currentProps = uiScript.materialProperties[uiScript.currentMaterial];
 
         float resistance = CalculateResistance(length, diameter, currentProps);
 
         WhiskerData data = new WhiskerData(length * 1000, diameter * 1000, resistance, uiScript.simIntComplete);
         bridgedWhiskers.Add(data);
-        //foreach (WhiskerData whiskerdata in bridgedWhiskers)
-        //{
-            SaveBridgedWhiskerData(data); //whiskerdata
-        //}
+
+        SaveBridgedWhiskerData(data);
     }
+
+    //Calculates resistances
     private float CalculateResistance(float length, float diameter, UIScript.MaterialProperties materialProps)
     {
         float area = Mathf.PI * Mathf.Pow((diameter*1000)/2, 2);
         return materialProps.resistivity * (length*1000)/area;
     }
 
+    //Saves bridged whisker datas into the CSV files.
     private void SaveBridgedWhiskerData(WhiskerData data)
     {
-        //string directoryPath = @"D:/Unity";//remove
         string filePath = Path.Combine(directoryPath, fileName + ".csv");
 
         try
@@ -245,6 +255,7 @@ public void ApplyGravity(int val)
         }
     }
 
+    //Saves the directory/filename
     public void SaveButtonClicked()
     {
         directoryPath = filePathInputField.text;

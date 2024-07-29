@@ -1,3 +1,8 @@
+/*AU Team 1 (SP & SU 2024 used the help of Auburn graduate student Jake Botello
+to learn Unity and C# in integratinf design ideas. The team applied background
+knowledge of MATLAB and C++ coding languages to develop various tools and
+functions used throughout this script. ChatGPT was also used as a troubleshooting
+reference.*/
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +10,7 @@ using TMPro;
 using UnityEngine.UI;
 using System;
 
+//Controls the External Force: Vibration
 public class VibrationManager : MonoBehaviour
 {
     public TMP_InputField amplitudeInputField; // Input field for vibration amplitude
@@ -23,18 +29,13 @@ public class VibrationManager : MonoBehaviour
     public TMP_Dropdown fAxis;
     public Button vibrateButton;
     public UIScript uiScript;
-    //private GameObject[] conductors; // Array of conductors
-    //private Vector2[] originalConductorPositions; // Array to store original positions of conductors
 
     private void Start()
     {
-        /*GameObject circuitBoardObject = GameObject.FindGameObjectWithTag("CircuitBoard");
-        if (circuitBoardObject != null)
-        {
-            circuitBoard = circuitBoardObject.transform;
-        }*/
+  
     }
 
+    //Applys the correct vibration in the appropriate axis depending on the user inputs
     private void FixedUpdate()
     {
         if (isVibratingX)
@@ -42,11 +43,9 @@ public class VibrationManager : MonoBehaviour
             float elapsedTime = Time.time - startTime;
             if (elapsedTime < duration)
             {
-                // Calculate the current offset based on sine wave
                 float sineValue = Mathf.Sin(elapsedTime * frequency * 2 * Mathf.PI);
                 float offsetX = sineValue * amplitude;
 
-                // Move the circuit board
                 Vector3 targetBoardPosition = new Vector3(originalBoardPosition.x + offsetX, originalBoardPosition.y, originalBoardPosition.z);
                 if (circuitBoardRigidbody != null)
                 {
@@ -55,10 +54,10 @@ public class VibrationManager : MonoBehaviour
             }
             else
             {
-                isVibratingX = false; // Stop vibrating after the duration
+                isVibratingX = false; 
                 Debug.Log("Vibration finished.");
                 VibrationFinished();
-                // Reset the position of the circuit board
+              
                 if (circuitBoard != null)
                 {
                     circuitBoard.position = originalBoardPosition;
@@ -71,11 +70,9 @@ public class VibrationManager : MonoBehaviour
             float elapsedTime = Time.time - startTime;
             if (elapsedTime < duration)
             {
-                // Calculate the current offset based on sine wave
                 float sineValue = Mathf.Sin(elapsedTime * frequency * 2 * Mathf.PI);
                 float offsetY = sineValue * amplitude;
 
-                // Move the circuit board
                 Vector3 targetBoardPosition = new Vector3(originalBoardPosition.x, originalBoardPosition.y  + offsetY, originalBoardPosition.z);
                 if (circuitBoardRigidbody != null)
                 {
@@ -84,10 +81,10 @@ public class VibrationManager : MonoBehaviour
             }
             else
             {
-                isVibratingY = false; // Stop vibrating after the duration
+                isVibratingY = false;
                 Debug.Log("Vibration finished.");
                 VibrationFinished();
-                // Reset the position of the circuit board
+
                 if (circuitBoard != null)
                 {
                     circuitBoard.position = originalBoardPosition;
@@ -100,11 +97,10 @@ public class VibrationManager : MonoBehaviour
             float elapsedTime = Time.time - startTime;
             if (elapsedTime < duration)
             {
-                // Calculate the current offset based on sine wave
+
                 float sineValue = Mathf.Sin(elapsedTime * frequency * 2 * Mathf.PI);
                 float offsetZ = sineValue * amplitude;
 
-                // Move the circuit board
                 Vector3 targetBoardPosition = new Vector3(originalBoardPosition.x, originalBoardPosition.y, originalBoardPosition.z + offsetZ);
                 if (circuitBoardRigidbody != null)
                 {
@@ -113,10 +109,10 @@ public class VibrationManager : MonoBehaviour
             }
             else
             {
-                isVibratingZ = false; // Stop vibrating after the duration
+                isVibratingZ = false; 
                 Debug.Log("Vibration finished.");
                 VibrationFinished();
-                // Reset the position of the circuit board
+
                 if (circuitBoard != null)
                 {
                     circuitBoard.position = originalBoardPosition;
@@ -126,14 +122,13 @@ public class VibrationManager : MonoBehaviour
       
     }
 
+    //These functions actually run the vibration
     public void StartVibrationX()
     {
-        // Find the Rigidbody component of the circuit board
+
         circuitBoardRigidbody = circuitBoard.GetComponent<Rigidbody>();
-        // Store the original position of the circuit board
         originalBoardPosition = circuitBoard.position;
-        
-        // Parse user inputs for amplitude, duration, and frequency
+
         if (float.TryParse(amplitudeInputField.text, out amplitude) &&
             float.TryParse(durationInputField.text, out duration) &&
             float.TryParse(frequencyInputField.text, out frequency))
@@ -152,12 +147,9 @@ public class VibrationManager : MonoBehaviour
 
     public void StartVibrationY()
     {
-        // Find the Rigidbody component of the circuit board
         circuitBoardRigidbody = circuitBoard.GetComponent<Rigidbody>();
-        // Store the original position of the circuit board
         originalBoardPosition = circuitBoard.position;
-        
-        // Parse user inputs for amplitude, duration, and frequency
+
         if (float.TryParse(amplitudeInputField.text, out amplitude) &&
             float.TryParse(durationInputField.text, out duration) &&
             float.TryParse(frequencyInputField.text, out frequency))
@@ -176,12 +168,9 @@ public class VibrationManager : MonoBehaviour
 
     public void StartVibrationZ()
     {
-        // Find the Rigidbody component of the circuit board
         circuitBoardRigidbody = circuitBoard.GetComponent<Rigidbody>();
-        // Store the original position of the circuit board
         originalBoardPosition = circuitBoard.position;
-        
-        // Parse user inputs for amplitude, duration, and frequency
+
         if (float.TryParse(amplitudeInputField.text, out amplitude) &&
             float.TryParse(durationInputField.text, out duration) &&
             float.TryParse(frequencyInputField.text, out frequency))
@@ -197,19 +186,21 @@ public class VibrationManager : MonoBehaviour
         }
        
     }
+
+    //This runs whenever the vibration button is pressed or called.
     public void vibratePressed()
     {
-        if(Convert.ToInt32(amplitudeInputField.text) > 35)
+        if(float.Parse(amplitudeInputField.text) > 35)
         {
             uiScript.SetErrorMessage("Vibration Amplitude is too high.");
             return;
         }
-        if(Convert.ToInt32(frequencyInputField.text) > 150)
+        if(float.Parse(frequencyInputField.text) > 150)
         {
             uiScript.SetErrorMessage("Vibration frequnecy is too high.");
             return;
         }
-        if(Convert.ToInt32(durationInputField.text) > 30)
+        if(float.Parse(durationInputField.text) > 30)
         {
             uiScript.SetErrorMessage("Vibration Amplitude is too high.");
             return;
@@ -238,6 +229,6 @@ public class VibrationManager : MonoBehaviour
     }
     private void VibrationFinished()
     {
-        vibrateButton.interactable = true; // Re-enable the Vibrate button
+        vibrateButton.interactable = true; 
     }
 }   
