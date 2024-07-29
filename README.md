@@ -1,5 +1,5 @@
 # 3DStuff
- Tin Whisker Project
+3D Modeling of Detached Metal Whiskers - MDA, NASA
 
 Before starting, please download and follow the steps listed in the "ORR User Manual" pdf file. This file will give complete steps on how to access everything from the GitHub and run the simulation.
 
