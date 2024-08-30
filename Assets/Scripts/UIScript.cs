@@ -75,6 +75,7 @@ public class UIScript : MonoBehaviour
     public ShockManager shockManager;
     public float shockPressTimer = 0f;
     public float shockPressInterval = 2f;
+    public SimulationController simulationController; //reference to the simulation controller script
 
     //Sets the lists for the dimensions/data to be stored in, as well as sets material properties from the dropdown.
     void Start()
@@ -620,6 +621,17 @@ public class UIScript : MonoBehaviour
             this.resistivity = resistivity;
             this.coefficientOfFriction = coefficientOfFriction;
         }
+    }
+
+    public void OnSaveInputButtonClicked()
+    {
+        //calls the savesettings method from SimulationController script to save inputs
+        simulationController.SaveSettings();
+    }
+
+    public void OnLoadInputButtonClicked()
+    {
+        simulationController.LoadSettings(); //Calls the LoadSettings method from SImulationController
     }
 }
 
