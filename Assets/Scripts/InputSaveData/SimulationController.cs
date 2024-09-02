@@ -12,9 +12,16 @@ public class SimulationController : MonoBehaviour
     public TMP_InputField widthSigmaInput;
     public TMP_InputField numWhiskersInput;
     public TMP_InputField numIterationsInput;
+    public TMP_InputField xCoordInput;
+    public TMP_InputField yCoordInput;
+    public TMP_InputField zCoordInput;
+    public TMP_Dropdown whiskerMatDropdown;
+    public TMP_Dropdown distributionDropdown;
 
     public SaveManager saveManager;
     private SimulationData currentSimulationData;
+
+    public WhiskerControl whiskerControl; //reference to get gravity from WhiskerControl
 
     private void Start()
     {
@@ -57,6 +64,12 @@ public class SimulationController : MonoBehaviour
         currentSimulationData.widthSigma = float.Parse(widthSigmaInput.text);
         currentSimulationData.numWhiskers = int.Parse(numWhiskersInput.text);
         currentSimulationData.numIterations = int.Parse(numIterationsInput.text);
+        currentSimulationData.xCoord = float.Parse(xCoordInput.text);
+        currentSimulationData.yCoord = float.Parse(yCoordInput.text);
+        currentSimulationData.zCoord = float.Parse(zCoordInput.text);
+        currentSimulationData.whiskMat = whiskerMatDropdown.value;
+        currentSimulationData.distributionDropdown = distributionDropdown.value;
+        currentSimulationData.gravity = whiskerControl.gravity.value;
 
         if (saveManager != null)
         {
@@ -93,5 +106,11 @@ public class SimulationController : MonoBehaviour
         widthSigmaInput.text = data.widthSigma.ToString();
         numWhiskersInput.text = data.numWhiskers.ToString();
         numIterationsInput.text = data.numIterations.ToString();
+        xCoordInput.text = data.xCoord.ToString();
+        yCoordInput.text = data.yCoord.ToString();
+        zCoordInput.text = data.zCoord.ToString();
+        whiskerMatDropdown.value = data.whiskMat;
+        distributionDropdown.value = data.distributionDropdown;
+        whiskerControl.gravity.value = data.gravity;
     }
 }

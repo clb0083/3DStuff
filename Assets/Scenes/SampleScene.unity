@@ -20730,7 +20730,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 518.4, y: 29.499992}
+  m_AnchoredPosition: {x: 518.4, y: -60}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1513539543
@@ -22612,7 +22612,13 @@ MonoBehaviour:
   widthSigmaInput: {fileID: 213075737}
   numWhiskersInput: {fileID: 1822391628}
   numIterationsInput: {fileID: 166620094}
+  xCoordInput: {fileID: 1731680972}
+  yCoordInput: {fileID: 1328382923}
+  zCoordInput: {fileID: 433706441}
+  whiskerMatDropdown: {fileID: 738609958}
+  distributionDropdown: {fileID: 1184046050}
   saveManager: {fileID: 1141998018}
+  whiskerControl: {fileID: 230131766}
 --- !u!4 &1689348461
 Transform:
   m_ObjectHideFlags: 0
@@ -27439,7 +27445,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 518.4, y: 73}
+  m_AnchoredPosition: {x: 518.4, y: -20}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2028542334

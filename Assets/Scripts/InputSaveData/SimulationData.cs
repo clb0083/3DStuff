@@ -10,4 +10,10 @@ public class SimulationData
     public float widthSigma;
     public int numWhiskers;
     public int numIterations;
+    public float xCoord;
+    public float yCoord;
+    public float zCoord;
+    public int whiskMat;
+    public int distributionDropdown;
+    public int gravity;
 }
