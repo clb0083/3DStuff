@@ -76,10 +76,13 @@ public class UIScript : MonoBehaviour
     public float shockPressTimer = 0f;
     public float shockPressInterval = 2f;
     public SimulationController simulationController; //reference to the simulation controller script
+    private int whiskerCounter; //variable to track whisker numbers
 
     //Sets the lists for the dimensions/data to be stored in, as well as sets material properties from the dropdown.
     void Start()
     {
+        whiskerCounter = 1; //initialize the counter to 1 when the script starts
+
         lengths = new List<float>();
         widths = new List<float>();
         volumes = new List<float>();
@@ -352,7 +355,11 @@ public class UIScript : MonoBehaviour
 
             GameObject whiskerClone = Instantiate(whisker, spawnPos, Quaternion.Euler(UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360)));
             whiskerClone.tag = "whiskerClone";
- 
+
+            whiskerClone.name = $"whisker_{whiskerCounter}"; //unique name for each whisker
+            whiskerCounter++; //increment counter for next whisker
+
+            // Set up Rigidbody, scaling, and physics properties
             Rigidbody whiskerRigidbody = whiskerClone.GetComponent<Rigidbody>();
             if (whiskerRigidbody == null)
             {
@@ -437,12 +444,16 @@ public class UIScript : MonoBehaviour
     //Controls the Reload whiskers buttons. Clears out whiskers and generates new.
     public void ReloadWhiskersButton()
     {
+        // Clear out all whiskers
         GameObject[] allWhiskers = GameObject.FindGameObjectsWithTag("whiskerClone");
         foreach (GameObject whisk in allWhiskers)
         {
             Destroy(whisk.gameObject);
         }
         bridgesPerRun = 0;
+
+        // Reset the whisker counter before creating new whiskers
+        whiskerCounter = 1; //resets counter to 1 for each iteration
         MakeWhiskerButton();
     }
 
