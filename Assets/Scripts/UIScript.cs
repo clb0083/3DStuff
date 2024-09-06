@@ -357,7 +357,6 @@ public class UIScript : MonoBehaviour
             whiskerClone.tag = "whiskerClone";
 
             whiskerClone.name = $"whisker_{whiskerCounter}"; //unique name for each whisker
-            whiskerCounter++; //increment counter for next whisker
 
             // Set up Rigidbody, scaling, and physics properties
             Rigidbody whiskerRigidbody = whiskerClone.GetComponent<Rigidbody>();
@@ -424,9 +423,11 @@ public class UIScript : MonoBehaviour
            
             if(whiskerControl.confirmGravity)
             {
-                WhiskerData data = new WhiskerData(length, diameter, volume, mass, resistance, simIntComplete); 
+                WhiskerData data = new WhiskerData(whiskerCounter, length, diameter, volume, mass, resistance, simIntComplete); 
                 SaveWhiskerData(data);
             }
+
+            whiskerCounter++; //increment counter for next whisker
 
             // Debug log for verification
             Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}, Resistance: {resistance}");
@@ -499,11 +500,11 @@ public class UIScript : MonoBehaviour
                 if (!fileExists)
                 {
                     // Write the column titles
-                    writer.WriteLine("All Whiskers,,,,Bridged Whiskers");
-                    writer.WriteLine("Length (um),Width (um),Resistance (ohm),Iteration,Length (um),Width (um),Resistance (ohm),Iteration");
+                    writer.WriteLine("All Whiskers,,,,,Bridged Whiskers");
+                    writer.WriteLine("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Whisker #,Length (um),Width (um),Resistance (ohm),Iteration");
                 }
 
-                writer.WriteLine($"{data.Length*1000},{data.Width*1000},{data.Resistance},{data.Iteration}");
+                writer.WriteLine($"{data.WhiskerNumber},{data.Length*1000},{data.Width*1000},{data.Resistance},{data.Iteration}");
                 DataSaveManager.CurrentRowIndex++;
             }
             Debug.Log($"Whisker data saved successfully to {filePath}");
@@ -601,6 +602,7 @@ public class UIScript : MonoBehaviour
     //Class for whisker data to be stored.
     public class WhiskerData
         {
+        public int WhiskerNumber { get; set; }
         public float Length { get; set; }
         public float Width { get; set; }
         public float Volume { get; set; }
@@ -608,8 +610,9 @@ public class UIScript : MonoBehaviour
         public float Resistance { get; set; }
         public int Iteration { get; set; } // New property for iteration count
 
-        public WhiskerData(float length, float width, float volume, float mass, float resistance, int iteration)
+        public WhiskerData(int whiskerNumber, float length, float width, float volume, float mass, float resistance, int iteration)
         {
+            WhiskerNumber = whiskerNumber;
             Length = length;
             Width = width;
             Volume = volume;

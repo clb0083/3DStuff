@@ -245,7 +245,7 @@ public class WhiskerControl : MonoBehaviour
             }
         }
       
-        lines.Add($",,,,{data.Length / 1000},{data.Diameter / 1000},{data.Resistance / 1000},{data.SimulationIndex}");
+        lines.Add($",,,,,{data.Length / 1000},{data.Diameter / 1000},{data.Resistance / 1000},{data.SimulationIndex}"); //commas are there to indent so data is inserted into correct column
             
         File.WriteAllLines(filePath, lines);
         Debug.Log($"Bridged whisker data saved successfully to {filePath}");
