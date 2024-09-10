@@ -92,6 +92,10 @@ public class TriggerControl : MonoBehaviour
             }
             foreach (Transform child in children)
             {
+                if (child == null || child.GetComponent<MeshCollider>() == null)
+                {
+                    continue;
+                }
 
                 MeshCollider originalMeshCollider = child.GetComponent<MeshCollider>();
                 if (originalMeshCollider != null)

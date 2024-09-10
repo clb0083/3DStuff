@@ -429,8 +429,8 @@ public class UIScript : MonoBehaviour
 
             whiskerCounter++; //increment counter for next whisker
 
-            // Debug log for verification
-            Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}, Resistance: {resistance}");
+            // Debug log for verification, currently commented out to avoid log spam
+            //Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}, Resistance: {resistance}");
         }
     }
 
