@@ -119,8 +119,6 @@ if (originalMeshCollider != null)
 
     emptyObject.AddComponent<TriggerTracker>();
     objectvalues_.Add(emptyObject);
-
-    originalMeshCollider = null;
 }
 
 
