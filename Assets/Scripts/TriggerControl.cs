@@ -42,6 +42,7 @@ public class TriggerControl : MonoBehaviour
         if (topTransform != null)
         {
             Destroy(topTransform.gameObject);
+            topTransform = null; // Set it to null to avoid further reference
         }
         
         rb = gameObject.AddComponent<Rigidbody>();
@@ -93,31 +94,33 @@ public class TriggerControl : MonoBehaviour
             foreach (Transform child in children)
             {
 
-                MeshCollider originalMeshCollider = child.GetComponent<MeshCollider>();
-                if (originalMeshCollider != null)
-                {
-                    testerfill.Add(child.gameObject);
-                    GameObject emptyObject = new GameObject(child.name + "_ColliderCopy");
+MeshCollider originalMeshCollider = child.GetComponent<MeshCollider>();
 
-                    emptyObject.transform.position = child.TransformPoint(offset);
-                    emptyObject.transform.rotation = child.rotation;
-                    emptyObject.transform.localScale = child.lossyScale;
+if (originalMeshCollider != null)
+{
+    testerfill.Add(child.gameObject);
+    GameObject emptyObject = new GameObject(child.name + "_ColliderCopy");
 
-                    MeshCollider newMeshCollider = emptyObject.AddComponent<MeshCollider>();
-                    newMeshCollider.sharedMesh = originalMeshCollider.sharedMesh;
-                    newMeshCollider.convex = originalMeshCollider.convex;
-                    newMeshCollider.isTrigger = true;
+    emptyObject.transform.position = child.TransformPoint(offset);
+    emptyObject.transform.rotation = child.rotation;
+    emptyObject.transform.localScale = child.lossyScale;
 
-                    emptyObject.transform.SetParent(parent, true);
+    MeshCollider newMeshCollider = emptyObject.AddComponent<MeshCollider>();
+    newMeshCollider.sharedMesh = originalMeshCollider.sharedMesh;
+    newMeshCollider.convex = originalMeshCollider.convex;
+    newMeshCollider.isTrigger = true;
 
-                    Renderer renderer = emptyObject.AddComponent<MeshRenderer>();
-                    MeshFilter meshFilter = emptyObject.AddComponent<MeshFilter>();
-                    meshFilter.mesh = originalMeshCollider.sharedMesh;
-                    renderer.material = new Material(triggerMaterial);
+    emptyObject.transform.SetParent(parent, true);
 
-                    emptyObject.AddComponent<TriggerTracker>();
-                    objectvalues_.Add(emptyObject);
-                }
+    Renderer renderer = emptyObject.AddComponent<MeshRenderer>();
+    MeshFilter meshFilter = emptyObject.AddComponent<MeshFilter>();
+    meshFilter.mesh = originalMeshCollider.sharedMesh;
+    renderer.material = new Material(triggerMaterial);
+
+    emptyObject.AddComponent<TriggerTracker>();
+    objectvalues_.Add(emptyObject);
+}
+
 
                 yield return StartCoroutine(CopyMeshCollidersToEmptyObjects(child, depth + 1));
             }
