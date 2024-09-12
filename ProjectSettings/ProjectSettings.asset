@@ -636,7 +636,7 @@ PlayerSettings:
   webGLWasmArithmeticExceptions: 0
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
-  webGLDecompressionFallback: 0
+  webGLDecompressionFallback: 1
   webGLInitialMemorySize: 32
   webGLMaximumMemorySize: 2048
   webGLMemoryGrowthMode: 2
@@ -752,11 +752,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 422b61a1-c6e7-4184-b326-699d95d31d1e
+  cloudProjectId: d56d7ea9-f3fe-4d9b-8ff6-48edefbf0a8b
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 3DStuff
-  organizationId: cdm0104
+  projectName: AuburnThings
+  organizationId: shawn_de89
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
