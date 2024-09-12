@@ -17115,6 +17115,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   screenshotButton: {fileID: 1535877005}
   flashPanel: {fileID: 1645724270}
+  uiCanvas: {fileID: 117388700}
 --- !u!1 &1252489954
 GameObject:
   m_ObjectHideFlags: 0
