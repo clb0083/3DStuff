@@ -23,7 +23,7 @@ public class TriggerTracker : MonoBehaviour
     public void IncrementPingCount()
     {
         pingCount++;
-        Debug.Log($"Ping count for {gameObject.name}: {pingCount}");
+        //Debug.Log($"Ping count for {gameObject.name}: {pingCount}"); //log to notify when whiskers hit nodes, can uncomment whenever
     }
 
     public int GetPingCount()

@@ -195,7 +195,11 @@ public class WhiskerControl : MonoBehaviour
 
         float resistance = CalculateResistance(length, diameter, currentProps);
 
-        WhiskerData data = new WhiskerData(length * 1000, diameter * 1000, resistance, uiScript.simIntComplete);
+        // Extract whisker number from whisker's name
+        string whiskerName = whisker.name;
+        int whiskerNumber = int.Parse(whiskerName.Split('_')[1]);
+
+        WhiskerData data = new WhiskerData(whiskerNumber, length * 1000, diameter * 1000, resistance, uiScript.simIntComplete);
         bridgedWhiskers.Add(data);
 
         SaveBridgedWhiskerData(data);
@@ -221,6 +225,9 @@ public class WhiskerControl : MonoBehaviour
             }
             var lines = File.ReadAllLines(filePath).ToList();
 
+            //checks if whisker number is correctly passed, can uncomment whenever
+        //Debug.Log($"Saving bridged whisker with number: {data.WhiskerNumber}");
+
         for (int i = 2; i < lines.Count; i++)
         {
             var columns = lines[i].Split(',').ToList();
@@ -230,7 +237,8 @@ public class WhiskerControl : MonoBehaviour
                 {
                     columns.Add(string.Empty);
                 }
-              
+                
+                columns.Add(data.WhiskerNumber.ToString());
                 columns.Add(data.Length.ToString());
                 columns.Add(data.Diameter.ToString());
                 columns.Add(data.Resistance.ToString());
@@ -240,12 +248,13 @@ public class WhiskerControl : MonoBehaviour
 
                 File.WriteAllLines(filePath, lines);
 
-                Debug.Log($"Bridged whisker data saved successfully to {filePath}");
+                    //checks if bridged whisker saved properly, can uncomment whenever
+                //Debug.Log($"Bridged whisker data saved successfully to {filePath}");
                 return; 
             }
         }
       
-        lines.Add($",,,,,{data.Length / 1000},{data.Diameter / 1000},{data.Resistance / 1000},{data.SimulationIndex}"); //commas are there to indent so data is inserted into correct column
+        lines.Add($",,,,,{data.WhiskerNumber},{data.Length / 1000},{data.Diameter / 1000},{data.Resistance / 1000},{data.SimulationIndex}"); //commas are there to indent so data is inserted into correct column
             
         File.WriteAllLines(filePath, lines);
         Debug.Log($"Bridged whisker data saved successfully to {filePath}");
@@ -265,13 +274,15 @@ public class WhiskerControl : MonoBehaviour
 
     public class WhiskerData
     {
+        public int WhiskerNumber { get; set; }
         public float Length { get; set; }
         public float Diameter { get; set; }
         public float Resistance { get; set; }
         public int SimulationIndex { get; set; }
 
-        public WhiskerData(float length, float diameter, float resistance, int simulationIndex)
+        public WhiskerData(int whiskerNumber, float length, float diameter, float resistance, int simulationIndex)
         {
+            WhiskerNumber = whiskerNumber;
             Length = length;
             Diameter = diameter;
             Resistance = resistance;
