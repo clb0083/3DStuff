@@ -15,7 +15,9 @@ public class BoardDetector : MonoBehaviour
 
         if (detectedBoard != null)
         {
-            Debug.Log("Board detected: " + detectedBoard.name);
+            Debug.Log("Board detected: " + detectedBoard.name); //log the detected board
+            Renderer boardRenderer = detectedBoard.GetComponent<Renderer>();
+            //Debug.Log("detected Board Bounds: " + boardRenderer.bounds); //log the detected board bounds
         }
         else
         {
@@ -26,8 +28,8 @@ public class BoardDetector : MonoBehaviour
     // Method to find the board based on largest object in heirachy
     private GameObject FindBoard(GameObject rootObject)
     {
-        GameObject largestObject = null;
-        float largestArea = 0;
+        GameObject largestFlatObject = null;
+        float largestSurfaceArea = 0;
 
         // Iterate over all the children of the imported model (all the components)
         foreach (Renderer renderer in rootObject.GetComponentsInChildren<Renderer>())
@@ -37,13 +39,26 @@ public class BoardDetector : MonoBehaviour
             //calculates the surface area
             float surfaceArea = bounds.size.x * bounds.size.z;
 
-            //Compare with the larges founds so far
-            if (surfaceArea > largestArea)
+            //Debug.Log($"Checking Object: {renderer.gameObject.name}, Surface Area: {surfaceArea}, Thickness (Y): {bounds.size.y}, Center Y: {bounds.center.y}");
+            //check if the object is realtively flat by comparing its height (Y) with its surface area
+            // Example: thickness should be relatively small compared to surface area
+            if (surfaceArea > largestSurfaceArea && bounds.size.y < (0.3f * Mathf.Min(bounds.size.x, bounds.size.z)))
             {
-                largestArea = surfaceArea;
-                largestObject = renderer.gameObject;
+                largestSurfaceArea = surfaceArea;
+                largestFlatObject = renderer.gameObject;
+
+                //Debug.Log($"Potential Board Detected: {largestFlatObject.name}, Surface Area; {surfaceArea}, thickness (Y): {bounds.size.y}");
             }
         }
-        return largestObject;
+
+        if (largestFlatObject != null)
+        {
+            //Debug.Log("Largest Flat Object Detected: " + largestFlatObject.name);
+        }
+        else
+        {
+            Debug.LogWarning("No flat object detected as the board.");
+        }
+        return largestFlatObject;
     }
 }

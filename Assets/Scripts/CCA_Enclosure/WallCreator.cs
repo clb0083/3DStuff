@@ -7,12 +7,15 @@ using TMPro;
 public class WallCreator : MonoBehaviour
 {
     public GameObject wallPrefab; //prefab for the wall
-    public Button wallButton; //reference to the UI button
-    public TMP_InputField wallHeightInput; //Refernece to the UI input field for wall height
+    public GameObject ceilingPrefab; //prefab for ceiling
+    public Button wallButton; //reference to the create walls button
+    public TMP_InputField wallHeightInput; //Refernece to the input field for wall height
+    public Toggle ceilingToggle; //Reference to the toggle button for the ceiling
     public Material transparentWallMaterial;
 
     private BoardDetector boardDetector; //to detect the board
     private GameObject[] currentWalls; //stores the currently created walls
+    private GameObject currentCeiling; //stores currently created ceiling
 
     private void Start()
     {
@@ -34,21 +37,31 @@ public class WallCreator : MonoBehaviour
     //called when the button is pressed
     public void OnWallButtonPressed()
     {
-        DeleteExistingWalls();
+        DeleteExistingWallsAndCeiling();
+
         //Get the detected board from the BoardDetector script
         GameObject detectedBoard = boardDetector.detectedBoard;
 
         if (detectedBoard != null)
         {
             Renderer boardRenderer = detectedBoard.GetComponent<Renderer>();
-            Bounds bounds = boardRenderer.bounds;
+            Bounds boardBounds = boardRenderer.bounds;
+
+            //Debug.Log("Detected Board for Wall Placement: " + detectedBoard.name);
+            //Debug.Log("detected Board Bounds for Wall PLacement: " + boardBounds);
 
             // The input from the text box to get the wall height
             float wallHeight;
-                if (float.TryParse(wallHeightInput.text, out wallHeight))
+            if (float.TryParse(wallHeightInput.text, out wallHeight))
             {
                 // creates walls around the detected board
-                CreateWalls(bounds, detectedBoard, wallHeight);
+                CreateWalls(boardBounds, detectedBoard, wallHeight);
+
+                //check if ceiling toggle is on
+                if (ceilingToggle.isOn)
+                {
+                    CreateCeiling(boardBounds, detectedBoard, wallHeight);
+                }
             }
             else
             {
@@ -62,19 +75,26 @@ public class WallCreator : MonoBehaviour
     }
 
 
-    private void CreateWalls(Bounds bounds, GameObject detectedBoard, float wallHeight)
+    private void CreateWalls(Bounds boardBounds, GameObject detectedBoard, float wallHeight)
     {
-        Vector3 boardSize = bounds.size;
-        Vector3 boardCenter = bounds.center;
+        Vector3 boardSize = boardBounds.size;
+        Vector3 boardCenter = boardBounds.center;
 
-        // positions and scales the walls
-        Vector3 leftWallPos = new Vector3(boardCenter.x - boardSize.x / 2, boardCenter.y, boardCenter.z);
-        Vector3 rightWallPos = new Vector3(boardCenter.x + boardSize.x / 2, boardCenter.y, boardCenter.z);
-        Vector3 frontWallPos = new Vector3(boardCenter.x, boardCenter.y, boardCenter.z + boardSize.z / 2);
-        Vector3 backWallPos = new Vector3(boardCenter.x, boardCenter.y, boardCenter.z - boardSize.z / 2);
+        //ensures bottom of walls align with bottom of the board
+        float wallBottomY = boardBounds.min.y;
+
+        // Log the wall position and size
+        //Debug.Log($"Creating Walls at Bottom Y: {wallBottomY}, Wall Height: {wallHeight}");
 
         // Wall dimensions
         float wallThickness = 0.1f;
+
+        // positions and scales the walls
+        Vector3 leftWallPos = new Vector3(boardCenter.x - (boardSize.x / 2) - (wallThickness / 2), wallBottomY + (wallHeight /2), boardCenter.z);
+        Vector3 rightWallPos = new Vector3(boardCenter.x + (boardSize.x / 2) + (wallThickness / 2), wallBottomY + (wallHeight / 2), boardCenter.z);
+        Vector3 frontWallPos = new Vector3(boardCenter.x, wallBottomY + (wallHeight / 2), boardCenter.z + (boardSize.z / 2) + (wallThickness / 2));
+        Vector3 backWallPos = new Vector3(boardCenter.x, wallBottomY + (wallHeight / 2), boardCenter.z - (boardSize.z / 2) - (wallThickness / 2));
+
 
         // Creates an array to hold references for the new walls
         currentWalls = new GameObject[4];
@@ -84,6 +104,33 @@ public class WallCreator : MonoBehaviour
         currentWalls[1] = CreateWall(rightWallPos, new Vector3(wallThickness, wallHeight, boardSize.z), detectedBoard);
         currentWalls[2] = CreateWall(frontWallPos, new Vector3(boardSize.x, wallHeight, wallThickness), detectedBoard);
         currentWalls[3] = CreateWall(backWallPos, new Vector3(boardSize.x, wallHeight, wallThickness), detectedBoard);
+    }
+
+    private void CreateCeiling(Bounds boardBounds, GameObject detectedBoard, float wallHeight)
+    {
+        Vector3 boardSize = boardBounds.size;
+        Vector3 boardCenter = boardBounds.center;
+
+        float ceilingThickness = 0.1f;
+
+        //Positions ceiling at the top of the walls
+        float ceilingY = boardBounds.min.y + wallHeight + (ceilingThickness / 2);
+
+        //Debug.Log($"Creating Ceiling at Y: {ceilingY}, Board Center: {boardCenter}");
+
+        Vector3 ceilingPos = new Vector3(boardCenter.x, ceilingY, boardCenter.z);
+
+        // Create the ceiling
+        currentCeiling = Instantiate(ceilingPrefab, ceilingPos, Quaternion.identity);
+        currentCeiling.transform.localScale = new Vector3(boardSize.x, 0.1f, boardSize.z); //adjusts size and thickeness
+        currentCeiling.transform.SetParent(detectedBoard.transform); //attaches ceiling to the board
+
+        // Apply the transparent material to the ceiling
+        Renderer ceilingRenderer = currentCeiling.GetComponent<Renderer>();
+        if (ceilingRenderer != null)
+        {
+            ceilingRenderer.material = transparentWallMaterial;
+        }
     }
 
     private GameObject CreateWall(Vector3 position, Vector3 scale, GameObject detectedBoard)
@@ -101,7 +148,7 @@ public class WallCreator : MonoBehaviour
         return wall; //return reference to newly created wall
     }
 
-    private void DeleteExistingWalls()
+    private void DeleteExistingWallsAndCeiling()
     {
         //Checks for existing walls
         if (currentWalls != null)
@@ -114,6 +161,12 @@ public class WallCreator : MonoBehaviour
                     Destroy(currentWalls[i]);
                 }
             }
+        }
+
+        //check and delete the ceiling if it exists
+        if (currentCeiling != null)
+        {
+            Destroy(currentCeiling);
         }
     }
 }
