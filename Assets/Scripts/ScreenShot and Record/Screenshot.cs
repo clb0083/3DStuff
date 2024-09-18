@@ -8,6 +8,7 @@ public class ScreenshotHandler : MonoBehaviour
     public Button screenshotButton;   // Assign the in-game button in the Inspector
     public Image flashPanel;          // Assign the UI Image (flash panel) in the Inspector
     public Canvas uiCanvas;           // Reference to the Canvas that contains all UI elements
+    public Canvas UserInterfaceCanvas;
     private int screenshotCount = 1;  // Counter to track the number of screenshots
     private float flashDuration = 0.2f; // Duration of the flash
 
@@ -40,6 +41,11 @@ public class ScreenshotHandler : MonoBehaviour
             uiCanvas.enabled = false;
         }
 
+                if (UserInterfaceCanvas != null)
+        {
+            UserInterfaceCanvas.enabled = false;
+        }
+
         // Wait for the end of the frame to ensure the UI is hidden
         yield return new WaitForEndOfFrame();
 
@@ -57,6 +63,11 @@ public class ScreenshotHandler : MonoBehaviour
         if (uiCanvas != null)
         {
             uiCanvas.enabled = true;
+        }
+
+                if (UserInterfaceCanvas != null)
+        {
+            UserInterfaceCanvas.enabled = true;
         }
 
         // Trigger the flash effect
