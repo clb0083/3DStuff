@@ -1700,6 +1700,7 @@ RectTransform:
   - {fileID: 1635322365}
   - {fileID: 2030945558}
   - {fileID: 2035975360}
+  - {fileID: 318193811}
   - {fileID: 1748728067}
   - {fileID: 246681136}
   m_Father: {fileID: 0}
@@ -5542,7 +5543,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &318193807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5637,12 +5638,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 318193806}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 5, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -960, y: -535, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 117388701}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &318693279
 GameObject:
@@ -27843,8 +27844,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 89, y: 9.5}
-  m_SizeDelta: {x: 132, y: 17}
+  m_AnchoredPosition: {x: 96, y: 9.5}
+  m_SizeDelta: {x: 160, y: 17}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1767888579
 MonoBehaviour:
@@ -27879,7 +27880,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Spawn Cube
+  m_Text: ' Whisker Spawn Area'
 --- !u!222 &1767888580
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34454,4 +34455,3 @@ SceneRoots:
   - {fileID: 1141998019}
   - {fileID: 1983576633}
   - {fileID: 953651899}
-  - {fileID: 318193811}
