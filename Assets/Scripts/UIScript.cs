@@ -78,6 +78,10 @@ public class UIScript : MonoBehaviour
     public SimulationController simulationController; //reference to the simulation controller script
     private int whiskerCounter; //variable to track whisker numbers
 
+    public TMP_InputField WhiskerSpawnPointX;
+    public TMP_InputField WhiskerSpawnPointY;
+    public TMP_InputField WhiskerSpawnPointZ;
+
     //Sets the lists for the dimensions/data to be stored in, as well as sets material properties from the dropdown.
     void Start()
     {
@@ -343,6 +347,33 @@ public class UIScript : MonoBehaviour
         masses.Clear();
         resistances.Clear();
 
+
+    GameObject whiskerSpawnPoint = GameObject.Find("WhiskerSpawnPoint");
+    
+    if (whiskerSpawnPoint == null)
+    {
+        SetErrorMessage("WhiskerSpawnPoint not found in the scene.");
+        return;
+    }
+        // Move the WhiskerSpawnPoint to (0, 0, 0) before starting
+        whiskerSpawnPoint.transform.position = Vector3.zero;
+
+            // Ensure input fields are not null
+    if (WhiskerSpawnPointX == null || WhiskerSpawnPointY == null || WhiskerSpawnPointZ == null)
+    {
+        SetErrorMessage("One or more input fields are not assigned.");
+        return;
+    }
+
+        // Read target position from input fields
+    if (!float.TryParse(WhiskerSpawnPointX.text, out float WSPX) ||
+        !float.TryParse(WhiskerSpawnPointY.text, out float WSPY) ||
+        !float.TryParse(WhiskerSpawnPointZ.text, out float WSPZ))
+    {
+        SetErrorMessage("Invalid input for target positions.");
+        return;
+    }
+
         for (int i = 0; i < numWhiskersToCreate; i++)
         {
             //Generate dimensions and spawn position
@@ -351,9 +382,17 @@ public class UIScript : MonoBehaviour
             float spawnPointX = UnityEngine.Random.Range(-float.Parse(xCoord.text)*10, float.Parse(xCoord.text)*10);
             float spawnPointY = UnityEngine.Random.Range(1, Convert.ToInt32(yCoord.text)*10);
             float spawnPointZ = UnityEngine.Random.Range(-float.Parse(zCoord.text)*10, float.Parse(zCoord.text)*10);
-            Vector3 spawnPos = new Vector3(spawnPointX, spawnPointY, spawnPointZ);
+
+            Vector3 spawnPos = whiskerSpawnPoint.transform.position + new Vector3(spawnPointX, spawnPointY, spawnPointZ);
+
+                    if (whisker == null)
+        {
+            SetErrorMessage("Whisker prefab is not assigned.");
+            return;
+        }
 
             GameObject whiskerClone = Instantiate(whisker, spawnPos, Quaternion.Euler(UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360)));
+            whiskerClone.transform.SetParent(whiskerSpawnPoint.transform);
             whiskerClone.tag = "whiskerClone";
 
             whiskerClone.name = $"whisker_{whiskerCounter}"; //unique name for each whisker
@@ -432,6 +471,9 @@ public class UIScript : MonoBehaviour
             // Debug log for verification, currently commented out to avoid log spam
             //Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}, Resistance: {resistance}");
         }
+            // Move the WhiskerSpawnPoint to the desired target position after spawning
+        Vector3 targetPosition = new Vector3(WSPX, WSPY, WSPZ);
+        whiskerSpawnPoint.transform.position = targetPosition;
     }
 
     //Updates the friction on the whiskers
@@ -648,4 +690,3 @@ public class UIScript : MonoBehaviour
         simulationController.LoadSettings(); //Calls the LoadSettings method from SImulationController
     }
 }
-

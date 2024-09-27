@@ -89,17 +89,12 @@ public class WhiskerControl : MonoBehaviour
             case 2:
                 forceDirection = new Vector3(0, -4, 0);
                 break;
+            case 3:
+                forceDirection = new Vector4(5, 0, 0);
+                break;
         }
 
-        foreach (GameObject obj in objectsWithTag)
-        {
-            ConstantForce cForce = obj.GetComponent<ConstantForce>();
-            if (cForce == null)
-            {
-                cForce = obj.AddComponent<ConstantForce>();
-            }
-            cForce.force = forceDirection;
-        }
+
     }
 
     //Resets gravity /ResetButton
