@@ -20,7 +20,8 @@ public class MovePlaneTMP : MonoBehaviour
                 float.TryParse(inputFieldZ.text, out float zValue))
             {
                 // Update the plane's position
-                transform.localScale = new Vector3(xValue * 20f, yValue * 20f, zValue * 20f);
+                transform.localScale = new Vector3(xValue * 20f, yValue * 10f, zValue * 20f);
+                transform.localPosition = new Vector3 (0,yValue/.2f ,0);
             }
         }
     }
