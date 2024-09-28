@@ -472,7 +472,7 @@ public class UIScript : MonoBehaviour
             //Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}, Resistance: {resistance}");
         }
             // Move the WhiskerSpawnPoint to the desired target position after spawning
-        Vector3 targetPosition = new Vector3(WSPX, WSPY, WSPZ);
+        Vector3 targetPosition = new Vector3(WSPX*10, WSPY*10, WSPZ*10);
         whiskerSpawnPoint.transform.position = targetPosition;
     }
 
