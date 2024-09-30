@@ -24,7 +24,7 @@ public class WhiskerControl : MonoBehaviour
     public Material targetMaterial;
     public int bridges = 0;
     public bool confirmGravity; 
-    private List<WhiskerData> bridgedWhiskers = new List<WhiskerData>();
+    public List<WhiskerData> bridgedWhiskers = new List<WhiskerData>();
     public GameObject UIObject;
     public UIScript uiScript;
     public TMP_InputField filePathInputField;
