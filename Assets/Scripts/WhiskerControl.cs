@@ -93,7 +93,15 @@ public class WhiskerControl : MonoBehaviour
                 forceDirection = new Vector4(5, 0, 0);
                 break;
         }
-
+                foreach (GameObject obj in objectsWithTag)
+        {
+            ConstantForce cForce = obj.GetComponent<ConstantForce>();
+            if (cForce == null)
+            {
+                cForce = obj.AddComponent<ConstantForce>();
+            }
+            cForce.force = forceDirection;
+        }
 
     }
 
