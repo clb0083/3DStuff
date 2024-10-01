@@ -189,24 +189,27 @@ public class WhiskerControl : MonoBehaviour
 
     //Saves Bridged Whiskers
     public void TrackBridgedWhiskers(GameObject whisker)
-    {
-        Vector3 scale = whisker.transform.localScale;
-        float length = scale.y*2;
-        float diameter = (scale.x + scale.z) / 2;
+{
+    Vector3 scale = whisker.transform.localScale;
+    float length = scale.y * 2;
+    float diameter = (scale.x + scale.z) / 2;
 
-        UIScript.MaterialProperties currentProps = uiScript.materialProperties[uiScript.currentMaterial];
+    UIScript.MaterialProperties currentProps = uiScript.materialProperties[uiScript.currentMaterial];
 
-        float resistance = CalculateResistance(length, diameter, currentProps);
+    float resistance = CalculateResistance(length, diameter, currentProps);
 
-        // Extract whisker number from whisker's name
-        string whiskerName = whisker.name;
-        int whiskerNumber = int.Parse(whiskerName.Split('_')[1]);
+    // Extract whisker number from whisker's name
+    string whiskerName = whisker.name;
+    int whiskerNumber = int.Parse(whiskerName.Split('_')[1]);
 
-        WhiskerData data = new WhiskerData(whiskerNumber, length * 1000, diameter * 1000, resistance, uiScript.simIntComplete);
-        bridgedWhiskers.Add(data);
+    WhiskerData data = new WhiskerData(whiskerNumber, length * 1000, diameter * 1000, resistance, uiScript.simIntComplete);
+    bridgedWhiskers.Add(data);
 
-        SaveBridgedWhiskerData(data);
-    }
+    // Set the tag of the whisker to "bridgedWhisker"
+    whisker.tag = "bridgedWhisker";
+
+    SaveBridgedWhiskerData(data);
+}
 
     //Calculates resistances
     private float CalculateResistance(float length, float diameter, UIScript.MaterialProperties materialProps)

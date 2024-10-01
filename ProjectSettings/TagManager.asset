@@ -8,6 +8,7 @@ TagManager:
   - Conductor
   - ConductorTrigger
   - CircuitBoard
+  - bridgedWhisker
   layers:
   - Default
   - TransparentFX

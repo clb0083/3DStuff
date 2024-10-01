@@ -13,6 +13,7 @@ using System.IO;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 using System.Data.Common;
+using System.Linq;
 
 //This is the main script that controls many of the objects on the interface, namely the user inputs.
 public class UIScript : MonoBehaviour
@@ -488,7 +489,9 @@ public class UIScript : MonoBehaviour
     public void ReloadWhiskersButton()
     {
         // Clear out all whiskers
-        GameObject[] allWhiskers = GameObject.FindGameObjectsWithTag("whiskerClone");
+        GameObject[] whiskerClones = GameObject.FindGameObjectsWithTag("whiskerClone");
+        GameObject[] bridgedWhiskers = GameObject.FindGameObjectsWithTag("bridgedWhisker");
+        GameObject[] allWhiskers = whiskerClones.Concat(bridgedWhiskers).ToArray();
         foreach (GameObject whisk in allWhiskers)
         {
             Destroy(whisk.gameObject);
