@@ -546,10 +546,10 @@ public class UIScript : MonoBehaviour
                 {
                     // Write the column titles
                     writer.WriteLine("All Whiskers,,,,,Bridged Whiskers");
-                    writer.WriteLine("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Whisker #,Length (um),Width (um),Resistance (ohm),Iteration");
+                    writer.WriteLine("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Conductor 1, Conductor 2");
                 }
 
-                writer.WriteLine($"{data.WhiskerNumber},{data.Length*1000},{data.Width*1000},{data.Resistance},{data.Iteration}");
+                writer.WriteLine($"{data.WhiskerNumber},{data.Length*1000},{data.Width*1000},{data.Resistance},{data.Iteration},,,,,,,");
                 DataSaveManager.CurrentRowIndex++;
             }
             Debug.Log($"Whisker data saved successfully to {filePath}");

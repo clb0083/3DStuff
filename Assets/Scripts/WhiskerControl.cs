@@ -154,7 +154,7 @@ public class WhiskerControl : MonoBehaviour
                     childRenderer.material.color = bridgeDetectedColor;
                     haveLoggedConnection = true;
 
-                    TrackBridgedWhiskers(gameObject);
+                    TrackBridgedWhiskers(gameObject, currentConnections.ToList());
                     haveBridgedBefore = true; //uncomment for limit of one bridge.
                     
                 }
@@ -188,7 +188,7 @@ public class WhiskerControl : MonoBehaviour
     }
 
     //Saves Bridged Whiskers
-    public void TrackBridgedWhiskers(GameObject whisker)
+    public void TrackBridgedWhiskers(GameObject whisker, List<string> conductorNames)
 {
     Vector3 scale = whisker.transform.localScale;
     float length = scale.y * 2;
@@ -202,7 +202,11 @@ public class WhiskerControl : MonoBehaviour
     string whiskerName = whisker.name;
     int whiskerNumber = int.Parse(whiskerName.Split('_')[1]);
 
-    WhiskerData data = new WhiskerData(whiskerNumber, length * 1000, diameter * 1000, resistance, uiScript.simIntComplete);
+    //Get conductor name and remove _ColliderCopy from names
+    string conductor1 = conductorNames.Count > 0 ? conductorNames[0].Replace("_ColliderCopy", "") : "";
+    string conductor2 = conductorNames.Count > 1 ? conductorNames[1].Replace("_ColliderCopy", "") : "";
+
+    WhiskerData data = new WhiskerData(whiskerNumber, length * 1000, diameter * 1000, resistance, uiScript.simIntComplete, conductor1, conductor2);
     bridgedWhiskers.Add(data);
 
     // Set the tag of the whisker to "bridgedWhisker"
@@ -229,42 +233,69 @@ public class WhiskerControl : MonoBehaviour
             {
                 Directory.CreateDirectory(directoryPath);
             }
-            var lines = File.ReadAllLines(filePath).ToList();
 
-            //checks if whisker number is correctly passed, can uncomment whenever
-        //Debug.Log($"Saving bridged whisker with number: {data.WhiskerNumber}");
+            var lines = File.Exists(filePath) ? File.ReadAllLines(filePath).ToList() : new List<string>();
 
-        for (int i = 2; i < lines.Count; i++)
-        {
-            var columns = lines[i].Split(',').ToList();
-            if (columns.Count < 6)
+            //If the file is empty, write the headers
+            if (lines.Count == 0)
             {
-                while (columns.Count < 4)
+                // Write the column titles
+                lines.Add("All Whiskers,,,,,Bridged Whiskers");
+                lines.Add("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
+            }
+
+            // Ensure the columns list has at least 12 columns
+            for (int i = 0; i < lines.Count; i++)
+            {
+                var columns = lines[i].Split(',').ToList();
+                while (columns.Count < 12)
                 {
                     columns.Add(string.Empty);
                 }
-                
-                columns.Add(data.WhiskerNumber.ToString());
-                columns.Add(data.Length.ToString());
-                columns.Add(data.Diameter.ToString());
-                columns.Add(data.Resistance.ToString());
-                columns.Add(data.SimulationIndex.ToString());
-
                 lines[i] = string.Join(",", columns);
-
-                File.WriteAllLines(filePath, lines);
-
-                    //checks if bridged whisker saved properly, can uncomment whenever
-                //Debug.Log($"Bridged whisker data saved successfully to {filePath}");
-                return; 
             }
+
+            //Find the first line where bridged whisker data is empty
+            bool dataInserted = false;
+
+            //checks if whisker number is correctly passed, can uncomment whenever
+            //Debug.Log($"Saving bridged whisker with number: {data.WhiskerNumber}");
+
+            for (int i = 2; i < lines.Count; i++)
+            {
+                var columns = lines[i].Split(',').ToList();
+
+                // Check if the bridged whisker columns are empty
+                if (string.IsNullOrEmpty(columns[5]))
+                {
+                    // Fill in the bridged whisker data starting from column index 5
+                    columns[5] = data.WhiskerNumber.ToString();
+                    columns[6] = data.Length.ToString();
+                    columns[7] = data.Diameter.ToString();
+                    columns[8] = data.Resistance.ToString();
+                    columns[9] = data.SimulationIndex.ToString();
+                    columns[10] = data.Conductor1;
+                    columns[11] = data.Conductor2;
+                    
+                    lines[i] = string.Join(",", columns);
+                    dataInserted = true;
+                    break;
+                }
+            }
+
+            if (!dataInserted)
+            {
+                // If no existing line to inser data, add a new line
+                string newLine = $",,,,,{data.WhiskerNumber},{data.Length},{data.Diameter},{data.Resistance},{data.SimulationIndex},{data.Conductor1},{data.Conductor2}";
+                lines.Add(newLine);
+            }
+
+            File.WriteAllLines(filePath, lines);
+
+            //checks if bridged whisker saved properly, can uncomment whenever
+            //Debug.Log($"Bridged whisker data saved successfully to {filePath}");
         }
-      
-        lines.Add($",,,,,{data.WhiskerNumber},{data.Length / 1000},{data.Diameter / 1000},{data.Resistance / 1000},{data.SimulationIndex}"); //commas are there to indent so data is inserted into correct column
-            
-        File.WriteAllLines(filePath, lines);
-        Debug.Log($"Bridged whisker data saved successfully to {filePath}");
-        }
+
         catch (Exception ex)
         {
             Debug.LogError($"Failed to save bridged whisker data: {ex.Message}");
@@ -285,14 +316,18 @@ public class WhiskerControl : MonoBehaviour
         public float Diameter { get; set; }
         public float Resistance { get; set; }
         public int SimulationIndex { get; set; }
+        public string Conductor1 { get; set; }
+        public string Conductor2 { get; set; }
 
-        public WhiskerData(int whiskerNumber, float length, float diameter, float resistance, int simulationIndex)
+        public WhiskerData(int whiskerNumber, float length, float diameter, float resistance, int simulationIndex, string conductor1, string conductor2)
         {
             WhiskerNumber = whiskerNumber;
             Length = length;
             Diameter = diameter;
             Resistance = resistance;
             SimulationIndex = simulationIndex;
+            Conductor1 = conductor1;
+            Conductor2 = conductor2;
         }
     }
 }
