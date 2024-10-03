@@ -28,7 +28,7 @@ public class ScreenshotHandler : MonoBehaviour
         }
     }
 
-    private void TakeScreenshot()
+    public void TakeScreenshot()
     {
         StartCoroutine(CaptureScreenshotWithoutUI());
     }

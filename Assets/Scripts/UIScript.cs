@@ -82,6 +82,8 @@ public class UIScript : MonoBehaviour
     public TMP_InputField WhiskerSpawnPointX;
     public TMP_InputField WhiskerSpawnPointY;
     public TMP_InputField WhiskerSpawnPointZ;
+    public ScreenshotHandler screenshotManager; // Reference to the Screenshot script
+
 
     //Sets the lists for the dimensions/data to be stored in, as well as sets material properties from the dropdown.
     void Start()
@@ -145,6 +147,7 @@ public class UIScript : MonoBehaviour
 
     //Controls the iteration counters/bridge counters/applys shock/vibration throughout simulation
     void Update()
+    
     {
         totalBridges.text = "Total Bridges: " + bridgesDetected.ToString(); //remove if needed.
         bridgesEachRun.text = "Bridges for Current Run: " + bridgesPerRun.ToString();
@@ -181,6 +184,10 @@ public class UIScript : MonoBehaviour
                     simIntComplete++;
                     ReloadWhiskersButton();
                     simtimeElapsed = 0f;
+                     if (screenshotManager != null) // Ensure it's not null before calling
+                    {
+                        screenshotManager.TakeScreenshot(); // Call the screenshot method
+                    }
                 }
             }
 
@@ -190,6 +197,11 @@ public class UIScript : MonoBehaviour
                 iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
                 if (simtimeElapsed > simTimeThresh)
                 {
+                    // Call screenshot here as well for the last iteration
+                    if (screenshotManager != null)
+                    {
+                        screenshotManager.TakeScreenshot(); // Ensure a screenshot is taken
+                    }
                     iterationCompleteMessage.text = "Simulation Complete!";
                     startSim = false;
                 }
