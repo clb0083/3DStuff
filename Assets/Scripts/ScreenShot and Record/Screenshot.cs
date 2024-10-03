@@ -9,6 +9,8 @@ public class ScreenshotHandler : MonoBehaviour
     public Image flashPanel;          // Assign the UI Image (flash panel) in the Inspector
     public Canvas uiCanvas;           // Reference to the Canvas that contains all UI elements
     public Canvas UserInterfaceCanvas;
+    public Toggle autoScreenshotToggle; //Assign the toggle (checkbox) in the inspector
+
     private int screenshotCount = 1;  // Counter to track the number of screenshots
     private float flashDuration = 0.2f; // Duration of the flash
 
@@ -26,6 +28,12 @@ public class ScreenshotHandler : MonoBehaviour
             flashPanel.color = new Color(1, 1, 1, 0); // White color with 0 alpha (invisible)
             flashPanel.raycastTarget = false; // Ensure the panel does not block raycasts
         }
+
+        //Set the screenshot toggle button to off at the start
+        if (autoScreenshotToggle != null)
+        {
+            autoScreenshotToggle.isOn = false;
+        }
     }
 
     public void TakeScreenshot()
@@ -41,7 +49,7 @@ public class ScreenshotHandler : MonoBehaviour
             uiCanvas.enabled = false;
         }
 
-                if (UserInterfaceCanvas != null)
+        if (UserInterfaceCanvas != null)
         {
             UserInterfaceCanvas.enabled = false;
         }
@@ -65,7 +73,7 @@ public class ScreenshotHandler : MonoBehaviour
             uiCanvas.enabled = true;
         }
 
-                if (UserInterfaceCanvas != null)
+        if (UserInterfaceCanvas != null)
         {
             UserInterfaceCanvas.enabled = true;
         }
@@ -101,5 +109,14 @@ public class ScreenshotHandler : MonoBehaviour
 
         // Disable raycast blocking after the flash effect is done
         flashPanel.raycastTarget = false;
+    }
+
+    public void OnIterationEnd()
+    {
+        //check if the toggle is on
+        if (autoScreenshotToggle != null && autoScreenshotToggle.isOn)
+        {
+            TakeScreenshot();
+        }
     }
 }

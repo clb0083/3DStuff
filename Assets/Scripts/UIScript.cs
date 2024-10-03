@@ -184,14 +184,15 @@ public class UIScript : MonoBehaviour
                     simIntComplete++;
                     ReloadWhiskersButton();
                     simtimeElapsed = 0f;
+
                      if (screenshotManager != null) // Ensure it's not null before calling
                     {
-                        screenshotManager.TakeScreenshot(); // Call the screenshot method
+                        screenshotManager.OnIterationEnd(); // Call the screenshot method
                     }
                 }
             }
 
-            if (simIntComplete == Convert.ToInt32(totalRuns.text))
+            else if (simIntComplete == Convert.ToInt32(totalRuns.text))
             {
                 
                 iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
@@ -200,7 +201,7 @@ public class UIScript : MonoBehaviour
                     // Call screenshot here as well for the last iteration
                     if (screenshotManager != null)
                     {
-                        screenshotManager.TakeScreenshot(); // Ensure a screenshot is taken
+                        screenshotManager.OnIterationEnd(); // Ensure a screenshot is taken
                     }
                     iterationCompleteMessage.text = "Simulation Complete!";
                     startSim = false;
