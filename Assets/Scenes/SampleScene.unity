@@ -4070,6 +4070,9 @@ MonoBehaviour:
   saveButton: {fileID: 0}
   directoryPath: 
   fileName: 
+  customGravityInputX: {fileID: 1399919630}
+  customGravityInputY: {fileID: 2114762867}
+  customGravityInputZ: {fileID: 1345437116}
   detectionRadius: 0.5
   rayDistance: 1
   conductorLayer:
@@ -6985,7 +6988,7 @@ GameObject:
   - component: {fileID: 375925939}
   - component: {fileID: 375925938}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: customGravityInputZT
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9466,7 +9469,7 @@ GameObject:
   - component: {fileID: 496877303}
   - component: {fileID: 496877302}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: customGravityInputYT
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11966,11 +11969,7 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Mars
       m_Image: {fileID: 0}
-    - m_Text: Custom X
-      m_Image: {fileID: 0}
-    - m_Text: Custom Y
-      m_Image: {fileID: 0}
-    - m_Text: Custom Z
+    - m_Text: Custom Gravity
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
@@ -21105,7 +21104,7 @@ GameObject:
   - component: {fileID: 1223534747}
   - component: {fileID: 1223534746}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: customGravityInputXT
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

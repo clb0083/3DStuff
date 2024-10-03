@@ -10,7 +10,7 @@ public class DropdownHandler : MonoBehaviour
     public InputField inputFieldY; // Reference to your TMP Input Field
 
     public InputField inputFieldZ; // Reference to your TMP Input Field
-
+    
     private void Start()
     {
         // Initialize the Input Field as disabled
@@ -28,28 +28,14 @@ public class DropdownHandler : MonoBehaviour
         if (index == 3) // Change this to the index of your desired option
         {
             inputFieldX.gameObject.SetActive(true); // Show the input field
+            inputFieldY.gameObject.SetActive(true);
+            inputFieldZ.gameObject.SetActive(true);
         }
         else
         {
             inputFieldX.gameObject.SetActive(false); // Hide the input field
-        }
-
-        if (index == 4) // Change this to the index of your desired option
-        {
-            inputFieldY.gameObject.SetActive(true); // Show the input field
-        }
-        else
-        {
-            inputFieldY.gameObject.SetActive(false); // Hide the input field
-        }
-
-        if (index == 5) // Change this to the index of your desired option
-        {
-            inputFieldZ.gameObject.SetActive(true); // Show the input field
-        }
-        else
-        {
-            inputFieldZ.gameObject.SetActive(false); // Hide the input field
+            inputFieldY.gameObject.SetActive(false);
+            inputFieldZ.gameObject.SetActive(false);
         }
     }
 }

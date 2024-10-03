@@ -32,7 +32,11 @@ public class WhiskerControl : MonoBehaviour
     public Button saveButton;
     public string directoryPath;
     public string fileName;
- 
+    public InputField customGravityInputX;
+    public InputField customGravityInputY;
+    public InputField customGravityInputZ;
+
+
     //Initializes the UiScript
     void Start()
     {
@@ -74,35 +78,70 @@ public class WhiskerControl : MonoBehaviour
     //Applys correct gravity 
     public void ApplyGravity(int val)
     {
+        // Find all objects with the tag "whiskerClone"
         GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("whiskerClone");
 
         Vector3 forceDirection = Vector3.zero;
 
-        switch (val)
+                // Set default values to "0" if the InputFields are null or empty
+        if (customGravityInputX == null || string.IsNullOrEmpty(customGravityInputX.text))
         {
-            case 0:
-                forceDirection = new Vector3(0, -10, 0);
-                break;
-            case 1:
-                forceDirection = new Vector3(0, -2, 0);
-                break;
-            case 2:
-                forceDirection = new Vector3(0, -4, 0);
-                break;
-            case 3:
-                forceDirection = new Vector4(5, 0, 0);
-                break;
-        }
-                foreach (GameObject obj in objectsWithTag)
-        {
-            ConstantForce cForce = obj.GetComponent<ConstantForce>();
-            if (cForce == null)
-            {
-                cForce = obj.AddComponent<ConstantForce>();
-            }
-            cForce.force = forceDirection;
+            customGravityInputX.text = "0";
         }
 
+        if (customGravityInputY == null || string.IsNullOrEmpty(customGravityInputY.text))
+        {
+            customGravityInputY.text = "0";
+        }
+
+        if (customGravityInputZ == null || string.IsNullOrEmpty(customGravityInputZ.text))
+        {
+            customGravityInputZ.text = "0";
+        }
+
+        // Validate the input fields
+        if (customGravityInputX != null && customGravityInputY != null && customGravityInputZ != null)
+        {
+            if (float.TryParse(customGravityInputX.text, out float CGIX) &&
+                float.TryParse(customGravityInputY.text, out float CGIY) &&
+                float.TryParse(customGravityInputZ.text, out float CGIZ))
+            {
+                // Proceed with gravity application
+                switch (val)
+                {
+                    case 0:
+                        forceDirection = new Vector3(0, -10, 0);
+                        break;
+                    case 1:
+                        forceDirection = new Vector3(0, -2, 0);
+                        break;
+                    case 2:
+                        forceDirection = new Vector3(0, -4, 0);
+                        break;
+                    case 3:
+                        forceDirection = new Vector3(CGIX, CGIY, CGIZ);
+                        break;
+                    default:
+                        Debug.LogWarning("Invalid gravity value provided.");
+                        return;
+                }
+
+                // Apply the force to each object
+                foreach (GameObject obj in objectsWithTag)
+                {
+                    ConstantForce cForce = obj.GetComponent<ConstantForce>() ?? obj.AddComponent<ConstantForce>();
+                    cForce.force = forceDirection;
+                }
+            }
+            else
+            {
+                Debug.LogError("Failed to parse custom gravity inputs.");
+            }
+        }
+        else
+        {
+            Debug.LogError("One or more custom gravity input fields are not assigned.");
+        }
     }
 
     //Resets gravity /ResetButton
