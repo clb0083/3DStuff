@@ -3,14 +3,15 @@ using UnityEngine;
 
 public class CameraOrbit : MonoBehaviour
 {
-    public float orbitSpeed = 25f; // Speed of orbiting
-    public float distanceFromTarget = 5f; // Distance from the target object
-    public Vector3 defaultPosition; // Default position of the camera
-    public Vector3 defaultRotation; // Default rotation of the camera
+    public float orbitSpeed = 20f;                  // Speed of orbiting
+    public float distanceFromTarget = 5f;           // Distance from the target object
+    public Vector3 defaultPosition;                  // Default position of the camera
+    public Vector3 defaultRotation;                  // Default rotation of the camera
+    public float speedChangeAmount = 8f;            // Amount to change the orbit speed
 
-    private List<Transform> bridgedWhiskers; // List of game objects with the tag "bridgedWhisker"
-    private int currentTargetIndex = -1; // Current target index for orbiting
-    private bool isOrbiting = false; // Is the camera currently orbiting
+    private List<Transform> bridgedWhiskers;        // List of game objects with the tag "bridgedWhisker"
+    private int currentTargetIndex = -1;            // Current target index for orbiting
+    private bool isOrbiting = false;                // Is the camera currently orbiting
 
     void Start()
     {
@@ -52,6 +53,19 @@ public class CameraOrbit : MonoBehaviour
         {
             distanceFromTarget = Mathf.Max(1f, distanceFromTarget - Time.deltaTime * orbitSpeed); // Prevent going below 1 unit
         }
+
+        // Adjust orbit speed with [ and ]
+        if (Input.GetKey(KeyCode.LeftBracket)) // Decrease orbit speed
+        {
+            orbitSpeed = Mathf.Max(1f, orbitSpeed - speedChangeAmount * Time.deltaTime);
+        }
+        if (Input.GetKey(KeyCode.RightBracket)) // Increase orbit speed
+        {
+            orbitSpeed += speedChangeAmount * Time.deltaTime;
+        }
+
+        // Display the current orbit speed in the console for debugging
+        //Debug.Log("Current Orbit Speed: " + orbitSpeed);
 
         // Handle orbiting the current target
         if (isOrbiting && currentTargetIndex >= 0 && currentTargetIndex < bridgedWhiskers.Count)
