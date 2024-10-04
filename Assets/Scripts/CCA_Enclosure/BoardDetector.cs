@@ -5,23 +5,34 @@ using TMPro;
 
 public class BoardDetector : MonoBehaviour
 {
-    public GameObject importedModel; // parent gameobject of the entire imported board
     public GameObject detectedBoard { get; private set; } //stores the detected board
 
-    private void Start()
+    private IEnumerator Start()
     {
-        // Call the method to find the board
-        detectedBoard = FindBoard(importedModel);
 
-        if (detectedBoard != null)
+        yield return new WaitForEndOfFrame();
+
+        // Call the method to find the board
+        GameObject importedModel = GameObject.FindWithTag("CircuitBoard");
+
+        if (importedModel != null)
         {
-            Debug.Log("Board detected: " + detectedBoard.name); //log the detected board
-            Renderer boardRenderer = detectedBoard.GetComponent<Renderer>();
-            //Debug.Log("detected Board Bounds: " + boardRenderer.bounds); //log the detected board bounds
+            detectedBoard = FindBoard(importedModel);
+
+            if (detectedBoard != null)
+            {
+                Debug.Log("Board detected: " + detectedBoard.name); //log the detected board
+                Renderer boardRenderer = detectedBoard.GetComponent<Renderer>();
+                //Debug.Log("detected Board Bounds: " + boardRenderer.bounds); //log the detected board bounds
+            }
+            else
+            {
+                Debug.LogError("Board could not be detected");
+            }
         }
         else
         {
-            Debug.LogError("Board could not be detected");
+            Debug.LogError("No object with tag 'CircuitBoard' found.");
         }
     }
 
