@@ -42,8 +42,7 @@ public class CameraOrbit : MonoBehaviour
                 currentTargetIndex = (currentTargetIndex + 1) % bridgedWhiskers.Count; // Cycle through the targets
 
                 // Update the text with the name of the current target whisker
-                OrbitWhiskerName.text = bridgedWhiskers[currentTargetIndex].gameObject.name;
-
+                UpdateWhiskerText(bridgedWhiskers[currentTargetIndex]);
             }
         }
 
@@ -111,5 +110,16 @@ public class CameraOrbit : MonoBehaviour
 
         // Clear the text when resetting
         OrbitWhiskerName.text = "";
+    }
+
+    void UpdateWhiskerText(Transform target)
+    {
+        Debug.Log($"Updating text for target: {target.name}"); // Debug statement
+
+        // Always display the static text
+        string staticText = "Red = Bridged\nOrange = Momentary\n";
+        
+        // Update the text with the name of the current target whisker
+        OrbitWhiskerName.text = staticText + target.gameObject.name;
     }
 }

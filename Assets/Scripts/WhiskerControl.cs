@@ -223,7 +223,7 @@ public class WhiskerControl : MonoBehaviour
         currentConnections.Clear();
         haveLoggedConnection = false;
         bridgesPerConductor[gameObject.name]--; 
-        childRenderer.material.color = defaultColor;
+        childRenderer.material.color = new Color(1.0f, 0.647f, 0.0f);
     }
 
     //Saves Bridged Whiskers
