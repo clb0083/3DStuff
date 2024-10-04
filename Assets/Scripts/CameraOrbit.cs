@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro; // Required for TextMeshPro
 
 public class CameraOrbit : MonoBehaviour
 {
     public float orbitSpeed = 20f;                  // Speed of orbiting
     public float distanceFromTarget = 5f;           // Distance from the target object
-    public Vector3 defaultPosition;                  // Default position of the camera
-    public Vector3 defaultRotation;                  // Default rotation of the camera
+    public Vector3 defaultPosition;                 // Default position of the camera
+    public Vector3 defaultRotation;                 // Default rotation of the camera
     public float speedChangeAmount = 8f;            // Amount to change the orbit speed
+    public TextMeshProUGUI OrbitWhiskerName;        // Reference to the UI text element for displaying whisker name
 
     private List<Transform> bridgedWhiskers;        // List of game objects with the tag "bridgedWhisker"
     private int currentTargetIndex = -1;            // Current target index for orbiting
@@ -21,6 +23,9 @@ public class CameraOrbit : MonoBehaviour
 
         // Initialize the list of bridged whiskers
         UpdateBridgedWhiskers();
+
+        // Ensure the text element is cleared at the start
+        OrbitWhiskerName.text = "";
     }
 
     void Update()
@@ -35,6 +40,10 @@ public class CameraOrbit : MonoBehaviour
             {
                 isOrbiting = true;
                 currentTargetIndex = (currentTargetIndex + 1) % bridgedWhiskers.Count; // Cycle through the targets
+
+                // Update the text with the name of the current target whisker
+                OrbitWhiskerName.text = bridgedWhiskers[currentTargetIndex].gameObject.name;
+
             }
         }
 
@@ -63,9 +72,6 @@ public class CameraOrbit : MonoBehaviour
         {
             orbitSpeed += speedChangeAmount * Time.deltaTime;
         }
-
-        // Display the current orbit speed in the console for debugging
-        //Debug.Log("Current Orbit Speed: " + orbitSpeed);
 
         // Handle orbiting the current target
         if (isOrbiting && currentTargetIndex >= 0 && currentTargetIndex < bridgedWhiskers.Count)
@@ -102,5 +108,8 @@ public class CameraOrbit : MonoBehaviour
         isOrbiting = false;
         currentTargetIndex = -1; // Reset the target index
         distanceFromTarget = 5f; // Reset distance to default if desired
+
+        // Clear the text when resetting
+        OrbitWhiskerName.text = "";
     }
 }
