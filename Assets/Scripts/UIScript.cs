@@ -84,6 +84,16 @@ public class UIScript : MonoBehaviour
     public TMP_InputField WhiskerSpawnPointZ;
     public ScreenshotHandler screenshotManager; // Reference to the Screenshot script
 
+    //references for critical pair UI
+    public TMP_Dropdown conductor1Dropdown;
+    public TMP_Dropdown conductor2Dropdown;
+    public Button addPairButton;
+    public Button removePairButton;
+    public ScrollRect criticalPairsScrollView;
+    public GameObject criticalPairItemPrefab; //prefab for list items
+    public HashSet<string> criticalPairs = new HashSet<string>(); //data structure to store crit pairs
+    private List<GameObject> criticalPairItems = new List<GameObject>(); // list to keep track of UI items
+    public Button refreshDropdownsButton;
 
     //Sets the lists for the dimensions/data to be stored in, as well as sets material properties from the dropdown.
     void Start()
@@ -105,6 +115,12 @@ public class UIScript : MonoBehaviour
         Time.fixedDeltaTime = 0.005f;
         Physics.defaultSolverIterations = 10;
         Physics.defaultSolverVelocityIterations = 10;
+
+        StartCoroutine(DelayedPopulateConductorDropdowns()); //delay to call code
+
+        addPairButton.onClick.AddListener(OnAddPairButtonClicked);
+        removePairButton.onClick.AddListener(OnRemovePairButtonClicked);
+        refreshDropdownsButton.onClick.AddListener(OnRefreshButtonClicked);
     }
 
     //Controls the dropdown for material selection.
@@ -705,4 +721,129 @@ public class UIScript : MonoBehaviour
     {
         simulationController.LoadSettings(); //Calls the LoadSettings method from SImulationController
     }
+
+    public void PopulateConductorDropdowns() //Critical Pair UI
+    {
+        //Find all gameobjects with the tag "ConductorTrigger"
+        GameObject[] conductorObjects = GameObject.FindGameObjectsWithTag("ConductorTrigger");
+
+        //Extract unique conductor names
+        List<string> conductorNames = new List<string>();
+        foreach (GameObject obj in conductorObjects)
+        {
+            string name = obj.name.Replace("_ColliderCopy", "");
+            if(!conductorNames.Contains(name))
+            {
+                conductorNames.Add(name);
+            }    
+        }
+
+        //sort names alphabetically
+        conductorNames.Sort();
+
+        //clear existing options
+        conductor1Dropdown.ClearOptions();
+        conductor2Dropdown.ClearOptions();
+
+        //Add options to dropdowns
+        conductor1Dropdown.AddOptions(conductorNames);
+        conductor2Dropdown.AddOptions(conductorNames);
+    }
+
+    public string CreatePairKey(string conductorA, string conductorB) //critical pair UI
+    {
+        var orderedPair = new[] { conductorA, conductorB }.OrderBy(name => name).ToArray();
+        return $"{orderedPair[0]}-{orderedPair[1]}";
+    }
+
+    public void OnAddPairButtonClicked() //critical pair UI
+    {
+        string conductorA = conductor1Dropdown.options[conductor1Dropdown.value].text;
+        string conductorB = conductor2Dropdown.options[conductor2Dropdown.value].text;
+
+        string pairKey = CreatePairKey(conductorA, conductorB);
+
+        if (!criticalPairs.Contains(pairKey))
+        {
+            criticalPairs.Add(pairKey);
+            AddCriticalPairToUI(conductorA, conductorB);
+        }
+        else
+        {
+            Debug.Log("Critical pair already exists.");
+        }
+    }
+
+    public void OnRemovePairButtonClicked() //critical pair UI
+    {
+        string conductorA = conductor1Dropdown.options[conductor1Dropdown.value].text;
+        string conductorB = conductor2Dropdown.options[conductor2Dropdown.value].text;
+
+        string pairKey = CreatePairKey(conductorA, conductorB);
+
+        if (criticalPairs.Contains(pairKey))
+        {
+            criticalPairs.Remove(pairKey);
+            RemoveCriticalPairFromUI(pairKey);
+        }
+        else
+        {
+            Debug.Log("Critical pair does not exist.");
+        }
+    }
+
+    public void AddCriticalPairToUI(string conductorA, string conductorB)
+    {
+        // Instantiate a new list item under the Content GameObject
+        GameObject newItem = Instantiate(criticalPairItemPrefab, criticalPairsScrollView.content);
+
+        // Set the text to display the pair
+        TextMeshProUGUI itemText = newItem.GetComponentInChildren<TextMeshProUGUI>();
+        if (itemText != null)
+        {
+            itemText.text = $"{conductorA} - {conductorB}";
+        }
+        else
+        {
+            Debug.LogError("TextMeshProUGUI component not found in CriticalPairItemPrefab.");
+        }
+
+        // Store the pair key in the item's name for easy removal
+        newItem.name = CreatePairKey(conductorA, conductorB);
+
+        // Add to the list of UI items
+        criticalPairItems.Add(newItem);
+    }
+
+    public void RemoveCriticalPairFromUI(string pairKey)
+    {
+        // Find the UI item corresponding to the pairKey
+        GameObject itemToRemove = criticalPairItems.FirstOrDefault(item => item.name == pairKey);
+
+        if (itemToRemove != null)
+        {
+            criticalPairItems.Remove(itemToRemove);
+            Destroy(itemToRemove);
+        }
+        else
+        {
+            Debug.Log($"No UI item found with name {pairKey}.");
+        }
+    }
+
+
+    private IEnumerator DelayedPopulateConductorDropdowns()
+    {
+        // Wait until the end of the frame
+        yield return new WaitForEndOfFrame();
+
+        // Now populate the conductor dropdowns
+        PopulateConductorDropdowns();
+    }
+
+    public void OnRefreshButtonClicked()
+    {
+        PopulateConductorDropdowns();
+    }
+
 }

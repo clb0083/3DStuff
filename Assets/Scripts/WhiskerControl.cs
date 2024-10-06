@@ -4,15 +4,13 @@ knowledge of MATLAB and C++ coding languages to develop various tools and
 functions used throughout this script. ChatGPT was also used as a troubleshooting
 reference.*/
 
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
 using System;
-using UnityEngine.UI;
-using System.Data;
-using System.Linq;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 //Handles most of script that goes along with the whiskers, such as setting colliders and handling their collisions.
 public class WhiskerControl : MonoBehaviour
@@ -23,7 +21,7 @@ public class WhiskerControl : MonoBehaviour
     public int selectedIndex = 0;
     public Material targetMaterial;
     public int bridges = 0;
-    public bool confirmGravity; 
+    public bool confirmGravity;
     public List<WhiskerData> bridgedWhiskers = new List<WhiskerData>();
     public GameObject UIObject;
     public UIScript uiScript;
@@ -47,19 +45,19 @@ public class WhiskerControl : MonoBehaviour
         }
     }
 
-    public float detectionRadius = 0.5f; 
+    public float detectionRadius = 0.5f;
     public float rayDistance = 1.0f;
     public LayerMask conductorLayer;
 
     //Turns on the gravity
     void Update()
     {
-        if(confirmGravity)
+        if (confirmGravity)
         {
             GetGravitySelection(gravity.value);
         }
     }
- 
+
     //Confirm Gravity Button
     public void ConfirmButtonPressed()
     {
@@ -83,7 +81,7 @@ public class WhiskerControl : MonoBehaviour
 
         Vector3 forceDirection = Vector3.zero;
 
-                // Set default values to "0" if the InputFields are null or empty
+        // Set default values to "0" if the InputFields are null or empty
         if (customGravityInputX == null || string.IsNullOrEmpty(customGravityInputX.text))
         {
             customGravityInputX.text = "0";
@@ -145,13 +143,13 @@ public class WhiskerControl : MonoBehaviour
     }
 
     //Resets gravity /ResetButton
-    public void ResetGravity()        
+    public void ResetGravity()
     {
         GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("whiskerClone");
         foreach (GameObject obj in objectsWithTag)
         {
             cForce = GetComponent<ConstantForce>();
-            forceDirection = new Vector3(0,0,0);
+            forceDirection = new Vector3(0, 0, 0);
             cForce.force = forceDirection;
         }
         confirmGravity = false;
@@ -163,7 +161,7 @@ public class WhiskerControl : MonoBehaviour
     public bool haveMadeSecondConnection;
     public string secondConnection;
     public int connectionsMade;
-    public static Dictionary<string, int> bridgesPerConductor = new Dictionary<string, int>(); 
+    public static Dictionary<string, int> bridgesPerConductor = new Dictionary<string, int>();
     private Renderer objectRenderer;
     public Color bridgeDetectedColor = Color.red;
     public Color defaultColor = Color.white;
@@ -173,9 +171,9 @@ public class WhiskerControl : MonoBehaviour
     public bool haveBridgedBefore;
 
     // BRIDGING DETECTION
-    private void OnTriggerStay(Collider trigger) 
+    private void OnTriggerStay(Collider trigger)
     {
-        if (trigger.gameObject.CompareTag("ConductorTrigger")) 
+        if (trigger.gameObject.CompareTag("ConductorTrigger"))
         {
             currentConnections.Add(trigger.gameObject.name);
 
@@ -195,7 +193,7 @@ public class WhiskerControl : MonoBehaviour
 
                     TrackBridgedWhiskers(gameObject, currentConnections.ToList());
                     haveBridgedBefore = true; //uncomment for limit of one bridge.
-                    
+
                 }
             }
         }
@@ -203,9 +201,9 @@ public class WhiskerControl : MonoBehaviour
 
     private void OnTriggerExit(Collider trigger)
     {
-        if (trigger.gameObject.CompareTag("ConductorTrigger")) 
+        if (trigger.gameObject.CompareTag("ConductorTrigger"))
         {
-            currentConnections.Remove(trigger.gameObject.name); 
+            currentConnections.Remove(trigger.gameObject.name);
 
             if (currentConnections.Count < 2 && haveLoggedConnection)
             {
@@ -213,7 +211,7 @@ public class WhiskerControl : MonoBehaviour
             }
         }
     }
-    
+
     //Resets connection whenever the whisker stops being in contact
     private void ResetConnectionState()
     {
@@ -222,43 +220,50 @@ public class WhiskerControl : MonoBehaviour
 
         currentConnections.Clear();
         haveLoggedConnection = false;
-        bridgesPerConductor[gameObject.name]--; 
+        bridgesPerConductor[gameObject.name]--;
         childRenderer.material.color = new Color(1.0f, 0.647f, 0.0f);
     }
 
     //Saves Bridged Whiskers
     public void TrackBridgedWhiskers(GameObject whisker, List<string> conductorNames)
-{
-    Vector3 scale = whisker.transform.localScale;
-    float length = scale.y * 2;
-    float diameter = (scale.x + scale.z) / 2;
+    {
+        Vector3 scale = whisker.transform.localScale;
+        float length = scale.y * 2;
+        float diameter = (scale.x + scale.z) / 2;
 
-    UIScript.MaterialProperties currentProps = uiScript.materialProperties[uiScript.currentMaterial];
+        UIScript.MaterialProperties currentProps = uiScript.materialProperties[uiScript.currentMaterial];
 
-    float resistance = CalculateResistance(length, diameter, currentProps);
+        float resistance = CalculateResistance(length, diameter, currentProps);
 
-    // Extract whisker number from whisker's name
-    string whiskerName = whisker.name;
-    int whiskerNumber = int.Parse(whiskerName.Split('_')[1]);
+        // Extract whisker number from whisker's name
+        string whiskerName = whisker.name;
+        int whiskerNumber = int.Parse(whiskerName.Split('_')[1]);
 
-    //Get conductor name and remove _ColliderCopy from names
-    string conductor1 = conductorNames.Count > 0 ? conductorNames[0].Replace("_ColliderCopy", "") : "";
-    string conductor2 = conductorNames.Count > 1 ? conductorNames[1].Replace("_ColliderCopy", "") : "";
+        //Get conductor name and remove _ColliderCopy from names
+        string conductor1 = conductorNames.Count > 0 ? CleanConductorName(conductorNames[0]) : "";
+        string conductor2 = conductorNames.Count > 1 ? CleanConductorName(conductorNames[1]) : "";
 
-    WhiskerData data = new WhiskerData(whiskerNumber, length * 1000, diameter * 1000, resistance, uiScript.simIntComplete, conductor1, conductor2);
-    bridgedWhiskers.Add(data);
+        string pairKey = uiScript.CreatePairKey(conductor1, conductor2);
 
-    // Set the tag of the whisker to "bridgedWhisker"
-    whisker.tag = "bridgedWhisker";
+        WhiskerData data = new WhiskerData(whiskerNumber, length * 1000, diameter * 1000, resistance, uiScript.simIntComplete, conductor1, conductor2);
+        bridgedWhiskers.Add(data);
 
-    SaveBridgedWhiskerData(data);
-}
+        // Set the tag of the whisker to "bridgedWhisker"
+        whisker.tag = "bridgedWhisker";
+
+        SaveBridgedWhiskerData(data);
+
+        if (uiScript.criticalPairs.Contains(pairKey))
+        {
+            SaveCriticalBridgedWhiskerData(data);
+        }
+    }
 
     //Calculates resistances
     private float CalculateResistance(float length, float diameter, UIScript.MaterialProperties materialProps)
     {
-        float area = Mathf.PI * Mathf.Pow((diameter*1000)/2, 2);
-        return materialProps.resistivity * (length*1000)/area;
+        float area = Mathf.PI * Mathf.Pow((diameter * 1000) / 2, 2);
+        return materialProps.resistivity * (length * 1000) / area;
     }
 
     //Saves bridged whisker datas into the CSV files.
@@ -315,7 +320,7 @@ public class WhiskerControl : MonoBehaviour
                     columns[9] = data.SimulationIndex.ToString();
                     columns[10] = data.Conductor1;
                     columns[11] = data.Conductor2;
-                    
+
                     lines[i] = string.Join(",", columns);
                     dataInserted = true;
                     break;
@@ -369,4 +374,43 @@ public class WhiskerControl : MonoBehaviour
             Conductor2 = conductor2;
         }
     }
+
+    private void SaveCriticalBridgedWhiskerData(WhiskerData data) //crit pairs UI
+    {
+        string filePath = Path.Combine(directoryPath, fileName + ".csv");
+
+        try
+        {
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            var lines = File.Exists(filePath) ? File.ReadAllLines(filePath).ToList() : new List<string>();
+
+            // Check if the critical pairs header exists; if not, add it
+            if (!lines.Contains("Critical Bridged Whiskers"))
+            {
+                lines.Add(""); // Add an empty line to separate sections
+                lines.Add("Critical Bridged Whiskers");
+                lines.Add("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
+            }
+
+            // Append the critical bridge data
+            string newLine = $"{data.WhiskerNumber},{data.Length},{data.Diameter},{data.Resistance},{data.SimulationIndex},{data.Conductor1},{data.Conductor2}";
+            lines.Add(newLine);
+
+            // Write back to the file
+            File.WriteAllLines(filePath, lines);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to save critical bridged whisker data: {ex.Message}");
+        }
+    }
+
+    private string CleanConductorName(string name)
+    {
+        return name.Replace("_ColliderCopy", "");
+    }    
 }
