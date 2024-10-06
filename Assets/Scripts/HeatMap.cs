@@ -45,7 +45,7 @@ public class HeatMap : MonoBehaviour
     //once heatmap is on, this will run constantly, and updates the colors as bridges form.
     public void heatMapToggleON()
     {
-        GameObject[] triggerObjects = GameObject.FindGameObjectsWithTag("Trigger");
+        GameObject[] triggerObjects = GameObject.FindGameObjectsWithTag("ConductorTrigger");
 
         foreach (GameObject triggerObject in triggerObjects)
         {
