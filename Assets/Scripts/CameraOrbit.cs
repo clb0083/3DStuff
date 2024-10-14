@@ -10,8 +10,10 @@ public class CameraOrbit : MonoBehaviour
     public Vector3 defaultRotation;                 // Default rotation of the camera
     public float speedChangeAmount = 8f;            // Amount to change the orbit speed
     public TextMeshProUGUI OrbitWhiskerName;        // Reference to the UI text element for displaying whisker name
+    public TMP_Dropdown whiskerDropdown;            // Reference to the UI dropdown for whisker selection
 
     private List<Transform> bridgedWhiskers;        // List of game objects with the tag "bridgedWhisker"
+    private List<string> previousWhiskerNames;      // List to store the last state of whisker names for comparison
     private int currentTargetIndex = -1;            // Current target index for orbiting
     private bool isOrbiting = false;                // Is the camera currently orbiting
 
@@ -24,25 +26,33 @@ public class CameraOrbit : MonoBehaviour
         // Initialize the list of bridged whiskers
         UpdateBridgedWhiskers();
 
+        // Populate the dropdown with the whisker names
+        PopulateDropdown();
+
         // Ensure the text element is cleared at the start
         OrbitWhiskerName.text = "";
     }
 
     void Update()
     {
-        // Update the list of bridged whiskers every frame in case they are dynamically created or destroyed
+        // Continuously update the list of bridged whiskers to check for any changes
         UpdateBridgedWhiskers();
 
-        // Check for the up arrow key to start orbiting
+        // Check if the whisker list has changed and update the dropdown if necessary
+        if (HasWhiskerListChanged())
+        {
+            PopulateDropdown();
+        }
+
+        // Check for the up arrow key to start orbiting to the next whisker
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             if (bridgedWhiskers.Count > 0)
             {
-                isOrbiting = true;
-                currentTargetIndex = (currentTargetIndex + 1) % bridgedWhiskers.Count; // Cycle through the targets
-
-                // Update the text with the name of the current target whisker
+                // Move to the next whisker in numerical order
+                currentTargetIndex = (currentTargetIndex + 1) % bridgedWhiskers.Count;
                 UpdateWhiskerText(bridgedWhiskers[currentTargetIndex]);
+                isOrbiting = true; // Start orbiting the selected whisker
             }
         }
 
@@ -81,10 +91,92 @@ public class CameraOrbit : MonoBehaviour
 
     void UpdateBridgedWhiskers()
     {
-        bridgedWhiskers = new List<Transform>(GameObject.FindGameObjectsWithTag("bridgedWhisker").Length);
-        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("bridgedWhisker"))
+        bridgedWhiskers = new List<Transform>();
+        GameObject[] whiskerObjects = GameObject.FindGameObjectsWithTag("bridgedWhisker");
+
+        foreach (GameObject obj in whiskerObjects)
         {
             bridgedWhiskers.Add(obj.transform);
+        }
+
+        // Sort the whiskers by the numeric part in their names
+        bridgedWhiskers.Sort((a, b) => ExtractNumber(a.name).CompareTo(ExtractNumber(b.name)));
+    }
+
+    int ExtractNumber(string name)
+    {
+        // Assumes the number in the whisker name is the last part after an underscore
+        string[] parts = name.Split('_');
+        if (parts.Length > 1 && int.TryParse(parts[1], out int number))
+        {
+            return number; // Return the extracted number
+        }
+        return int.MaxValue; // If no valid number found, return max value to sort last
+    }
+
+    bool HasWhiskerListChanged()
+    {
+        List<string> currentWhiskerNames = new List<string>();
+        foreach (Transform whisker in bridgedWhiskers)
+        {
+            currentWhiskerNames.Add(whisker.name);
+        }
+
+        // Compare the new list with the previous list of whisker names
+        if (previousWhiskerNames == null || currentWhiskerNames.Count != previousWhiskerNames.Count)
+        {
+            previousWhiskerNames = currentWhiskerNames;
+            return true; // List has changed
+        }
+
+        for (int i = 0; i < currentWhiskerNames.Count; i++)
+        {
+            if (currentWhiskerNames[i] != previousWhiskerNames[i])
+            {
+                previousWhiskerNames = currentWhiskerNames;
+                return true; // List has changed
+            }
+        }
+
+        return false; // No changes detected
+    }
+
+    void PopulateDropdown()
+    {
+        if (bridgedWhiskers == null || bridgedWhiskers.Count == 0)
+        {
+            Debug.LogWarning("No bridged whiskers found to populate the dropdown.");
+            return; // Early exit if there are no whiskers to add
+        }
+
+        // Clear the current options in the dropdown
+        whiskerDropdown.ClearOptions();
+
+        // Create a list of whisker names
+        List<string> whiskerNames = new List<string>();
+        foreach (Transform whisker in bridgedWhiskers)
+        {
+            whiskerNames.Add(whisker.name);
+        }
+
+        // Add the whisker names to the dropdown
+        whiskerDropdown.AddOptions(whiskerNames);
+
+        // Add a listener to handle when the user selects a new option
+        whiskerDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
+
+        Debug.Log("Dropdown successfully populated with whisker names.");
+    }
+
+    void OnDropdownValueChanged(int selectedIndex)
+    {
+        if (selectedIndex >= 0 && selectedIndex < bridgedWhiskers.Count)
+        {
+            // Update the camera to focus on the selected whisker
+            currentTargetIndex = selectedIndex;
+            UpdateWhiskerText(bridgedWhiskers[currentTargetIndex]);
+            isOrbiting = true; // Start orbiting the selected whisker
+            Debug.Log($"Dropdown selection changed to: {bridgedWhiskers[selectedIndex].name}");
         }
     }
 
