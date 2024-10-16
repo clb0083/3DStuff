@@ -4,11 +4,11 @@ using TMPro; // Required for TextMeshPro
 
 public class CameraOrbit : MonoBehaviour
 {
-    public float orbitSpeed = 20f;                  // Speed of orbiting
+    public float orbitSpeed = 1f;                  // Speed of orbiting
     public float distanceFromTarget = 5f;           // Distance from the target object
     public Vector3 defaultPosition;                 // Default position of the camera
     public Vector3 defaultRotation;                 // Default rotation of the camera
-    public float speedChangeAmount = 8f;            // Amount to change the orbit speed
+    public float speedChangeAmount = 15f;            // Amount to change the orbit speed
     public TextMeshProUGUI OrbitWhiskerName;        // Reference to the UI text element for displaying whisker name
     public TMP_Dropdown whiskerDropdown;            // Reference to the UI dropdown for whisker selection
 
@@ -16,6 +16,8 @@ public class CameraOrbit : MonoBehaviour
     private List<string> previousWhiskerNames;      // List to store the last state of whisker names for comparison
     private int currentTargetIndex = -1;            // Current target index for orbiting
     private bool isOrbiting = false;                // Is the camera currently orbiting
+    private bool isMouseControlled = false;         // Is the camera being controlled by the mouse
+    private Vector3 lastMousePosition;              // Last position of the mouse during movement
 
     void Start()
     {
@@ -43,6 +45,9 @@ public class CameraOrbit : MonoBehaviour
         {
             PopulateDropdown();
         }
+
+        // Check for mouse button to take over control of the camera
+        HandleMouseControl();
 
         // Check for the up arrow key to start orbiting to the next whisker
         if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -82,13 +87,44 @@ public class CameraOrbit : MonoBehaviour
             orbitSpeed += speedChangeAmount * Time.deltaTime;
         }
 
-        // Handle orbiting the current target
-        if (isOrbiting && currentTargetIndex >= 0 && currentTargetIndex < bridgedWhiskers.Count)
+        // Handle orbiting the current target if mouse control is not active
+        if (isOrbiting && !isMouseControlled && currentTargetIndex >= 0 && currentTargetIndex < bridgedWhiskers.Count)
         {
             OrbitAround(bridgedWhiskers[currentTargetIndex]);
         }
     }
 
+    void HandleMouseControl()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            // Start mouse control when the left mouse button is pressed
+            isMouseControlled = true;
+            isOrbiting = false; // Disable automatic orbit when mouse control begins
+            lastMousePosition = Input.mousePosition;
+        }
+
+        if (Input.GetMouseButton(0) && isMouseControlled)
+        {
+            // Calculate mouse movement difference
+            Vector3 mouseDelta = Input.mousePosition - lastMousePosition;
+            lastMousePosition = Input.mousePosition;
+
+            // Rotate the camera based on mouse movement
+            float rotationX = mouseDelta.x * orbitSpeed * Time.deltaTime;
+            float rotationY = -mouseDelta.y * orbitSpeed * Time.deltaTime;
+
+            // Apply the rotation around the target
+            transform.RotateAround(bridgedWhiskers[currentTargetIndex].position, Vector3.up, rotationX);
+            transform.RotateAround(bridgedWhiskers[currentTargetIndex].position, transform.right, rotationY);
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            // Stop mouse control when the left mouse button is released
+            isMouseControlled = false;
+        }
+    }
     void UpdateBridgedWhiskers()
     {
         bridgedWhiskers = new List<Transform>();
