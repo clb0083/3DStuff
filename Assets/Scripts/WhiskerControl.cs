@@ -108,16 +108,20 @@ public class WhiskerControl : MonoBehaviour
                 switch (val)
                 {
                     case 0:
-                        forceDirection = new Vector3(0, -10, 0);
+                        forceDirection = new Vector3(0, -100, 0); 
+                        // This accleration is 0.1m/s^2 any faster and the whisker fly through the board
+
                         break;
                     case 1:
-                        forceDirection = new Vector3(0, -2, 0);
+                        forceDirection = new Vector3(0, -20, 0);
+                        // This accleration is 0.02m/s^2 any faster and the whisker fly through the board
                         break;
                     case 2:
-                        forceDirection = new Vector3(0, -4, 0);
+                        forceDirection = new Vector3(0, -40, 0);
+                        // This accleration is 0.04m/s^2 any faster and the whisker fly through the board
                         break;
                     case 3:
-                        forceDirection = new Vector3(CGIX, CGIY, CGIZ);
+                        forceDirection = new Vector3(CGIX*10, CGIY*10, CGIZ*10);
                         break;
                     default:
                         Debug.LogWarning("Invalid gravity value provided.");
