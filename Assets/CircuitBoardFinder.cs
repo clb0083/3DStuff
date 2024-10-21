@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class CircuitBoardFinder : MonoBehaviour
 {
@@ -13,15 +14,39 @@ public class CircuitBoardFinder : MonoBehaviour
     public TMP_InputField SpinRateY;
     public TMP_InputField SpinRateZ;
 
-    // This method will be called when the button is clicked
-    public void OnButtonClick()
+    // Reference to the RotateSpinToggle for resetting
+    public Toggle RotateSpinToggle;
+
+    private Quaternion initialRotation;
+    public float xSpinRate, ySpinRate, zSpinRate;
+    private GameObject circuitBoard;
+    private Coroutine spinCoroutine;
+
+    void Start()
     {
-        // Find the GameObject with the tag "CircuitBoard"
-        GameObject circuitBoard = GameObject.FindGameObjectWithTag("CircuitBoard");
+        circuitBoard = GameObject.FindGameObjectWithTag("CircuitBoard");
+        if (circuitBoard != null)
+        {
+            initialRotation = circuitBoard.transform.rotation;
+        }
+
+        // Add listeners to input fields
+        CircuitRotateX.onValueChanged.AddListener(delegate { UpdateCircuitBoard(); });
+        CircuitRotateY.onValueChanged.AddListener(delegate { UpdateCircuitBoard(); });
+        CircuitRotateZ.onValueChanged.AddListener(delegate { UpdateCircuitBoard(); });
+        SpinRateX.onValueChanged.AddListener(delegate { UpdateCircuitBoard(); });
+        SpinRateY.onValueChanged.AddListener(delegate { UpdateCircuitBoard(); });
+        SpinRateZ.onValueChanged.AddListener(delegate { UpdateCircuitBoard(); });
+        RotateSpinToggle.onValueChanged.AddListener(delegate { UpdateCircuitBoard(); });
+    }
+
+    public void UpdateCircuitBoard()
+    {
+        ResetCircuitBoard(); // Reset before updating
 
         if (circuitBoard != null)
         {
-            // Get the rotation values, defaulting to 0 if input is empty
+            // Get the rotation values
             float xRotation = GetInputValue(CircuitRotateX);
             float yRotation = GetInputValue(CircuitRotateY);
             float zRotation = GetInputValue(CircuitRotateZ);
@@ -30,13 +55,14 @@ public class CircuitBoardFinder : MonoBehaviour
             circuitBoard.transform.rotation = Quaternion.Euler(xRotation, yRotation, zRotation);
             Debug.Log($"CircuitBoard rotated to: X={xRotation}, Y={yRotation}, Z={zRotation}");
 
-            // Get the spin rates, defaulting to 0 if input is empty
-            float xSpinRate = GetInputValue(SpinRateX);
-            float ySpinRate = GetInputValue(SpinRateY);
-            float zSpinRate = GetInputValue(SpinRateZ);
+            // Get the spin rates
+            xSpinRate = GetInputValue(SpinRateX);
+            ySpinRate = GetInputValue(SpinRateY);
+            zSpinRate = GetInputValue(SpinRateZ);
 
-            // Start spinning the circuitBoard (you can implement a method to handle this)
-            StartCoroutine(SpinCircuitBoard(circuitBoard, xSpinRate, ySpinRate, zSpinRate));
+            // Start spinning the circuitBoard
+            if (spinCoroutine != null) StopCoroutine(spinCoroutine);
+            spinCoroutine = StartCoroutine(SpinCircuitBoard(circuitBoard, xSpinRate, ySpinRate, zSpinRate));
         }
         else
         {
@@ -44,16 +70,13 @@ public class CircuitBoardFinder : MonoBehaviour
         }
     }
 
-    // Helper method to parse input values
-    private float GetInputValue(TMP_InputField inputField)
+    public float GetInputValue(TMP_InputField inputField)
     {
-        // Check if the input field is empty
         if (string.IsNullOrWhiteSpace(inputField.text))
         {
             return 0f; // Default to 0 if empty
         }
 
-        // Try to parse the input; if parsing fails, return 0
         if (float.TryParse(inputField.text, out float result))
         {
             return result;
@@ -62,13 +85,28 @@ public class CircuitBoardFinder : MonoBehaviour
         return 0f; // Default to 0 if input is invalid
     }
 
-    // Coroutine to handle the spinning
     private System.Collections.IEnumerator SpinCircuitBoard(GameObject circuitBoard, float xSpinRate, float ySpinRate, float zSpinRate)
     {
         while (true)
         {
             circuitBoard.transform.Rotate(xSpinRate * Time.deltaTime, ySpinRate * Time.deltaTime, zSpinRate * Time.deltaTime);
             yield return null; // Wait for the next frame
+        }
+    }
+
+    public void ResetCircuitBoard()
+    {
+        if (RotateSpinToggle != null && RotateSpinToggle.isOn)
+        {
+            float xRotation = GetInputValue(CircuitRotateX);
+            float yRotation = GetInputValue(CircuitRotateY);
+            float zRotation = GetInputValue(CircuitRotateZ);
+
+            circuitBoard.transform.rotation = Quaternion.Euler(xRotation, yRotation, zRotation);
+            circuitBoard.transform.position = Vector3.zero; // Reset position if needed
+
+            if (spinCoroutine != null) StopCoroutine(spinCoroutine);
+            Debug.Log("CircuitBoard reset to initial rotation and spin.");
         }
     }
 }
