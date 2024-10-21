@@ -95,36 +95,38 @@ public class CameraOrbit : MonoBehaviour
     }
 
     void HandleMouseControl()
+{
+    // Check if the left mouse button is pressed along with the Right Shift key
+    if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.RightShift))
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            // Start mouse control when the left mouse button is pressed
-            isMouseControlled = true;
-            isOrbiting = false; // Disable automatic orbit when mouse control begins
-            lastMousePosition = Input.mousePosition;
-        }
-
-        if (Input.GetMouseButton(0) && isMouseControlled)
-        {
-            // Calculate mouse movement difference
-            Vector3 mouseDelta = Input.mousePosition - lastMousePosition;
-            lastMousePosition = Input.mousePosition;
-
-            // Rotate the camera based on mouse movement
-            float rotationX = mouseDelta.x * orbitSpeed * Time.deltaTime;
-            float rotationY = -mouseDelta.y * orbitSpeed * Time.deltaTime;
-
-            // Apply the rotation around the target
-            transform.RotateAround(bridgedWhiskers[currentTargetIndex].position, Vector3.up, rotationX);
-            transform.RotateAround(bridgedWhiskers[currentTargetIndex].position, transform.right, rotationY);
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            // Stop mouse control when the left mouse button is released
-            isMouseControlled = false;
-        }
+        // Start mouse control when the left mouse button and key are pressed
+        isMouseControlled = true;
+        isOrbiting = false; // Disable automatic orbit when mouse control begins
+        lastMousePosition = Input.mousePosition;
     }
+
+    // Continue handling mouse movement only if the mouse is held down and the key is pressed
+    if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.RightShift) && isMouseControlled)
+    {
+        // Calculate mouse movement difference
+        Vector3 mouseDelta = Input.mousePosition - lastMousePosition;
+        lastMousePosition = Input.mousePosition;
+
+        // Rotate the camera based on mouse movement
+        float rotationX = mouseDelta.x * orbitSpeed * Time.deltaTime;
+        float rotationY = -mouseDelta.y * orbitSpeed * Time.deltaTime;
+
+        // Apply the rotation around the target
+        transform.RotateAround(bridgedWhiskers[currentTargetIndex].position, Vector3.up, rotationX);
+        transform.RotateAround(bridgedWhiskers[currentTargetIndex].position, transform.right, rotationY);
+    }
+
+    // Stop mouse control when the left mouse button is released
+    if (Input.GetMouseButtonUp(0))
+    {
+        isMouseControlled = false;
+    }
+}
     void UpdateBridgedWhiskers()
     {
         bridgedWhiskers = new List<Transform>();
