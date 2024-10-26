@@ -22,6 +22,8 @@ public class CircuitBoardFinder : MonoBehaviour
     private GameObject circuitBoard;
     private Coroutine spinCoroutine;
 
+    public GameObject basePlane;
+
     void Start()
     {
         circuitBoard = GameObject.FindGameObjectWithTag("CircuitBoard");
@@ -62,7 +64,7 @@ public class CircuitBoardFinder : MonoBehaviour
 
             // Start spinning the circuitBoard
             if (spinCoroutine != null) StopCoroutine(spinCoroutine);
-            spinCoroutine = StartCoroutine(SpinCircuitBoard(circuitBoard, xSpinRate, ySpinRate, zSpinRate));
+            spinCoroutine = StartCoroutine(SpinBasePlane(basePlane, xSpinRate, ySpinRate, zSpinRate));
         }
         else
         {
@@ -85,11 +87,11 @@ public class CircuitBoardFinder : MonoBehaviour
         return 0f; // Default to 0 if input is invalid
     }
 
-    private System.Collections.IEnumerator SpinCircuitBoard(GameObject circuitBoard, float xSpinRate, float ySpinRate, float zSpinRate)
+    private System.Collections.IEnumerator SpinBasePlane(GameObject basePlane , float xSpinRate, float ySpinRate, float zSpinRate)
     {
         while (true)
         {
-            circuitBoard.transform.Rotate(xSpinRate * Time.deltaTime, ySpinRate * Time.deltaTime, zSpinRate * Time.deltaTime);
+            basePlane.transform.Rotate(xSpinRate * Time.deltaTime, ySpinRate * Time.deltaTime, zSpinRate * Time.deltaTime);
             yield return null; // Wait for the next frame
         }
     }
@@ -104,9 +106,10 @@ public class CircuitBoardFinder : MonoBehaviour
 
             circuitBoard.transform.rotation = Quaternion.Euler(xRotation, yRotation, zRotation);
             circuitBoard.transform.position = Vector3.zero; // Reset position if needed
+            basePlane.transform.position= Vector3.zero;
 
             if (spinCoroutine != null) StopCoroutine(spinCoroutine);
-            Debug.Log("CircuitBoard reset to initial rotation and spin.");
+            Debug.Log("CircuitBoard and BasePlane reset to initial rotation and spin.");
         }
     }
 }

@@ -24,6 +24,12 @@ public class BoardDetector : MonoBehaviour
                 Debug.Log("Board detected: " + detectedBoard.name); //log the detected board
                 Renderer boardRenderer = detectedBoard.GetComponent<Renderer>();
                 //Debug.Log("detected Board Bounds: " + boardRenderer.bounds); //log the detected board bounds
+                GameObject whiskerSpawnPoint = GameObject.Find("WhiskerSpawnPoint");
+                whiskerSpawnPoint.transform.SetParent(detectedBoard.transform);
+
+                GameObject BasePlane = GameObject.Find("BasePlane");
+                importedModel.transform.SetParent(BasePlane.transform);
+
             }
             else
             {

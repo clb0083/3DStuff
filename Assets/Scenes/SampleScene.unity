@@ -40122,6 +40122,10 @@ MonoBehaviour:
   SpinRateY: {fileID: 1847335392}
   SpinRateZ: {fileID: 552901096}
   RotateSpinToggle: {fileID: 1541257141}
+  xSpinRate: 0
+  ySpinRate: 0
+  zSpinRate: 0
+  basePlane: {fileID: 412856314}
 --- !u!114 &1805681361
 MonoBehaviour:
   m_ObjectHideFlags: 0
