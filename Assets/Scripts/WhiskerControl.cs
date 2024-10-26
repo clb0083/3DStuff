@@ -272,146 +272,147 @@ public class WhiskerControl : MonoBehaviour
 
     //Saves bridged whisker datas into the CSV files.
     private void SaveBridgedWhiskerData(WhiskerData data)
+{
+    // Path for bridgeOutput.csv in the Assets folder
+    string fixedFilePath = Path.Combine(Application.dataPath, "bridgeOutput.csv");
+
+    try
     {
-        string filePath = Path.Combine(directoryPath, fileName + ".csv");
-
-        try
+        if (!Directory.Exists(Path.GetDirectoryName(fixedFilePath)))
         {
-            if (!Directory.Exists(directoryPath))
+            Directory.CreateDirectory(Path.GetDirectoryName(fixedFilePath));
+        }
+
+        var lines = File.Exists(fixedFilePath) ? File.ReadAllLines(fixedFilePath).ToList() : new List<string>();
+
+        // If the file is empty, write the headers
+        if (lines.Count == 0)
+        {
+            // Write the column titles
+            lines.Add("All Whiskers,,,,,Bridged Whiskers");
+            lines.Add("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
+        }
+
+        // Ensure the columns list has at least 12 columns
+        for (int i = 0; i < lines.Count; i++)
+        {
+            var columns = lines[i].Split(',').ToList();
+            while (columns.Count < 12)
             {
-                Directory.CreateDirectory(directoryPath);
+                columns.Add(string.Empty);
             }
+            lines[i] = string.Join(",", columns);
+        }
 
-            var lines = File.Exists(filePath) ? File.ReadAllLines(filePath).ToList() : new List<string>();
+        // Find the first line where bridged whisker data is empty
+        bool dataInserted = false;
 
-            //If the file is empty, write the headers
-            if (lines.Count == 0)
+        // Checks if whisker number is correctly passed, can uncomment whenever
+        // Debug.Log($"Saving bridged whisker with number: {data.WhiskerNumber}");
+
+        for (int i = 2; i < lines.Count; i++)
+        {
+            var columns = lines[i].Split(',').ToList();
+
+            // Check if the bridged whisker columns are empty
+            if (string.IsNullOrEmpty(columns[5]))
             {
-                // Write the column titles
-                lines.Add("All Whiskers,,,,,Bridged Whiskers");
-                lines.Add("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
-            }
+                // Fill in the bridged whisker data starting from column index 5
+                columns[5] = data.WhiskerNumber.ToString();
+                columns[6] = data.Length.ToString();
+                columns[7] = data.Diameter.ToString();
+                columns[8] = data.Resistance.ToString();
+                columns[9] = data.SimulationIndex.ToString();
+                columns[10] = data.Conductor1;
+                columns[11] = data.Conductor2;
 
-            // Ensure the columns list has at least 12 columns
-            for (int i = 0; i < lines.Count; i++)
-            {
-                var columns = lines[i].Split(',').ToList();
-                while (columns.Count < 12)
-                {
-                    columns.Add(string.Empty);
-                }
                 lines[i] = string.Join(",", columns);
+                dataInserted = true;
+                break;
             }
-
-            //Find the first line where bridged whisker data is empty
-            bool dataInserted = false;
-
-            //checks if whisker number is correctly passed, can uncomment whenever
-            //Debug.Log($"Saving bridged whisker with number: {data.WhiskerNumber}");
-
-            for (int i = 2; i < lines.Count; i++)
-            {
-                var columns = lines[i].Split(',').ToList();
-
-                // Check if the bridged whisker columns are empty
-                if (string.IsNullOrEmpty(columns[5]))
-                {
-                    // Fill in the bridged whisker data starting from column index 5
-                    columns[5] = data.WhiskerNumber.ToString();
-                    columns[6] = data.Length.ToString();
-                    columns[7] = data.Diameter.ToString();
-                    columns[8] = data.Resistance.ToString();
-                    columns[9] = data.SimulationIndex.ToString();
-                    columns[10] = data.Conductor1;
-                    columns[11] = data.Conductor2;
-
-                    lines[i] = string.Join(",", columns);
-                    dataInserted = true;
-                    break;
-                }
-            }
-
-            if (!dataInserted)
-            {
-                // If no existing line to inser data, add a new line
-                string newLine = $",,,,,{data.WhiskerNumber},{data.Length},{data.Diameter},{data.Resistance},{data.SimulationIndex},{data.Conductor1},{data.Conductor2}";
-                lines.Add(newLine);
-            }
-
-            File.WriteAllLines(filePath, lines);
-
-            //checks if bridged whisker saved properly, can uncomment whenever
-            //Debug.Log($"Bridged whisker data saved successfully to {filePath}");
         }
 
-        catch (Exception ex)
+        if (!dataInserted)
         {
-            Debug.LogError($"Failed to save bridged whisker data: {ex.Message}");
-        }
-    }
-
-    //Saves the directory/filename
-    public void SaveButtonClicked()
-    {
-        directoryPath = filePathInputField.text;
-        fileName = fileNameInputField.text;
-    }
-
-    public class WhiskerData
-    {
-        public int WhiskerNumber { get; set; }
-        public float Length { get; set; }
-        public float Diameter { get; set; }
-        public float Resistance { get; set; }
-        public int SimulationIndex { get; set; }
-        public string Conductor1 { get; set; }
-        public string Conductor2 { get; set; }
-
-        public WhiskerData(int whiskerNumber, float length, float diameter, float resistance, int simulationIndex, string conductor1, string conductor2)
-        {
-            WhiskerNumber = whiskerNumber;
-            Length = length;
-            Diameter = diameter;
-            Resistance = resistance;
-            SimulationIndex = simulationIndex;
-            Conductor1 = conductor1;
-            Conductor2 = conductor2;
-        }
-    }
-
-    private void SaveCriticalBridgedWhiskerData(WhiskerData data) //crit pairs UI
-    {
-        string filePath = Path.Combine(directoryPath, fileName + ".csv");
-
-        try
-        {
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-
-            var lines = File.Exists(filePath) ? File.ReadAllLines(filePath).ToList() : new List<string>();
-
-            // Check if the critical pairs header exists; if not, add it
-            if (!lines.Contains("Critical Bridged Whiskers"))
-            {
-                lines.Add(""); // Add an empty line to separate sections
-                lines.Add("Critical Bridged Whiskers");
-                lines.Add("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
-            }
-
-            // Append the critical bridge data
-            string newLine = $"{data.WhiskerNumber},{data.Length},{data.Diameter},{data.Resistance},{data.SimulationIndex},{data.Conductor1},{data.Conductor2}";
+            // If no existing line to insert data, add a new line
+            string newLine = $",,,,,{data.WhiskerNumber},{data.Length},{data.Diameter},{data.Resistance},{data.SimulationIndex},{data.Conductor1},{data.Conductor2}";
             lines.Add(newLine);
+        }
 
-            // Write back to the file
-            File.WriteAllLines(filePath, lines);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Failed to save critical bridged whisker data: {ex.Message}");
-        }
+        File.WriteAllLines(fixedFilePath, lines);
+
+        // Checks if bridged whisker saved properly, can uncomment whenever
+        // Debug.Log($"Bridged whisker data saved successfully to {fixedFilePath}");
     }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Failed to save bridged whisker data: {ex.Message}");
+    }
+}
+
+// Saves the directory/filename
+public void SaveButtonClicked()
+{
+    directoryPath = filePathInputField.text;
+    fileName = fileNameInputField.text;
+}
+
+public class WhiskerData
+{
+    public int WhiskerNumber { get; set; }
+    public float Length { get; set; }
+    public float Diameter { get; set; }
+    public float Resistance { get; set; }
+    public int SimulationIndex { get; set; }
+    public string Conductor1 { get; set; }
+    public string Conductor2 { get; set; }
+
+    public WhiskerData(int whiskerNumber, float length, float diameter, float resistance, int simulationIndex, string conductor1, string conductor2)
+    {
+        WhiskerNumber = whiskerNumber;
+        Length = length;
+        Diameter = diameter;
+        Resistance = resistance;
+        SimulationIndex = simulationIndex;
+        Conductor1 = conductor1;
+        Conductor2 = conductor2;
+    }
+}
+
+private void SaveCriticalBridgedWhiskerData(WhiskerData data) //crit pairs UI
+{
+    // Path for bridgeOutput.csv in the Assets folder
+    string fixedFilePath = Path.Combine(Application.dataPath, "bridgeOutput.csv");
+
+    try
+    {
+        if (!Directory.Exists(Path.GetDirectoryName(fixedFilePath)))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(fixedFilePath));
+        }
+
+        var lines = File.Exists(fixedFilePath) ? File.ReadAllLines(fixedFilePath).ToList() : new List<string>();
+
+        // Check if the critical pairs header exists; if not, add it
+        if (!lines.Contains("Critical Bridged Whiskers"))
+        {
+            lines.Add(""); // Add an empty line to separate sections
+            lines.Add("Critical Bridged Whiskers");
+            lines.Add("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
+        }
+
+        // Append the critical bridge data
+        string newLine = $"{data.WhiskerNumber},{data.Length},{data.Diameter},{data.Resistance},{data.SimulationIndex},{data.Conductor1},{data.Conductor2}";
+        lines.Add(newLine);
+
+        // Write back to the file
+        File.WriteAllLines(fixedFilePath, lines);
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Failed to save critical bridged whisker data: {ex.Message}");
+    }
+}
 
     private string CleanConductorName(string name)
     {
