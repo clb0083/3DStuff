@@ -72,6 +72,7 @@ public class UIScript : MonoBehaviour
     public WhiskerControl whiskerControl;   //new
     public bool isVibrationActive = false;
     public bool isShockActive = false;
+    public bool RotateSpinToggle = false;
     public VibrationManager vibrationManager;
     public ShockManager shockManager;
     public float shockPressTimer = 0f;
@@ -94,6 +95,15 @@ public class UIScript : MonoBehaviour
     public HashSet<string> criticalPairs = new HashSet<string>(); //data structure to store crit pairs
     private List<GameObject> criticalPairItems = new List<GameObject>(); // list to keep track of UI items
     public Button refreshDropdownsButton;
+
+    public TMP_InputField CircuitRotateX;
+    public TMP_InputField CircuitRotateY;
+    public TMP_InputField CircuitRotateZ;
+    private float CircuitRotateXValue;
+    private float CircuitRotateYValue;
+    private float CircuitRotateZValue;
+    private GameObject circuitBoard;
+
 
     //Sets the lists for the dimensions/data to be stored in, as well as sets material properties from the dropdown.
     void Start()
@@ -121,6 +131,8 @@ public class UIScript : MonoBehaviour
         addPairButton.onClick.AddListener(OnAddPairButtonClicked);
         removePairButton.onClick.AddListener(OnRemovePairButtonClicked);
         refreshDropdownsButton.onClick.AddListener(OnRefreshButtonClicked);
+
+        circuitBoard = GameObject.FindGameObjectWithTag("CircuitBoard");
     }
 
     //Controls the dropdown for material selection.
@@ -162,69 +174,73 @@ public class UIScript : MonoBehaviour
     }
 
     //Controls the iteration counters/bridge counters/applys shock/vibration throughout simulation
-    void Update()
-    
+void Update()
+{
+    totalBridges.text = "Total Bridges: " + bridgesDetected.ToString(); //remove if needed.
+    bridgesEachRun.text = "Bridges for Current Run: " + bridgesPerRun.ToString();
+
+    float horizontalInput = Input.GetAxis("Horizontal");
+    float verticalInput = Input.GetAxis("Vertical");
+
+    Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
+    transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
+
+    if (startSim)
     {
-        totalBridges.text = "Total Bridges: " + bridgesDetected.ToString(); //remove if needed.
-        bridgesEachRun.text = "Bridges for Current Run: " + bridgesPerRun.ToString();
+        CircuitBoardFinder circuitBoardFinder = FindObjectOfType<CircuitBoardFinder>();
 
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-
-        Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
-        transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
-
-        if(startSim)
+        if (isShockActive && shockManager.shockButton.interactable)
         {
-            if (isShockActive && shockManager.shockButton.interactable)
+            shockPressTimer += Time.deltaTime;
+            if (shockPressTimer >= shockPressInterval)
             {
-                shockPressTimer += Time.deltaTime;
-                if (shockPressTimer >= shockPressInterval)
+                shockManager.shockPressed();
+                shockPressTimer = 0f; 
+            }
+        }
+
+        if (isVibrationActive && vibrationManager.vibrateButton.interactable)
+        {
+            vibrationManager.vibratePressed();
+        }
+
+        simtimeElapsed += Time.deltaTime;
+        if (simIntComplete <= Convert.ToInt32(totalRuns.text) - 1)
+        {
+            iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
+            if (simtimeElapsed > simTimeThresh)
+            {
+                simIntComplete++;
+                ReloadWhiskersButton();
+                simtimeElapsed = 0f;
+
+                if (screenshotManager != null)
                 {
-                    shockManager.shockPressed();
-                    shockPressTimer = 0f; 
+                    screenshotManager.OnIterationEnd();
                 }
-            }
-
-            if(isVibrationActive && vibrationManager.vibrateButton.interactable)
-            {
-                vibrationManager.vibratePressed();
-            }
-
-            simtimeElapsed += Time.deltaTime;
-            if (simIntComplete <= Convert.ToInt32(totalRuns.text)-1)
-            {
-                iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
-                if (simtimeElapsed > simTimeThresh)
+                 if (circuitBoardFinder != null)
                 {
-                    simIntComplete++;
-                    ReloadWhiskersButton();
-                    simtimeElapsed = 0f;
-
-                     if (screenshotManager != null) // Ensure it's not null before calling
-                    {
-                        screenshotManager.OnIterationEnd(); // Call the screenshot method
-                    }
-                }
-            }
-
-            else if (simIntComplete == Convert.ToInt32(totalRuns.text))
-            {
-                
-                iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
-                if (simtimeElapsed > simTimeThresh)
-                {
-                    // Call screenshot here as well for the last iteration
-                    if (screenshotManager != null)
-                    {
-                        screenshotManager.OnIterationEnd(); // Ensure a screenshot is taken
-                    }
-                    iterationCompleteMessage.text = "Simulation Complete!";
-                    startSim = false;
+                    // Toggle the RotateSpinToggle
+                    circuitBoardFinder.RotateSpinToggle.isOn = !circuitBoardFinder.RotateSpinToggle.isOn;
                 }
             }
         }
+        else if (simIntComplete == Convert.ToInt32(totalRuns.text))
+        {
+            iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
+            if (simtimeElapsed > simTimeThresh)
+            {
+                if (screenshotManager != null)
+                {
+                    screenshotManager.OnIterationEnd();
+                }
+                iterationCompleteMessage.text = "Simulation Complete!";
+                startSim = false;
+            }
+        }
     }
+}
+
 
     //Resets the simulation counters back to original value
     public void resetSim()
