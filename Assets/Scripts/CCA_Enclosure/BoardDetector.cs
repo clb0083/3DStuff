@@ -5,40 +5,57 @@ using TMPro;
 
 public class BoardDetector : MonoBehaviour
 {
-    public GameObject detectedBoard { get; private set; } //stores the detected board
+    public GameObject detectedBoard { get; private set; } // Stores the detected board
 
     private IEnumerator Start()
     {
-
         yield return new WaitForEndOfFrame();
 
-        // Call the method to find the board
+        // Find the imported model tagged as "CircuitBoard"
         GameObject importedModel = GameObject.FindWithTag("CircuitBoard");
 
         if (importedModel != null)
         {
+            // Immediately set BasePlane as the parent of the imported model
+            GameObject basePlane = GameObject.Find("BasePlane");
+            if (basePlane != null)
+            {
+                importedModel.transform.SetParent(basePlane.transform);
+                Debug.Log("CircuitBoard parent set to BasePlane.");
+            }
+            else
+            {
+                Debug.LogError("BasePlane not found.");
+            }
+
+            // Now find and process the detected board
             detectedBoard = FindBoard(importedModel);
 
             if (detectedBoard != null)
             {
-                Debug.Log("Board detected: " + detectedBoard.name); //log the detected board
+                Debug.Log("Board detected: " + detectedBoard.name);
                 Renderer boardRenderer = detectedBoard.GetComponent<Renderer>();
-                //Debug.Log("detected Board Bounds: " + boardRenderer.bounds); //log the detected board bounds
+                // Uncomment if you need to log bounds
+                // Debug.Log("Detected Board Bounds: " + boardRenderer.bounds);
+
                 GameObject whiskerSpawnPoint = GameObject.Find("WhiskerSpawnPoint");
-                whiskerSpawnPoint.transform.SetParent(detectedBoard.transform);
-
-                GameObject BasePlane = GameObject.Find("BasePlane");
-                importedModel.transform.SetParent(BasePlane.transform);
-
+                if (whiskerSpawnPoint != null)
+                {
+                    whiskerSpawnPoint.transform.SetParent(detectedBoard.transform);
+                }
+                else
+                {
+                    Debug.LogError("WhiskerSpawnPoint not found.");
+                }
             }
             else
             {
-                Debug.LogError("Board could not be detected");
+                Debug.LogError("Board could not be detected.");
             }
         }
         else
         {
-            Debug.LogError("No object with tag 'CircuitBoard' found.");
+            Debug.LogError("No GameObject with tag 'CircuitBoard' found.");
         }
     }
 
