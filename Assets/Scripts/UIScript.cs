@@ -104,6 +104,8 @@ public class UIScript : MonoBehaviour
     private float CircuitRotateZValue;
     private GameObject circuitBoard;
 
+    private DataManager dataManager;
+    private bool dataWritten = false;
 
     //Sets the lists for the dimensions/data to be stored in, as well as sets material properties from the dropdown.
     void Start()
@@ -133,6 +135,21 @@ public class UIScript : MonoBehaviour
         refreshDropdownsButton.onClick.AddListener(OnRefreshButtonClicked);
 
         circuitBoard = GameObject.FindGameObjectWithTag("CircuitBoard");
+
+        dataManager = DataManager.Instance;
+        if (dataManager == null)
+        {
+            Debug.LogError("dataManager instance not found.");
+        }    
+
+        if (whiskerControl == null)
+        {
+            whiskerControl = FindObjectOfType<WhiskerControl>();
+            if (whiskerControl == null)
+            {
+                Debug.LogError("WhiskerControl not found in the scene.");
+            }
+        }
     }
 
     //Controls the dropdown for material selection.
@@ -236,7 +253,13 @@ void Update()
                 }
                 iterationCompleteMessage.text = "Simulation Complete!";
                 startSim = false;
-            }
+
+                    if (!dataWritten)
+                    {
+                        WriteDataToCSV();
+                        dataWritten = true; // Prevents multiple writes
+                    }
+                }
         }
     }
 }
@@ -564,48 +587,117 @@ void Update()
 
     //Saving whiskers data;
     public void SaveWhiskerData(WhiskerData data)
-    {   
-        string directoryPath = whiskerControl.directoryPath;
-        string filePath = Path.Combine(directoryPath, whiskerControl.fileName + ".csv");
-
-        string directoryPathCheck = whiskerControl.directoryPath;
-        string fileNameCheck = whiskerControl.fileName;
-
-    if (string.IsNullOrEmpty(directoryPath) || string.IsNullOrEmpty(whiskerControl.fileName))
     {
-        SetErrorMessage("Failed to save data - Path or Filename cannot be empty");
-        return;
+        DataManager.Instance.allWhiskersData.Add(data);
+
+        Debug.Log($"Whisker data saved: {data.WhiskerNumber}");
     }
+
+    public void WriteDataToCSV()
+    {
+        // Paths for both files
+        string customDirectoryPath = whiskerControl.directoryPath;
+        string customFilePath = Path.Combine(customDirectoryPath, whiskerControl.fileName + ".csv");
+        string fixedFilePath = Path.Combine(Application.dataPath, "bridgeOutput.csv");
+
+        // Write data to custom file path with all data
+        WriteDataToCSVFile(customFilePath, includeAllWhiskersData: true);
+        //brideOutput.csv file with only bridged data
+        WriteDataToCSVFile(fixedFilePath, includeAllWhiskersData: false);
+    }
+
+    private void WriteDataToCSVFile(string filePath, bool includeAllWhiskersData)
+    {
+        if (string.IsNullOrEmpty(filePath))
+        {
+            SetErrorMessage("Failed to save data - File path cannot be empty");
+            return;
+        }
 
         try
         {
-            if (!Directory.Exists(directoryPath))
+            if (!Directory.Exists(Path.GetDirectoryName(filePath)))
             {
-                Directory.CreateDirectory(directoryPath);
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             }
-            bool fileExists = File.Exists(filePath);
 
-            using (StreamWriter writer = new StreamWriter(filePath, true))
+            using (StreamWriter writer = new StreamWriter(filePath, false)) // Overwrite the file
             {
-                if (!fileExists)
+                // Get data from dataManager
+                List<WhiskerData> allWhiskersData = DataManager.Instance.allWhiskersData;
+                List<WhiskerData> bridgedWhiskersData = DataManager.Instance.bridgedWhiskersData;
+
+                if (includeAllWhiskersData)
                 {
-                    // Write the column titles
-                    writer.WriteLine("All Whiskers,,,,,Bridged Whiskers");
-                    writer.WriteLine("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Conductor 1, Conductor 2");
+                    // Write the headers
+                    writer.WriteLine("All Whiskers,,,,,,Bridged Whiskers,,,");
+                    writer.WriteLine("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,,Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
+
+                    // Determine the maximum number of rows
+                    int maxRows = Mathf.Max(allWhiskersData.Count, bridgedWhiskersData.Count);
+
+                    // Loop through all rows
+                    for (int i = 0; i < maxRows; i++)
+                    {
+                        string allWhiskerDataLine = "";
+                        string bridgedWhiskerDataLine = "";
+
+                        // Get All Whisker data if available
+                        if (i < allWhiskersData.Count)
+                        {
+                            var whisker = allWhiskersData[i];
+                            allWhiskerDataLine = $"{whisker.WhiskerNumber},{whisker.Length * 1000},{whisker.Width * 1000},{whisker.Resistance},{whisker.Iteration}";
+                        }
+
+                        // Get Bridged Whisker data if available
+                        if (i < bridgedWhiskersData.Count)
+                        {
+                            var bridgedWhisker = bridgedWhiskersData[i];
+                            bridgedWhiskerDataLine = $"{bridgedWhisker.WhiskerNumber},{bridgedWhisker.Length},{bridgedWhisker.Diameter},{bridgedWhisker.Resistance},{bridgedWhisker.SimulationIndex},{bridgedWhisker.Conductor1},{bridgedWhisker.Conductor2}";
+                        }
+
+                        // Write the combined data to the CSV file
+                        writer.WriteLine($"{allWhiskerDataLine},,{bridgedWhiskerDataLine}");
+                    }
+                }
+                else
+                {
+                    // Only write the Bridged Whiskers section
+                    writer.WriteLine("Bridged Whiskers");
+                    writer.WriteLine("Whisker #,Length (um),Diameter (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
+
+                    foreach (var bridgedWhisker in bridgedWhiskersData)
+                    {
+                        string bridgedWhiskerDataLine = $"{bridgedWhisker.WhiskerNumber},{bridgedWhisker.Length},{bridgedWhisker.Diameter},{bridgedWhisker.Resistance},{bridgedWhisker.SimulationIndex},{bridgedWhisker.Conductor1},{bridgedWhisker.Conductor2}";
+                        writer.WriteLine(bridgedWhiskerDataLine);
+                    }
                 }
 
-                writer.WriteLine($"{data.WhiskerNumber},{data.Length*1000},{data.Width*1000},{data.Resistance},{data.Iteration},,,,,,,");
-                DataSaveManager.CurrentRowIndex++;
+                //write crit bridged whiskers
+                if (DataManager.Instance.criticalBridgedWhiskersData.Count > 0)
+                {
+                    writer.WriteLine();
+                    writer.WriteLine("Critical Bridged Whiskers");
+                    writer.WriteLine("Whisker #,Length (um),Diameter (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
+
+                    foreach (var criticalWhisker in DataManager.Instance.criticalBridgedWhiskersData)
+                    {
+                        string criticalLine = $"{criticalWhisker.WhiskerNumber},{criticalWhisker.Length},{criticalWhisker.Diameter},{criticalWhisker.Resistance},{criticalWhisker.SimulationIndex},{criticalWhisker.Conductor1},{criticalWhisker.Conductor2}";
+                        writer.WriteLine(criticalLine);
+                    }
+                }
             }
-            Debug.Log($"Whisker data saved successfully to {filePath}");
-            
+            Debug.Log($"Data saved successfully to {filePath}");
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Failed to save whisker data: {ex.Message}");
-            
+            Debug.LogError($"Failed to save data to {filePath}: {ex.Message}");
         }
+
+        Debug.Log($"Number of bridged whiskers: {DataManager.Instance.bridgedWhiskersData.Count}");
+
     }
+
     public TextMeshProUGUI bridgesCount;
     public Text conductorName;
 
@@ -686,29 +778,6 @@ void Update()
         else
         {
             isVibrationActive = false;
-        }
-    }
-
-    //Class for whisker data to be stored.
-    public class WhiskerData
-        {
-        public int WhiskerNumber { get; set; }
-        public float Length { get; set; }
-        public float Width { get; set; }
-        public float Volume { get; set; }
-        public float Mass { get; set; }
-        public float Resistance { get; set; }
-        public int Iteration { get; set; } // New property for iteration count
-
-        public WhiskerData(int whiskerNumber, float length, float width, float volume, float mass, float resistance, int iteration)
-        {
-            WhiskerNumber = whiskerNumber;
-            Length = length;
-            Width = width;
-            Volume = volume;
-            Mass = mass;
-            Resistance = resistance;
-            Iteration = iteration; // Initialize iteration count
         }
     }
 
