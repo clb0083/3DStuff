@@ -626,12 +626,13 @@ void Update()
                 // Get data from dataManager
                 List<WhiskerData> allWhiskersData = DataManager.Instance.allWhiskersData;
                 List<WhiskerData> bridgedWhiskersData = DataManager.Instance.bridgedWhiskersData;
+                List<WhiskerData> criticalBridgedWhiskersData = DataManager.Instance.criticalBridgedWhiskersData;
 
                 if (includeAllWhiskersData)
                 {
                     // Write the headers
-                    writer.WriteLine("All Whiskers,,,,,,Bridged Whiskers,,,");
-                    writer.WriteLine("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,,Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
+                    writer.WriteLine("All Whiskers,,,,,,Bridged Whiskers,,,,,,,,Critical Bridged Whiskers,,,");
+                    writer.WriteLine("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,,Whisker #,Length (um),Diameter (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2,,Whisker #,Length (um),Diameter (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
 
                     // Determine the maximum number of rows
                     int maxRows = Mathf.Max(allWhiskersData.Count, bridgedWhiskersData.Count);
@@ -641,6 +642,7 @@ void Update()
                     {
                         string allWhiskerDataLine = "";
                         string bridgedWhiskerDataLine = "";
+                        string criticalBridgedWhiskerDataLine = "";
 
                         // Get All Whisker data if available
                         if (i < allWhiskersData.Count)
@@ -656,8 +658,15 @@ void Update()
                             bridgedWhiskerDataLine = $"{bridgedWhisker.WhiskerNumber},{bridgedWhisker.Length},{bridgedWhisker.Diameter},{bridgedWhisker.Resistance},{bridgedWhisker.SimulationIndex},{bridgedWhisker.Conductor1},{bridgedWhisker.Conductor2}";
                         }
 
+                        // Get Critical Bridged Whisker data if available
+                        if (i < criticalBridgedWhiskersData.Count)
+                        {
+                            var criticalWhisker = criticalBridgedWhiskersData[i];
+                            criticalBridgedWhiskerDataLine = $"{criticalWhisker.WhiskerNumber},{criticalWhisker.Length},{criticalWhisker.Diameter},{criticalWhisker.Resistance},{criticalWhisker.SimulationIndex},{criticalWhisker.Conductor1},{criticalWhisker.Conductor2}";
+                        }
+
                         // Write the combined data to the CSV file
-                        writer.WriteLine($"{allWhiskerDataLine},,{bridgedWhiskerDataLine}");
+                        writer.WriteLine($"{allWhiskerDataLine},,{bridgedWhiskerDataLine},,{criticalBridgedWhiskerDataLine}");
                     }
                 }
                 else
@@ -670,20 +679,6 @@ void Update()
                     {
                         string bridgedWhiskerDataLine = $"{bridgedWhisker.WhiskerNumber},{bridgedWhisker.Length},{bridgedWhisker.Diameter},{bridgedWhisker.Resistance},{bridgedWhisker.SimulationIndex},{bridgedWhisker.Conductor1},{bridgedWhisker.Conductor2}";
                         writer.WriteLine(bridgedWhiskerDataLine);
-                    }
-                }
-
-                //write crit bridged whiskers
-                if (DataManager.Instance.criticalBridgedWhiskersData.Count > 0)
-                {
-                    writer.WriteLine();
-                    writer.WriteLine("Critical Bridged Whiskers");
-                    writer.WriteLine("Whisker #,Length (um),Diameter (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
-
-                    foreach (var criticalWhisker in DataManager.Instance.criticalBridgedWhiskersData)
-                    {
-                        string criticalLine = $"{criticalWhisker.WhiskerNumber},{criticalWhisker.Length},{criticalWhisker.Diameter},{criticalWhisker.Resistance},{criticalWhisker.SimulationIndex},{criticalWhisker.Conductor1},{criticalWhisker.Conductor2}";
-                        writer.WriteLine(criticalLine);
                     }
                 }
             }
