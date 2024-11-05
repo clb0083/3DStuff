@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366756, g: 0.48427135, b: 0.56452316, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667564, g: 0.48427135, b: 0.5645232, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1703,7 +1703,7 @@ GameObject:
   - component: {fileID: 81336318}
   - component: {fileID: 81336319}
   m_Layer: 5
-  m_Name: Toggle
+  m_Name: VibrationToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7000,7 +7000,7 @@ GameObject:
   - component: {fileID: 283945077}
   - component: {fileID: 283945078}
   m_Layer: 5
-  m_Name: Toggle
+  m_Name: ShockToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18454,8 +18454,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 357f8cde0019be44c9b06f2850eab651, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distributionDropdown: {fileID: 0}
-  whiskMat: {fileID: 738609958}
   lengthMu: {fileID: 1347738115}
   widthMu: {fileID: 1207988694}
   lengthSigma: {fileID: 10229097}
@@ -18464,13 +18462,29 @@ MonoBehaviour:
   xCoord: {fileID: 1731680972}
   yCoord: {fileID: 1328382923}
   zCoord: {fileID: 433706441}
-  numIterations: {fileID: 0}
-  shockAmp: {fileID: 0}
+  numIterations: {fileID: 166620094}
+  shockAmp: {fileID: 1403810157}
   shockFreq: {fileID: 0}
   shockDur: {fileID: 0}
-  vibrAmp: {fileID: 0}
-  vibrFreq: {fileID: 0}
-  vibrDur: {fileID: 0}
+  vibrAmp: {fileID: 1966419009}
+  vibrFreq: {fileID: 1185955213}
+  vibrDur: {fileID: 1648562179}
+  material_input: {fileID: 897743643}
+  WhiskerSpawnPointX: {fileID: 2147133824}
+  WhiskerSpawnPointY: {fileID: 1970568219}
+  WhiskerSpawnPointZ: {fileID: 1689226693}
+  totalRuns: {fileID: 166620094}
+  CircuitRotateX: {fileID: 699939357}
+  CircuitRotateY: {fileID: 1472740349}
+  CircuitRotateZ: {fileID: 123734673}
+  SpinRateX: {fileID: 1527921628}
+  SpinRateY: {fileID: 1847335392}
+  SpinRateZ: {fileID: 552901096}
+  wallHeightInput: {fileID: 1641521093}
+  whiskMat: {fileID: 738609958}
+  distributionDropdown: {fileID: 1184046050}
+  isShockActiveToggle: {fileID: 283945078}
+  isVibrationActiveToggle: {fileID: 81336319}
   whisker: {fileID: 230131760}
   totalBridges: {fileID: 1980591731}
   bridgesDetected: 0
@@ -18481,7 +18495,6 @@ MonoBehaviour:
   startSim: 0
   simIntComplete: 1
   simTimeThresh: 5
-  totalRuns: {fileID: 166620094}
   moveSpeed: 5
   distributionType: 1
   UIisOn: 1
@@ -18490,7 +18503,6 @@ MonoBehaviour:
   grid: {fileID: 345298931}
   iterationCounter: {fileID: 1748728068}
   iterationCompleteMessage: {fileID: 246681137}
-  material_input: {fileID: 0}
   triggerControl: {fileID: 0}
   currentMaterial: 0
   whiskerControl: {fileID: 230131766}
@@ -18502,9 +18514,6 @@ MonoBehaviour:
   shockPressTimer: 0
   shockPressInterval: 2
   simulationController: {fileID: 1689348460}
-  WhiskerSpawnPointX: {fileID: 2147133824}
-  WhiskerSpawnPointY: {fileID: 1970568219}
-  WhiskerSpawnPointZ: {fileID: 1689226693}
   screenshotManager: {fileID: 1251758247}
   conductor1Dropdown: {fileID: 1656594176}
   conductor2Dropdown: {fileID: 847988679}
@@ -18513,9 +18522,8 @@ MonoBehaviour:
   criticalPairsScrollView: {fileID: 808573828}
   criticalPairItemPrefab: {fileID: 3208220150127306092, guid: 4163072f9d20bce41b82e01f3702ad00, type: 3}
   refreshDropdownsButton: {fileID: 46986848}
-  CircuitRotateX: {fileID: 699939357}
-  CircuitRotateY: {fileID: 1472740349}
-  CircuitRotateZ: {fileID: 123734673}
+  wallCreator: {fileID: 9419109}
+  circuitBoardFinder: {fileID: 1805681360}
   bridgesCount: {fileID: 837250430}
   conductorName: {fileID: 0}
 --- !u!4 &734999897
@@ -22260,6 +22268,7 @@ RectTransform:
   - {fileID: 1486317102}
   - {fileID: 1689348461}
   - {fileID: 961583651}
+  - {fileID: 1803900055}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -24740,7 +24749,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 49521796}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9850961
+  m_Size: 0.9999942
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -42085,6 +42094,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1802175221}
   m_CullTransparentMesh: 1
+--- !u!1 &1803900053
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1803900055}
+  - component: {fileID: 1803900054}
+  m_Layer: 0
+  m_Name: DataManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1803900054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1803900053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a145621a8c98ed4893f60892ea28073, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allWhiskersData: []
+  bridgedWhiskersData: []
+  criticalBridgedWhiskersData: []
+--- !u!4 &1803900055
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1803900053}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1251.3497, y: -730.96594, z: -34.32506}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 953651899}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1805340179
 GameObject:
   m_ObjectHideFlags: 0
@@ -45826,7 +45882,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.84024125}
+  m_AnchoredPosition: {x: 0, y: 0.0003494744}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1966419007
