@@ -19,8 +19,7 @@ using System.Linq;
 public class UIScript : MonoBehaviour
 {
     private System.Random rand = new System.Random();
-    public Dropdown distributionDropdown;
-    public TMP_Dropdown whiskMat;
+    //UI elements
     public TMP_InputField lengthMu;
     public TMP_InputField widthMu;
     public TMP_InputField lengthSigma;
@@ -36,6 +35,23 @@ public class UIScript : MonoBehaviour
     public TMP_InputField vibrAmp;
     public TMP_InputField vibrFreq;
     public TMP_InputField vibrDur;
+    public TMP_InputField material_input;
+    public TMP_InputField WhiskerSpawnPointX;
+    public TMP_InputField WhiskerSpawnPointY;
+    public TMP_InputField WhiskerSpawnPointZ;
+    public TMP_InputField totalRuns;
+    public TMP_InputField CircuitRotateX;
+    public TMP_InputField CircuitRotateY;
+    public TMP_InputField CircuitRotateZ;
+    public TMP_InputField SpinRateX;
+    public TMP_InputField SpinRateY;
+    public TMP_InputField SpinRateZ;
+    public TMP_InputField wallHeightInput;
+    public TMP_Dropdown whiskMat;
+    public TMP_Dropdown distributionDropdown;
+    public Toggle isShockActiveToggle;
+    public Toggle isVibrationActiveToggle;
+
     public GameObject whisker;
     public TextMeshProUGUI totalBridges;
     public int bridgesDetected;
@@ -46,7 +62,6 @@ public class UIScript : MonoBehaviour
     public bool startSim = false;
     public int simIntComplete = 1;
     public float simTimeThresh;
-    public TMP_InputField totalRuns;
     public float moveSpeed = 5f;
     public DistributionType distributionType = DistributionType.Lognormal;
     public bool UIisOn = true;
@@ -55,7 +70,6 @@ public class UIScript : MonoBehaviour
     public GameObject grid;
     public TextMeshProUGUI iterationCounter;
     public TextMeshProUGUI iterationCompleteMessage;
-    public TMP_InputField material_input;
     public TriggerControl triggerControl;
     public Dictionary<MaterialType, MaterialProperties> materialProperties = new Dictionary<MaterialType, MaterialProperties>()
     { //density (kg/um^3), resistivity (ohm*um), coefficient of friction (unitless)
@@ -80,9 +94,7 @@ public class UIScript : MonoBehaviour
     public SimulationController simulationController; //reference to the simulation controller script
     private int whiskerCounter; //variable to track whisker numbers
 
-    public TMP_InputField WhiskerSpawnPointX;
-    public TMP_InputField WhiskerSpawnPointY;
-    public TMP_InputField WhiskerSpawnPointZ;
+
     public ScreenshotHandler screenshotManager; // Reference to the Screenshot script
 
     //references for critical pair UI
@@ -96,13 +108,13 @@ public class UIScript : MonoBehaviour
     private List<GameObject> criticalPairItems = new List<GameObject>(); // list to keep track of UI items
     public Button refreshDropdownsButton;
 
-    public TMP_InputField CircuitRotateX;
-    public TMP_InputField CircuitRotateY;
-    public TMP_InputField CircuitRotateZ;
+
     private float CircuitRotateXValue;
     private float CircuitRotateYValue;
     private float CircuitRotateZValue;
     private GameObject circuitBoard;
+    public WallCreator wallCreator;
+    public CircuitBoardFinder circuitBoardFinder;
 
     private DataManager dataManager;
     private bool dataWritten = false;
@@ -118,7 +130,8 @@ public class UIScript : MonoBehaviour
         masses = new List<float>();
         resistances = new List<float>();
 
-        whiskMat.onValueChanged.AddListener(delegate {
+        whiskMat.onValueChanged.AddListener(delegate
+        {
             WhiskMatDropdownValueChanged(whiskMat);
         });
 
@@ -140,7 +153,7 @@ public class UIScript : MonoBehaviour
         if (dataManager == null)
         {
             Debug.LogError("dataManager instance not found.");
-        }    
+        }
 
         if (whiskerControl == null)
         {
@@ -191,68 +204,68 @@ public class UIScript : MonoBehaviour
     }
 
     //Controls the iteration counters/bridge counters/applys shock/vibration throughout simulation
-void Update()
-{
-    totalBridges.text = "Total Bridges: " + bridgesDetected.ToString(); //remove if needed.
-    bridgesEachRun.text = "Bridges for Current Run: " + bridgesPerRun.ToString();
-
-    float horizontalInput = Input.GetAxis("Horizontal");
-    float verticalInput = Input.GetAxis("Vertical");
-
-    Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
-    transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
-
-    if (startSim)
+    void Update()
     {
-        CircuitBoardFinder circuitBoardFinder = FindObjectOfType<CircuitBoardFinder>();
+        totalBridges.text = "Total Bridges: " + bridgesDetected.ToString(); //remove if needed.
+        bridgesEachRun.text = "Bridges for Current Run: " + bridgesPerRun.ToString();
 
-        if (isShockActive && shockManager.shockButton.interactable)
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+
+        Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
+        transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
+
+        if (startSim)
         {
-            shockPressTimer += Time.deltaTime;
-            if (shockPressTimer >= shockPressInterval)
+            CircuitBoardFinder circuitBoardFinder = FindObjectOfType<CircuitBoardFinder>();
+
+            if (isShockActive && shockManager.shockButton.interactable)
             {
-                shockManager.shockPressed();
-                shockPressTimer = 0f; 
-            }
-        }
-
-        if (isVibrationActive && vibrationManager.vibrateButton.interactable)
-        {
-            vibrationManager.vibratePressed();
-        }
-
-        simtimeElapsed += Time.deltaTime;
-        if (simIntComplete <= Convert.ToInt32(totalRuns.text) - 1)
-        {
-            iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
-            if (simtimeElapsed > simTimeThresh)
-            {
-                simIntComplete++;
-                ReloadWhiskersButton();
-                simtimeElapsed = 0f;
-
-                if (screenshotManager != null)
+                shockPressTimer += Time.deltaTime;
+                if (shockPressTimer >= shockPressInterval)
                 {
-                    screenshotManager.OnIterationEnd();
-                }
-                 if (circuitBoardFinder != null)
-                {
-                    // Toggle the RotateSpinToggle
-                    circuitBoardFinder.RotateSpinToggle.isOn = !circuitBoardFinder.RotateSpinToggle.isOn;
+                    shockManager.shockPressed();
+                    shockPressTimer = 0f;
                 }
             }
-        }
-        else if (simIntComplete == Convert.ToInt32(totalRuns.text))
-        {
-            iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
-            if (simtimeElapsed > simTimeThresh)
+
+            if (isVibrationActive && vibrationManager.vibrateButton.interactable)
             {
-                if (screenshotManager != null)
+                vibrationManager.vibratePressed();
+            }
+
+            simtimeElapsed += Time.deltaTime;
+            if (simIntComplete <= Convert.ToInt32(totalRuns.text) - 1)
+            {
+                iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
+                if (simtimeElapsed > simTimeThresh)
                 {
-                    screenshotManager.OnIterationEnd();
+                    simIntComplete++;
+                    ReloadWhiskersButton();
+                    simtimeElapsed = 0f;
+
+                    if (screenshotManager != null)
+                    {
+                        screenshotManager.OnIterationEnd();
+                    }
+                    if (circuitBoardFinder != null)
+                    {
+                        // Toggle the RotateSpinToggle
+                        circuitBoardFinder.RotateSpinToggle.isOn = !circuitBoardFinder.RotateSpinToggle.isOn;
+                    }
                 }
-                iterationCompleteMessage.text = "Simulation Complete!";
-                startSim = false;
+            }
+            else if (simIntComplete == Convert.ToInt32(totalRuns.text))
+            {
+                iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
+                if (simtimeElapsed > simTimeThresh)
+                {
+                    if (screenshotManager != null)
+                    {
+                        screenshotManager.OnIterationEnd();
+                    }
+                    iterationCompleteMessage.text = "Simulation Complete!";
+                    startSim = false;
 
                     if (!dataWritten)
                     {
@@ -260,9 +273,9 @@ void Update()
                         dataWritten = true; // Prevents multiple writes
                     }
                 }
+            }
         }
     }
-}
 
 
     //Resets the simulation counters back to original value
@@ -303,7 +316,7 @@ void Update()
         float sigma_log = float.Parse(widthSigma.text);
         float widthVal;
 
-        
+
         if (distributionType == DistributionType.Lognormal)
         {
             widthVal = GenerateLogNormalValue(mu_log, sigma_log);
@@ -346,65 +359,65 @@ void Update()
         float z = Convert.ToSingle(zCoord.text);
 
         if (distributionType == DistributionType.Lognormal)
+        {
+            if (mu_log > 9 || mu_log < 0)
             {
-            if (mu_log > 9 || mu_log < 0 )
-                {
-                    SetErrorMessage("Width Mu value outside acceptable range.");
-                    return;
-                }
-                if (sigma_log > 4 || sigma_log < 0 )
-                {
-                    SetErrorMessage("Width Sigma value is outside acceptable range.");
-                    return;
-                }
-                if (mu > 20 || mu < 0 )
-                {
-                    SetErrorMessage("Length Mu value outside acceptable range.");
-                    return;
-                }
-                if (sigma > 15 || sigma < 0)
-                {
-                    SetErrorMessage("Length Sigma value is outside acceptable range.");
-                    return;
-                } 
+                SetErrorMessage("Width Mu value outside acceptable range.");
+                return;
             }
+            if (sigma_log > 4 || sigma_log < 0)
+            {
+                SetErrorMessage("Width Sigma value is outside acceptable range.");
+                return;
+            }
+            if (mu > 20 || mu < 0)
+            {
+                SetErrorMessage("Length Mu value outside acceptable range.");
+                return;
+            }
+            if (sigma > 15 || sigma < 0)
+            {
+                SetErrorMessage("Length Sigma value is outside acceptable range.");
+                return;
+            }
+        }
         else
+        {
+            if (mu_log > 10000 || mu_log < 0)
             {
-            if (mu_log > 10000 || mu_log < 0 )
-                {
-                    SetErrorMessage("Width Mu value outside acceptable range.");
-                    return;
-                }
-                if (sigma_log > 10000 || sigma_log < 0 )
-                {
-                    SetErrorMessage("Width Sigma value is outside acceptable range.");
-                    return;
-                }
-                if (mu > 30000 || mu < 0 )
-                {
-                    SetErrorMessage("Length Mu value outside acceptable range.");
-                    return;
-                }
-                if (sigma > 10000 || sigma < 0)
-                {
-                    SetErrorMessage("Length Sigma value is outside acceptable range.");
-                    return;
-                } 
+                SetErrorMessage("Width Mu value outside acceptable range.");
+                return;
             }
+            if (sigma_log > 10000 || sigma_log < 0)
+            {
+                SetErrorMessage("Width Sigma value is outside acceptable range.");
+                return;
+            }
+            if (mu > 30000 || mu < 0)
+            {
+                SetErrorMessage("Length Mu value outside acceptable range.");
+                return;
+            }
+            if (sigma > 10000 || sigma < 0)
+            {
+                SetErrorMessage("Length Sigma value is outside acceptable range.");
+                return;
+            }
+        }
 
         if (numWhiskersToCreate > 2000 || numWhiskersToCreate < 0 || !Mathf.Approximately(numWhiskersToCreate, Mathf.Round(numWhiskersToCreate)))
         {
             SetErrorMessage("Whisker count too high or invalid. Limit is 2000 and must be a positive integer.");
             return;
-        }   
-        
+        }
+
         if (x < 0 || y < 0 || z < 0)
         {
             SetErrorMessage("Coordinates cannot be negative.");
             return;
         }
 
-        if(numberIterations < 0 || !Mathf.Approximately(numberIterations, Mathf.Round(numberIterations)) )
+        if (numberIterations < 0 || !Mathf.Approximately(numberIterations, Mathf.Round(numberIterations)))
         {
             SetErrorMessage("Iteration value must be a positive integer.");
             return;
@@ -417,48 +430,48 @@ void Update()
         resistances.Clear();
 
 
-    GameObject whiskerSpawnPoint = GameObject.Find("WhiskerSpawnPoint");
-    
-    if (whiskerSpawnPoint == null)
-    {
-        SetErrorMessage("WhiskerSpawnPoint not found in the scene.");
-        return;
-    }
+        GameObject whiskerSpawnPoint = GameObject.Find("WhiskerSpawnPoint");
+
+        if (whiskerSpawnPoint == null)
+        {
+            SetErrorMessage("WhiskerSpawnPoint not found in the scene.");
+            return;
+        }
         // Move the WhiskerSpawnPoint to (0, 0, 0) before starting
         whiskerSpawnPoint.transform.position = Vector3.zero;
 
-            // Ensure input fields are not null
-    if (WhiskerSpawnPointX == null || WhiskerSpawnPointY == null || WhiskerSpawnPointZ == null)
-    {
-        SetErrorMessage("One or more input fields are not assigned.");
-        return;
-    }
+        // Ensure input fields are not null
+        if (WhiskerSpawnPointX == null || WhiskerSpawnPointY == null || WhiskerSpawnPointZ == null)
+        {
+            SetErrorMessage("One or more input fields are not assigned.");
+            return;
+        }
 
         // Read target position from input fields
-    if (!float.TryParse(WhiskerSpawnPointX.text, out float WSPX) ||
-        !float.TryParse(WhiskerSpawnPointY.text, out float WSPY) ||
-        !float.TryParse(WhiskerSpawnPointZ.text, out float WSPZ))
-    {
-        SetErrorMessage("Invalid input for target positions.");
-        return;
-    }
+        if (!float.TryParse(WhiskerSpawnPointX.text, out float WSPX) ||
+            !float.TryParse(WhiskerSpawnPointY.text, out float WSPY) ||
+            !float.TryParse(WhiskerSpawnPointZ.text, out float WSPZ))
+        {
+            SetErrorMessage("Invalid input for target positions.");
+            return;
+        }
 
         for (int i = 0; i < numWhiskersToCreate; i++)
         {
             //Generate dimensions and spawn position
             float diameter = WidthDistributionGenerate() / 1000;
             float length = LengthDistributionGenerate() / 1000;
-            float spawnPointX = UnityEngine.Random.Range(-float.Parse(xCoord.text)*10, float.Parse(xCoord.text)*10);
-            float spawnPointY = UnityEngine.Random.Range(1, Convert.ToInt32(yCoord.text)*10);
-            float spawnPointZ = UnityEngine.Random.Range(-float.Parse(zCoord.text)*10, float.Parse(zCoord.text)*10);
+            float spawnPointX = UnityEngine.Random.Range(-float.Parse(xCoord.text) * 10, float.Parse(xCoord.text) * 10);
+            float spawnPointY = UnityEngine.Random.Range(1, Convert.ToInt32(yCoord.text) * 10);
+            float spawnPointZ = UnityEngine.Random.Range(-float.Parse(zCoord.text) * 10, float.Parse(zCoord.text) * 10);
 
             Vector3 spawnPos = whiskerSpawnPoint.transform.position + new Vector3(spawnPointX, spawnPointY, spawnPointZ);
 
-                    if (whisker == null)
-        {
-            SetErrorMessage("Whisker prefab is not assigned.");
-            return;
-        }
+            if (whisker == null)
+            {
+                SetErrorMessage("Whisker prefab is not assigned.");
+                return;
+            }
 
             GameObject whiskerClone = Instantiate(whisker, spawnPos, Quaternion.Euler(UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360), UnityEngine.Random.Range(0, 360)));
             whiskerClone.transform.SetParent(whiskerSpawnPoint.transform);
@@ -495,10 +508,10 @@ void Update()
 
             whiskerRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
-    //UPSIZING WIDTHS
+            //UPSIZING WIDTHS
             Transform visual = whiskerClone.transform.Find("visual");
             Transform collider = whiskerClone.transform.Find("collider");
-            if(diameter*1000 < 10) 
+            if (diameter * 1000 < 10)
             {
                 visual.localScale = new Vector3(10, 1, 10); // scales relative to the parent object 
             } // so this is saying if the diameter is less than 50, it takes the diameter of the orignal whisker and *5.
@@ -528,10 +541,10 @@ void Update()
                 whiskerCollider.sharedMaterial = whiskerPhysicsMaterial;
             }
             UpdatePhysicsMaterialFriction(whiskerPhysicsMaterial);
-           
-            if(whiskerControl.confirmGravity)
+
+            if (whiskerControl.confirmGravity)
             {
-                WhiskerData data = new WhiskerData(whiskerCounter, length, diameter, volume, mass, resistance, simIntComplete); 
+                WhiskerData data = new WhiskerData(whiskerCounter, length, diameter, volume, mass, resistance, simIntComplete);
                 SaveWhiskerData(data);
             }
 
@@ -540,8 +553,8 @@ void Update()
             // Debug log for verification, currently commented out to avoid log spam
             //Debug.Log($"Whisker created with material: {currentMaterial}, Density: {currentProps.density}, Mass: {mass}, Resistance: {resistance}");
         }
-            // Move the WhiskerSpawnPoint to the desired target position after spawning
-        Vector3 targetPosition = new Vector3(WSPX*10, WSPY*10, WSPZ*10);
+        // Move the WhiskerSpawnPoint to the desired target position after spawning
+        Vector3 targetPosition = new Vector3(WSPX * 10, WSPY * 10, WSPZ * 10);
         whiskerSpawnPoint.transform.position = targetPosition;
     }
 
@@ -631,11 +644,22 @@ void Update()
                 if (includeAllWhiskersData)
                 {
                     // Write the headers
-                    writer.WriteLine("All Whiskers,,,,,,Bridged Whiskers,,,,,,,,Critical Bridged Whiskers,,,");
-                    writer.WriteLine("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,,Whisker #,Length (um),Diameter (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2,,Whisker #,Length (um),Diameter (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2");
+                    writer.WriteLine("All Whiskers,,,,,,Bridged Whiskers,,,,,,,,Critical Bridged Whiskers,,,,,,,,Simulation Inputs,");
+                    writer.WriteLine("Whisker #,Length (um),Width (um),Resistance (ohm),Iteration,"
+                        + ",Whisker #,Length (um),Diameter (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2,"
+                        + ",Whisker #,Length (um),Diameter (um),Resistance (ohm),Iteration,Conductor 1,Conductor 2,"
+                        + ",Parameter,Value");
+
+                    //collect sim inputs
+                    List<KeyValuePair<string, string>> simulationInputs = GetSimulationInputs();
+
 
                     // Determine the maximum number of rows
-                    int maxRows = Mathf.Max(allWhiskersData.Count, bridgedWhiskersData.Count);
+                    int maxRows = Mathf.Max(allWhiskersData.Count, bridgedWhiskersData.Count, criticalBridgedWhiskersData.Count, simulationInputs.Count);
+
+                    string gap = ",,";
+                    string gap1 = ",,";
+                    string gap3 = ",,";
 
                     // Loop through all rows
                     for (int i = 0; i < maxRows; i++)
@@ -643,12 +667,20 @@ void Update()
                         string allWhiskerDataLine = "";
                         string bridgedWhiskerDataLine = "";
                         string criticalBridgedWhiskerDataLine = "";
+                        string simulationInputLine = "";
+
+                        bool hasData = false;
 
                         // Get All Whisker data if available
                         if (i < allWhiskersData.Count)
                         {
                             var whisker = allWhiskersData[i];
                             allWhiskerDataLine = $"{whisker.WhiskerNumber},{whisker.Length * 1000},{whisker.Width * 1000},{whisker.Resistance},{whisker.Iteration}";
+                            hasData = true;
+                        }
+                        else
+                        {
+                            allWhiskerDataLine = ",,,,";
                         }
 
                         // Get Bridged Whisker data if available
@@ -656,6 +688,11 @@ void Update()
                         {
                             var bridgedWhisker = bridgedWhiskersData[i];
                             bridgedWhiskerDataLine = $"{bridgedWhisker.WhiskerNumber},{bridgedWhisker.Length},{bridgedWhisker.Diameter},{bridgedWhisker.Resistance},{bridgedWhisker.SimulationIndex},{bridgedWhisker.Conductor1},{bridgedWhisker.Conductor2}";
+                            hasData = true;
+                        }
+                        else
+                        {
+                            bridgedWhiskerDataLine = ",,,,,,";
                         }
 
                         // Get Critical Bridged Whisker data if available
@@ -663,10 +700,51 @@ void Update()
                         {
                             var criticalWhisker = criticalBridgedWhiskersData[i];
                             criticalBridgedWhiskerDataLine = $"{criticalWhisker.WhiskerNumber},{criticalWhisker.Length},{criticalWhisker.Diameter},{criticalWhisker.Resistance},{criticalWhisker.SimulationIndex},{criticalWhisker.Conductor1},{criticalWhisker.Conductor2}";
+                            hasData = true;
+                        }
+                        else
+                        {
+                            criticalBridgedWhiskerDataLine = ",,,,,,";
+                        }
+
+                        // Get Simulation Input data if available
+                        if (i < simulationInputs.Count)
+                        {
+                            var input = simulationInputs[i];
+                            if (!string.IsNullOrWhiteSpace(input.Key) && !string.IsNullOrWhiteSpace(input.Value))
+                            {
+                                simulationInputLine = $"{input.Key},{input.Value}";
+                                hasData = true;
+                            }
+                            else
+                            {
+                                simulationInputLine = ",";
+                            }
+                        }
+                        else
+                        {
+                            simulationInputLine = ",";
+                        }
+
+                        // Add debug statements to trace values
+                        Debug.Log($"Row {i + 1}:");
+                        Debug.Log($"  AllWhiskerDataLine: '{allWhiskerDataLine}'");
+                        Debug.Log($"  BridgedWhiskerDataLine: '{bridgedWhiskerDataLine}'");
+                        Debug.Log($"  CriticalBridgedWhiskerDataLine: '{criticalBridgedWhiskerDataLine}'");
+                        Debug.Log($"  SimulationInputLine: '{simulationInputLine}'");
+                        Debug.Log($"  hasData: {hasData}");
+
+                        //skip writing line if all data sections are empty
+                        if (!hasData)
+                        {
+                            Debug.Log("  Skipping row because hasData is false.");
+                            continue;
                         }
 
                         // Write the combined data to the CSV file
-                        writer.WriteLine($"{allWhiskerDataLine},,{bridgedWhiskerDataLine},,{criticalBridgedWhiskerDataLine}");
+                        string combinedLine = $"{allWhiskerDataLine}{gap1}{bridgedWhiskerDataLine}{gap}{criticalBridgedWhiskerDataLine}{gap3}{simulationInputLine}";
+                        writer.WriteLine(combinedLine);
+
                     }
                 }
                 else
@@ -704,14 +782,14 @@ void Update()
 
     //Hides or Shows the UI.
     public void toggleUI()
-    {           
-        if(UIisOn)
+    {
+        if (UIisOn)
         {
             UIui.SetActive(false);
             UIisOn = false;
         }
         else
-        {   
+        {
             UIui.SetActive(!UIui.activeSelf);
             UIisOn = true;
         }
@@ -719,14 +797,14 @@ void Update()
 
     //Hides or Shows the Scale Grid
     public void toggleGrid()
-    {           
-        if(GridIsOn)
+    {
+        if (GridIsOn)
         {
             grid.SetActive(false);
             GridIsOn = false;
         }
         else
-        {   
+        {
             grid.SetActive(!grid.activeSelf);
             GridIsOn = true;
         }
@@ -753,7 +831,7 @@ void Update()
     //Tells the progran to apply the shock throughout the simulation
     public void toggleShock()
     {
-        if(!isShockActive)
+        if (!isShockActive)
         {
             isShockActive = true;
         }
@@ -766,7 +844,7 @@ void Update()
     //Tells the program to apply the vibration throughout the simulation
     public void toggleVibration()
     {
-        if(!isVibrationActive)
+        if (!isVibrationActive)
         {
             isVibrationActive = true;
         }
@@ -812,10 +890,10 @@ void Update()
         foreach (GameObject obj in conductorObjects)
         {
             string name = obj.name.Replace("_ColliderCopy", "");
-            if(!conductorNames.Contains(name))
+            if (!conductorNames.Contains(name))
             {
                 conductorNames.Add(name);
-            }    
+            }
         }
 
         //sort names alphabetically
@@ -925,5 +1003,77 @@ void Update()
     {
         PopulateConductorDropdowns();
     }
+
+    //Code for getting input variables and storing them so they can be inserted into .csv
+    private List<KeyValuePair<string, string>> GetSimulationInputs()
+    {
+        List<KeyValuePair<string, string>> inputs = new List<KeyValuePair<string, string>>();
+
+        // Collect inputs from UIScript
+        inputs.Add(new KeyValuePair<string, string>("Length Mu", lengthMu.text));
+        inputs.Add(new KeyValuePair<string, string>("Length Sigma", lengthSigma.text));
+        inputs.Add(new KeyValuePair<string, string>("Width Mu", widthMu.text));
+        inputs.Add(new KeyValuePair<string, string>("Width Sigma", widthSigma.text));
+        inputs.Add(new KeyValuePair<string, string>("# Of Whiskers", numWhiskers.text));
+        inputs.Add(new KeyValuePair<string, string>("Conductive Material Selection", material_input.text));
+        inputs.Add(new KeyValuePair<string, string>("Whisker Material", whiskMat.options[whiskMat.value].text));
+        inputs.Add(new KeyValuePair<string, string>("Distribution Selection", distributionDropdown.options[distributionDropdown.value].text));
+        inputs.Add(new KeyValuePair<string, string>("Whisker Spawn Point X", WhiskerSpawnPointX.text));
+        inputs.Add(new KeyValuePair<string, string>("Whisker Spawn Point Y", WhiskerSpawnPointY.text));
+        inputs.Add(new KeyValuePair<string, string>("Whisker Spawn Point Z", WhiskerSpawnPointZ.text.Trim()));
+        inputs.Add(new KeyValuePair<string, string>("X-Coord", xCoord.text));
+        inputs.Add(new KeyValuePair<string, string>("Y-Coord", yCoord.text));
+        inputs.Add(new KeyValuePair<string, string>("Z-Coord", zCoord.text));
+        inputs.Add(new KeyValuePair<string, string>("Gravity", whiskerControl.gravity.options[whiskerControl.gravity.value].text));
+        inputs.Add(new KeyValuePair<string, string>("# of Iterations", numIterations.text));
+        inputs.Add(new KeyValuePair<string, string>("Directory Path", whiskerControl.directoryPath));
+        inputs.Add(new KeyValuePair<string, string>("Save File Name", whiskerControl.fileName));
+
+        // Add Wall Height from WallCreator
+        inputs.Add(new KeyValuePair<string, string>("Wall Height", wallCreator.wallHeightInput.text));
+
+        // Add Rotations from CircuitBoardFinder
+        inputs.Add(new KeyValuePair<string, string>("Rotation-X", circuitBoardFinder.CircuitRotateX.text));
+        inputs.Add(new KeyValuePair<string, string>("Rotation-Y", circuitBoardFinder.CircuitRotateY.text));
+        inputs.Add(new KeyValuePair<string, string>("Rotation-Z", circuitBoardFinder.CircuitRotateZ.text));
+
+        // Add Spin Rates from CircuitBoardFinder
+        inputs.Add(new KeyValuePair<string, string>("Spin-X", circuitBoardFinder.SpinRateX.text));
+        inputs.Add(new KeyValuePair<string, string>("Spin-Y", circuitBoardFinder.SpinRateY.text));
+        inputs.Add(new KeyValuePair<string, string>("Spin-Z", circuitBoardFinder.SpinRateZ.text));
+
+        inputs.Add(new KeyValuePair<string, string>("Shock Amplitude", shockAmp.text));
+
+        // For checkboxes, output Y/N
+        string shockActive = isShockActive ? "Y" : "N";
+        inputs.Add(new KeyValuePair<string, string>("Shock Active", shockActive));
+
+        inputs.Add(new KeyValuePair<string, string>("Vibration Amplitude", vibrAmp.text));
+        inputs.Add(new KeyValuePair<string, string>("Vibration Frequency", vibrFreq.text));
+        inputs.Add(new KeyValuePair<string, string>("Vibration Duration", vibrDur.text));
+
+        string vibrationActive = isVibrationActive ? "Y" : "N";
+        inputs.Add(new KeyValuePair<string, string>("Vibration Active", vibrationActive));
+
+        // Add debug statements to log collected inputs before filtering
+        Debug.Log("Collected Simulation Inputs (before filtering):");
+        foreach (var input in inputs)
+        {
+            Debug.Log($"Key: '{input.Key}', Value: '{input.Value}'");
+        }
+
+        //remove empty entries
+        inputs = inputs.Where(input => !string.IsNullOrWhiteSpace(input.Key) && !string.IsNullOrWhiteSpace(input.Value)).ToList();
+
+        // Add debug statements to log inputs after filtering
+        Debug.Log("Simulation Inputs (after filtering empty entries):");
+        foreach (var input in inputs)
+        {
+            Debug.Log($"Key: '{input.Key}', Value: '{input.Value}'");
+        }
+
+        return inputs;
+    }
+
 
 }
