@@ -72,20 +72,21 @@ public class CircuitBoardFinder : MonoBehaviour
         }
     }
 
-    public float GetInputValue(TMP_InputField inputField)
+public float GetInputValue(TMP_InputField inputField)
+{
+    if (inputField == CircuitRotateX && string.IsNullOrWhiteSpace(inputField.text))
     {
-        if (string.IsNullOrWhiteSpace(inputField.text))
-        {
-            return 0f; // Default to 0 if empty
-        }
-
-        if (float.TryParse(inputField.text, out float result))
-        {
-            return result;
-        }
-
-        return 0f; // Default to 0 if input is invalid
+        return -90f; // Default to -90 if CircuitRotateX is empty
     }
+
+    if (float.TryParse(inputField.text, out float result))
+    {
+        return result;
+    }
+
+    return 0f; // Default to 0 if input is invalid for other fields
+}
+
 
     private System.Collections.IEnumerator SpinBasePlane(GameObject basePlane , float xSpinRate, float ySpinRate, float zSpinRate)
     {

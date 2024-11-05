@@ -117,11 +117,11 @@ public class WhiskerControl : MonoBehaviour
                         break;
                     case 1:
                         forceDirection = new Vector3(0, -20, 0);
-                        // This accleration is 0.02m/s^2 any faster and the whisker fly through the board
+                        // This accleration is 0.02m/s^2 d
                         break;
                     case 2:
                         forceDirection = new Vector3(0, -40, 0);
-                        // This accleration is 0.04m/s^2 any faster and the whisker fly through the board
+                        // This accleration is 0.04m/s^2
                         break;
                     case 3:
                         forceDirection = new Vector3(CGIX*10, CGIY*10, CGIZ*10);
