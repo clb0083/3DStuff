@@ -3007,8 +3007,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1750, y: -54}
-  m_SizeDelta: {x: 500, y: 108}
+  m_AnchoredPosition: {x: 1786, y: -54}
+  m_SizeDelta: {x: 512, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &151372030
 MonoBehaviour:
@@ -3264,8 +3264,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 2250, y: -54}
-  m_SizeDelta: {x: 500, y: 108}
+  m_AnchoredPosition: {x: 2304, y: -54}
+  m_SizeDelta: {x: 520, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &154460527
 MonoBehaviour:
@@ -5246,8 +5246,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1750, y: -54}
-  m_SizeDelta: {x: 500, y: 108}
+  m_AnchoredPosition: {x: 1786, y: -54}
+  m_SizeDelta: {x: 512, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &227368967
 MonoBehaviour:
@@ -5730,8 +5730,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1000, y: -54}
-  m_SizeDelta: {x: 2000, y: 108}
+  m_AnchoredPosition: {x: 1280, y: -54}
+  m_SizeDelta: {x: 2560, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &234271555
 MonoBehaviour:
@@ -5746,7 +5746,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -10388,8 +10388,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 750, y: -54}
-  m_SizeDelta: {x: 500, y: 108}
+  m_AnchoredPosition: {x: 762, y: -54}
+  m_SizeDelta: {x: 512, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &425114160
 MonoBehaviour:
@@ -15367,8 +15367,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 750, y: -54}
-  m_SizeDelta: {x: 500, y: 108}
+  m_AnchoredPosition: {x: 762, y: -54}
+  m_SizeDelta: {x: 512, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &631109299
 MonoBehaviour:
@@ -22516,7 +22516,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 234271554}
   moveButton: {fileID: 151372030}
-  targetPosition: {x: 1000, y: -354}
+  targetPosition: {x: 1280, y: -354}
 --- !u!114 &961583653
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22531,7 +22531,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 234271554}
   moveButton: {fileID: 1636865590}
-  targetPosition: {x: 1000, y: -354}
+  targetPosition: {x: 1280, y: -354}
 --- !u!114 &961583654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22546,7 +22546,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 234271554}
   moveButton: {fileID: 425114160}
-  targetPosition: {x: 1000, y: -354}
+  targetPosition: {x: 1280, y: -354}
 --- !u!114 &961583655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22561,7 +22561,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 234271554}
   moveButton: {fileID: 1097927162}
-  targetPosition: {x: 1000, y: -354}
+  targetPosition: {x: 1280, y: -354}
 --- !u!114 &961583656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22681,7 +22681,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 234271554}
   moveButton: {fileID: 227368967}
-  targetPosition: {x: 1000, y: -54}
+  targetPosition: {x: 1280, y: -54}
 --- !u!114 &961583664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22696,7 +22696,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 234271554}
   moveButton: {fileID: 1918770518}
-  targetPosition: {x: 1000, y: -54}
+  targetPosition: {x: 1280, y: -54}
 --- !u!114 &961583665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22711,7 +22711,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 234271554}
   moveButton: {fileID: 631109299}
-  targetPosition: {x: 1000, y: -54}
+  targetPosition: {x: 1280, y: -54}
 --- !u!114 &961583666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22726,7 +22726,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 234271554}
   moveButton: {fileID: 1818219210}
-  targetPosition: {x: 1000, y: -54}
+  targetPosition: {x: 1280, y: -54}
 --- !u!114 &961583667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22861,7 +22861,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 1636865589}
   moveButton: {fileID: 151372030}
-  targetPosition: {x: 1250, y: -54}
+  targetPosition: {x: 1274, y: -54}
 --- !u!114 &961583676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22876,7 +22876,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 1636865589}
   moveButton: {fileID: 1918770518}
-  targetPosition: {x: 1250, y: -54}
+  targetPosition: {x: 1274, y: -54}
 --- !u!114 &961583677
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22891,7 +22891,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 1636865589}
   moveButton: {fileID: 425114160}
-  targetPosition: {x: 1250, y: -54}
+  targetPosition: {x: 1274, y: -54}
 --- !u!114 &961583678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22906,7 +22906,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tab: {fileID: 1636865589}
   moveButton: {fileID: 1097927162}
-  targetPosition: {x: 1250, y: -54}
+  targetPosition: {x: 1274, y: -54}
 --- !u!114 &961583679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22914,14 +22914,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 961583650}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 54803c5883f2a4db1abc67356cfe99a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tab: {fileID: 1636865589}
   moveButton: {fileID: 1636865590}
-  targetPosition: {x: 0, y: 600}
+  targetPosition: {x: 1000, y: 600}
 --- !u!114 &961583680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24749,7 +24749,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 49521796}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.97975624
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -25757,7 +25757,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 250, y: -54}
-  m_SizeDelta: {x: 500, y: 108}
+  m_SizeDelta: {x: 512, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1097927162
 MonoBehaviour:
@@ -37831,8 +37831,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1250, y: -54}
-  m_SizeDelta: {x: 500, y: 108}
+  m_AnchoredPosition: {x: 1274, y: -54}
+  m_SizeDelta: {x: 512, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1636865590
 MonoBehaviour:
@@ -42614,7 +42614,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 250, y: -54}
-  m_SizeDelta: {x: 500, y: 108}
+  m_SizeDelta: {x: 512, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1818219210
 MonoBehaviour:
@@ -45482,8 +45482,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1250, y: -54}
-  m_SizeDelta: {x: 500, y: 108}
+  m_AnchoredPosition: {x: 1274, y: -54}
+  m_SizeDelta: {x: 512, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1918770518
 MonoBehaviour:
@@ -45882,7 +45882,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000036597252}
+  m_AnchoredPosition: {x: 0, y: 0.77214324}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1966419007
