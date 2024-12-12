@@ -1,12 +1,10 @@
-name: "CodeQL"
+name: "CodeQL Analysis"
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-  schedule:
-    - cron: '0 0 * * 0' # Weekly scan
 
 jobs:
   analyze:
@@ -22,10 +20,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.x' # Adjust for your project
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
+
+    - name: Build the project
+      run: |
+        dotnet restore
+        dotnet build --no-incremental --configuration Release
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
