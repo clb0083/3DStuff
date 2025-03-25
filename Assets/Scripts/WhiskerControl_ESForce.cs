@@ -151,19 +151,6 @@ public class WhiskerControl : MonoBehaviour
         }
     }
 
-    //Resets gravity /ResetButton
-    public void ResetGravity()
-    {
-        GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("whiskerClone");
-        foreach (GameObject obj in objectsWithTag)
-        {
-            cForce = GetComponent<ConstantForce>();
-            forceDirection = new Vector3(0, 0, 0);
-            cForce.force = forceDirection;
-        }
-        confirmGravity = false;
-    }
-
     //New Stuff 4
     void ApplyElectrostaticForces()
 {
@@ -186,6 +173,19 @@ public class WhiskerControl : MonoBehaviour
     }
 }
     //End of New Stuff 4
+
+    //Resets gravity /ResetButton
+    public void ResetGravity()
+    {
+        GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("whiskerClone");
+        foreach (GameObject obj in objectsWithTag)
+        {
+            cForce = GetComponent<ConstantForce>();
+            forceDirection = new Vector3(0, 0, 0);
+            cForce.force = forceDirection;
+        }
+        confirmGravity = false;
+    }
 
     public bool haveLoggedConnection;
     public bool haveMadeOneConnection;
