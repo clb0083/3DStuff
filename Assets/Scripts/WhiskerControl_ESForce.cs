@@ -9,6 +9,11 @@ using UnityEngine.UI;
 //Handles most of script that goes along with the whiskers, such as setting colliders and handling their collisions.
 public class WhiskerControl : MonoBehaviour
 {
+    //New Stuff 1:
+    public float charge = 1e-6f; // Charge of the whisker in Coulombs
+    private const float ke = 8.99e9f; // Coulomb's constant
+    private Rigidbody rb;
+    //End of New Stuff 1
     public Dropdown gravity;
     private ConstantForce cForce;
     private Vector3 forceDirection;
@@ -26,11 +31,7 @@ public class WhiskerControl : MonoBehaviour
     public InputField customGravityInputX;
     public InputField customGravityInputY;
     public InputField customGravityInputZ;
-    //New Stuff 1:
-    public float charge = 1e-6f; // Charge of the whisker in Coulombs
-    private const float ke = 8.99e9f; // Coulomb's constant
-    private Rigidbody rb;
-    //End of New Stuff 1
+    
 
     //Initializes the UiScript, includes New Stuff 2
     void Start()
@@ -418,16 +419,3 @@ public class WhiskerControl : MonoBehaviour
         return name.Replace("_ColliderCopy", "");
     }    
 }
-
-//New Stuff 5 (Optional)
-void OnDrawGizmos()
-{
-    Gizmos.color = Color.blue;
-    ElectrostaticCharge[] chargedObjects = FindObjectsOfType<ElectrostaticCharge>();
-
-    foreach (ElectrostaticCharge obj in chargedObjects)
-    {
-        Gizmos.DrawLine(transform.position, obj.transform.position);
-    }
-}
-//End of New Stuff 5
