@@ -418,3 +418,16 @@ public class WhiskerControl : MonoBehaviour
         return name.Replace("_ColliderCopy", "");
     }    
 }
+
+//New Stuff 5 (Optional)
+void OnDrawGizmos()
+{
+    Gizmos.color = Color.blue;
+    ElectrostaticCharge[] chargedObjects = FindObjectsOfType<ElectrostaticCharge>();
+
+    foreach (ElectrostaticCharge obj in chargedObjects)
+    {
+        Gizmos.DrawLine(transform.position, obj.transform.position);
+    }
+}
+//End of New Stuff 5
