@@ -1,9 +1,3 @@
-/*AU Team 1 (SP & SU 2024) used the help of Auburn graduate student Jake Botello
-to learn Unity and C# in integrating design ideas. The team applied background
-knowledge of MATLAB and C++ coding languages to develop various tools and
-functions used throughout this script. ChatGPT was also used as a troubleshooting
-reference.*/
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +9,11 @@ using UnityEngine.UI;
 //Handles most of script that goes along with the whiskers, such as setting colliders and handling their collisions.
 public class WhiskerControl : MonoBehaviour
 {
+    //New Stuff 1:
+    public float charge = 1e-6f; // Charge of the whisker in Coulombs
+    private const float ke = 8.99e9f; // Coulomb's constant
+    private Rigidbody rb;
+    //End of New Stuff 1
     public Dropdown gravity;
     private ConstantForce cForce;
     private Vector3 forceDirection;
@@ -32,21 +31,22 @@ public class WhiskerControl : MonoBehaviour
     public InputField customGravityInputX;
     public InputField customGravityInputY;
     public InputField customGravityInputZ;
+    
 
-
-    //Initializes the UiScript
+    //Initializes the UiScript, includes New Stuff 2
     void Start()
+{
+    rb = GetComponent<Rigidbody>(); // Initialize Rigidbody, New Stuff 2
+    uiScript = UIObject.GetComponent<UIScript>();
+    if (uiScript == null)
     {
-        uiScript = UIObject.GetComponent<UIScript>();
-        if (uiScript == null)
-        {
-            Debug.LogError("UIScript not found on UIObject.");
-        }
-        if (!bridgesPerConductor.ContainsKey(gameObject.name))
-        {
-            bridgesPerConductor[gameObject.name] = 0;
-        }
+        Debug.LogError("UIScript not found on UIObject.");
     }
+    if (!bridgesPerConductor.ContainsKey(gameObject.name))
+    {
+        bridgesPerConductor[gameObject.name] = 0;
+    }
+}
 
     public float detectionRadius = 0.5f;
     public float rayDistance = 1.0f;
@@ -59,6 +59,8 @@ public class WhiskerControl : MonoBehaviour
         {
             GetGravitySelection(gravity.value);
         }
+      ApplyElectrostaticForces(); // Apply electrostatic attraction/repulsion, New Stuff 3
+
     }
 
     //Confirm Gravity Button
@@ -76,7 +78,7 @@ public class WhiskerControl : MonoBehaviour
         ApplyGravity(val);
     }
 
-    //Applys correct gravity 
+    //Applies correct gravity 
     public void ApplyGravity(int val)
     {
         // Find all objects with the tag "whiskerClone"
@@ -148,6 +150,29 @@ public class WhiskerControl : MonoBehaviour
             Debug.LogError("One or more custom gravity input fields are not assigned.");
         }
     }
+
+    //New Stuff 4
+    void ApplyElectrostaticForces()
+{
+    ElectrostaticCharge[] chargedObjects = FindObjectsOfType<ElectrostaticCharge>();
+
+    foreach (ElectrostaticCharge obj in chargedObjects)
+    {
+        Vector3 direction = obj.transform.position - transform.position;
+        float distance = direction.magnitude;
+
+        if (distance < 0.01f) continue; // Avoid division by zero
+
+        float forceMagnitude = (ke * Mathf.Abs(charge * obj.charge)) / (distance * distance);
+        Vector3 force = forceMagnitude * direction.normalized;
+
+        if ((charge * obj.charge) > 0) // Like charges repel
+            rb.AddForce(-force);
+        else // Opposite charges attract
+            rb.AddForce(force);
+    }
+}
+    //End of New Stuff 4
 
     //Resets gravity /ResetButton
     public void ResetGravity()
