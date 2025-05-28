@@ -1,1 +1,1 @@
-{"lengthMu":2.0,"widthMu":2.0,"lengthSigma":1.0,"widthSigma":0.5,"numWhiskers":50,"numIterations":4,"xCoord":3.0,"yCoord":1.0,"zCoord":3.0,"whiskMat":0,"distributionDropdown":0,"gravity":0}
+{"lengthMu":4000.0,"widthMu":100.0,"lengthSigma":1.149999976158142,"widthSigma":0.6700000166893005,"numWhiskers":100,"numIterations":4,"xCoord":3.0,"yCoord":1.0,"zCoord":3.0,"whiskMat":0,"distributionDropdown":1,"gravity":0}
