@@ -55,7 +55,7 @@ public class WhiskerControl : MonoBehaviour
     //Turns on the gravity
     void Update()
     {
-        if (confirmGravity)
+        if (confirmGravity) 
         {
             GetGravitySelection(gravity.value);
         }
