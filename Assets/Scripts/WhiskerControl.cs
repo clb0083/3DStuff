@@ -78,7 +78,7 @@ public class WhiskerControl : MonoBehaviour
         ApplyGravity(val);
     }
 
-    //Applies correct gravity 
+    //Applies correct gravity
     public void ApplyGravity(int val)
     {
         // Find all objects with the tag "whiskerClone"
