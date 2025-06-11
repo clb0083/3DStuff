@@ -31,6 +31,7 @@ public class WhiskerControl : MonoBehaviour
     public InputField customGravityInputX;
     public InputField customGravityInputY;
     public InputField customGravityInputZ;
+    public WhiskerAcceleration WhiskerAcceleration;
     
 
     //Initializes the UiScript, includes New Stuff 2
@@ -55,19 +56,19 @@ public class WhiskerControl : MonoBehaviour
     //Turns on the gravity
     void Update()
     {
-        if (confirmGravity) 
-        {
-            GetGravitySelection(gravity.value);
-        }
+        //if (confirmGravity) 
+        //{
+        //    GetGravitySelection(gravity.value);
+        //}
       ApplyElectrostaticForces(); // Apply electrostatic attraction/repulsion, New Stuff 3
 
     }
 
-    //Confirm Gravity Button
+    //Start Simulation Button Press
     public void ConfirmButtonPressed()
     {
-        GetGravitySelection(gravity.value);
-        confirmGravity = true;
+        WhiskerAcceleration.ApplyAccel();
+        //confirmGravity = true;
         uiScript.ReloadWhiskersButton();
         UIObject.GetComponent<UIScript>().startSim = true;
     }
@@ -113,7 +114,7 @@ public class WhiskerControl : MonoBehaviour
                 switch (val)
                 {
                     case 0:
-                        forceDirection = new Vector3(0, -100, 0); 
+                        forceDirection = new Vector3(0, -100, 0);
                         // This accleration is 0.1m/s^2 any faster and the whisker fly through the board
 
                         break;
@@ -126,7 +127,7 @@ public class WhiskerControl : MonoBehaviour
                         // This accleration is 0.04m/s^2
                         break;
                     case 3:
-                        forceDirection = new Vector3(CGIX*10, CGIY*10, CGIZ*10);
+                        forceDirection = new Vector3(CGIX * 10, CGIY * 10, CGIZ * 10);
                         break;
                     default:
                         Debug.LogWarning("Invalid gravity value provided.");

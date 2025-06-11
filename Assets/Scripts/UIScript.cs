@@ -59,9 +59,10 @@ public class UIScript : MonoBehaviour
     public int bridgesPerRun;
     public TextMeshProUGUI errorMessage;
     public float simtimeElapsed;
+    private float nextLogTime = 0f;
     public bool startSim = false;
     public int simIntComplete = 1;
-    public float simTimeThresh;
+    public TMP_InputField simTimeLength;
     public float moveSpeed = 5f;
     public DistributionType distributionType = DistributionType.Lognormal;
     public bool UIisOn = true;
@@ -115,6 +116,7 @@ public class UIScript : MonoBehaviour
     private GameObject circuitBoard;
     public WallCreator wallCreator;
     public CircuitBoardFinder circuitBoardFinder;
+    public WhiskerAcceleration WhiskerAcceleration;
 
     private DataManager dataManager;
     private bool dataWritten = false;
@@ -215,6 +217,7 @@ public class UIScript : MonoBehaviour
         Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
 
+        // If statement for start simulation button
         if (startSim)
         {
             CircuitBoardFinder circuitBoardFinder = FindObjectOfType<CircuitBoardFinder>();
@@ -234,10 +237,29 @@ public class UIScript : MonoBehaviour
                 vibrationManager.vibratePressed();
             }
 
+            // sim time steps with frame update
             simtimeElapsed += Time.deltaTime;
+            if (float.TryParse(simTimeLength.text, out float simTimeThresh) && simTimeThresh > 0)
+            {
+                
+            }
+            else
+            {
+                Debug.Log("Invalid Accel Time. Please enter a number > 0.");
+            }
+            // if statement for log time count
+            if (simtimeElapsed >= nextLogTime)
+            {
+                Debug.Log("Sim time elapsed: " + simtimeElapsed.ToString("F2") + " seconds");
+                nextLogTime += 2f; //Next log in 2 seconds
+            }
+
+            // if statement for sim iterations to continue
             if (simIntComplete <= Convert.ToInt32(totalRuns.text) - 1)
             {
                 iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
+                
+                // restart sim time, reload whiskers and add sim iteration count
                 if (simtimeElapsed > simTimeThresh)
                 {
                     simIntComplete++;
@@ -255,6 +277,7 @@ public class UIScript : MonoBehaviour
                     }
                 }
             }
+            // last sim iteration
             else if (simIntComplete == Convert.ToInt32(totalRuns.text))
             {
                 iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
@@ -288,6 +311,8 @@ public class UIScript : MonoBehaviour
         iterationCompleteMessage.text = "";
         iterationCounter.text = "";
         startSim = false;
+        nextLogTime = 0;
+        WhiskerAcceleration.ResetAccel();
     }
 
     //Takes in Mu and Sigma values for Length to generate values.
