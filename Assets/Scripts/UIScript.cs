@@ -7,13 +7,13 @@ reference.*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
 using System.IO;
-using UnityEngine.UI;
-using Unity.VisualScripting;
-using System.Data.Common;
 using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+
 
 //This is the main script that controls many of the objects on the interface, namely the user inputs.
 public class UIScript : MonoBehaviour
@@ -312,7 +312,6 @@ public class UIScript : MonoBehaviour
         iterationCounter.text = "";
         startSim = false;
         nextLogTime = 0;
-        WhiskerAcceleration.ResetAccel();
     }
 
     //Takes in Mu and Sigma values for Length to generate values.
@@ -509,6 +508,16 @@ public class UIScript : MonoBehaviour
             if (whiskerRigidbody == null)
             {
                 whiskerRigidbody = whiskerClone.AddComponent<Rigidbody>();
+            }
+
+            // Apply Acceleration on Whisker Spawn
+            if (FunctionValuesStore.functionPoints != null)
+            {
+                var acc = whiskerClone.GetComponent<WhiskerAcceleration>();
+                if (acc != null && FunctionValuesStore.functionPoints != null)
+                {
+                    acc.SetFunctionData (new List<Vector2>(FunctionValuesStore.functionPoints));
+                }
             }
 
             //Calculates properties

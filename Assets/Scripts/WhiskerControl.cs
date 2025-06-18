@@ -67,7 +67,7 @@ public class WhiskerControl : MonoBehaviour
     //Start Simulation Button Press
     public void ConfirmButtonPressed()
     {
-        WhiskerAcceleration.ApplyAccel();
+        
         //confirmGravity = true;
         uiScript.ReloadWhiskersButton();
         UIObject.GetComponent<UIScript>().startSim = true;
