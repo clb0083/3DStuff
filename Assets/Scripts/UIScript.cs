@@ -32,9 +32,11 @@ public class UIScript : MonoBehaviour
     public TMP_InputField shockAmp;
     public TMP_InputField shockFreq;
     public TMP_InputField shockDur;
+    public TMP_InputField shockStartTime;
     public TMP_InputField vibrAmp;
     public TMP_InputField vibrFreq;
     public TMP_InputField vibrDur;
+    public TMP_InputField vibrStartTime;
     public TMP_InputField material_input;
     public TMP_InputField WhiskerSpawnPointX;
     public TMP_InputField WhiskerSpawnPointY;
@@ -222,20 +224,22 @@ public class UIScript : MonoBehaviour
         {
             CircuitBoardFinder circuitBoardFinder = FindObjectOfType<CircuitBoardFinder>();
 
-            if (isShockActive && shockManager.shockButton.interactable)
-            {
-                shockPressTimer += Time.deltaTime;
-                if (shockPressTimer >= shockPressInterval)
-                {
-                    shockManager.shockPressed();
-                    shockPressTimer = 0f;
-                }
-            }
+            ////Replace with shock start time in simulation
+            //if (isShockActive && shockManager.shockButton.interactable)
+            //{
+            //    shockPressTimer += Time.deltaTime;
+            //    if (shockPressTimer >= shockPressInterval)
+            //    {
+            //        shockManager.shockPressed();
+            //        shockPressTimer = 0f;
+            //    }
+            //}
 
-            if (isVibrationActive && vibrationManager.vibrateButton.interactable)
-            {
-                vibrationManager.vibratePressed();
-            }
+            ////Replace with vibration start time in simulaiton
+            //if (isVibrationActive && vibrationManager.vibrateButton.interactable)
+            //{
+            //    vibrationManager.vibratePressed();
+            //}
 
             // sim time steps with frame update
             simtimeElapsed += Time.deltaTime;
@@ -253,6 +257,12 @@ public class UIScript : MonoBehaviour
                 Debug.Log("Sim time elapsed: " + simtimeElapsed.ToString("F2") + " seconds");
                 nextLogTime += 2f; //Next log in 2 seconds
             }
+
+            // if statement for shock start
+            //if (float.TryParse(shockStartTime.text, out float shockStartTime), simtimeElapsed < shockStartTime)
+            //{
+            //    shockManager.shockPressed();
+            //}
 
             // if statement for sim iterations to continue
             if (simIntComplete <= Convert.ToInt32(totalRuns.text) - 1)
@@ -514,7 +524,7 @@ public class UIScript : MonoBehaviour
             if (FunctionValuesStore.functionPoints != null)
             {
                 var acc = whiskerClone.GetComponent<WhiskerAcceleration>();
-                if (acc != null && FunctionValuesStore.functionPoints != null)
+                if (acc != null)
                 {
                     acc.SetFunctionData (new List<Vector2>(FunctionValuesStore.functionPoints));
                 }
