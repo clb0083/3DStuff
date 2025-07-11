@@ -36,7 +36,7 @@ public class UIScript : MonoBehaviour
     public TMP_InputField vibrAmp;
     public TMP_InputField vibrFreq;
     public TMP_InputField vibrDur;
-    public TMP_InputField vibrStartTime;
+    public TMP_InputField vibrStartTime; 
     public TMP_InputField material_input;
     public TMP_InputField WhiskerSpawnPointX;
     public TMP_InputField WhiskerSpawnPointY;
@@ -88,11 +88,14 @@ public class UIScript : MonoBehaviour
     private List<float> resistances;
     public WhiskerControl whiskerControl;   //new
     public bool isVibrationActive = false;
+    public bool VibrIterationComplete = false; // Vibration completed for that iteration
     public bool isShockActive = false;
+    public bool ShockIterationComplete = false; // Shock completed for that iteration
     public bool RotateSpinToggle = false;
     public VibrationManager vibrationManager;
     public ShockManager shockManager;
-    public float shockPressTimer = 0f;
+    public float vibrTimer = 0f;
+    public float shockTimer = 0f;
     public float shockPressInterval = 2f;
     public SimulationController simulationController; //reference to the simulation controller script
     private int whiskerCounter; //variable to track whisker numbers
@@ -223,7 +226,7 @@ public class UIScript : MonoBehaviour
         if (startSim)
         {
             CircuitBoardFinder circuitBoardFinder = FindObjectOfType<CircuitBoardFinder>();
-
+            
             ////Replace with shock start time in simulation
             //if (isShockActive && shockManager.shockButton.interactable)
             //{
@@ -235,11 +238,31 @@ public class UIScript : MonoBehaviour
             //    }
             //}
 
+            if (float.TryParse(shockStartTime.text, out float shockStartTimeValue) && !ShockIterationComplete)
+            {
+                shockTimer += Time.deltaTime;
+                if (shockTimer >= shockStartTimeValue)
+                {
+                    shockManager.shockPressed();
+                    ShockIterationComplete = true;
+                }
+            }
+
             ////Replace with vibration start time in simulaiton
             //if (isVibrationActive && vibrationManager.vibrateButton.interactable)
             //{
             //    vibrationManager.vibratePressed();
             //}
+
+            if (float.TryParse(vibrStartTime.text, out float vibrStartTimeValue) && !VibrIterationComplete)
+            {
+                vibrTimer += Time.deltaTime;
+                if (vibrTimer >= vibrStartTimeValue)
+                {
+                    vibrationManager.vibratePressed();
+                    VibrIterationComplete = true;
+                }
+            }
 
             // sim time steps with frame update
             simtimeElapsed += Time.deltaTime;
@@ -251,18 +274,13 @@ public class UIScript : MonoBehaviour
             {
                 Debug.Log("Invalid Accel Time. Please enter a number > 0.");
             }
+
             // if statement for log time count
             if (simtimeElapsed >= nextLogTime)
             {
                 Debug.Log("Sim time elapsed: " + simtimeElapsed.ToString("F2") + " seconds");
                 nextLogTime += 2f; //Next log in 2 seconds
             }
-
-            // if statement for shock start
-            //if (float.TryParse(shockStartTime.text, out float shockStartTime), simtimeElapsed < shockStartTime)
-            //{
-            //    shockManager.shockPressed();
-            //}
 
             // if statement for sim iterations to continue
             if (simIntComplete <= Convert.ToInt32(totalRuns.text) - 1)
@@ -275,6 +293,10 @@ public class UIScript : MonoBehaviour
                     simIntComplete++;
                     ReloadWhiskersButton();
                     simtimeElapsed = 0f;
+                    VibrIterationComplete = false;
+                    vibrTimer = 0f;
+                    ShockIterationComplete = false;
+                    shockTimer = 0f;
 
                     if (screenshotManager != null)
                     {
