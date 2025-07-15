@@ -338,6 +338,10 @@ public class UIScript : MonoBehaviour
     {
         simIntComplete = 1;
         simtimeElapsed = 0;
+        VibrIterationComplete = false;
+        vibrTimer = 0f;
+        ShockIterationComplete = false;
+        shockTimer = 0f;
         bridgesDetected = 0;
         bridgesPerRun = 0;
         iterationCompleteMessage.text = "";
