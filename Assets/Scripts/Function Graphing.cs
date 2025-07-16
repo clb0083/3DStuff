@@ -9,6 +9,7 @@ public class FunctionGraphManager : MonoBehaviour
     public Button generateButton;
     public UILineRenderer lineRenderer;
     public TMP_InputField tEnd;
+    public FunctionInputHandler functionHandler;
     public float tStart = 0f;
     public int resolution = 100;
 
@@ -19,13 +20,20 @@ public class FunctionGraphManager : MonoBehaviour
 
     void GenerateFunctionCurve()
     {
-        string function = functionInput.text;
-        float.TryParse(tEnd.text, out float parsedtEnd);
-        float usedtEnd = parsedtEnd > tStart ? parsedtEnd : tStart;
+        functionHandler.RefreshFunction(); // Ensure it's using the latest function + time length
 
+        float usedtEnd = Mathf.Max(tStart + 0.01f, functionHandler.timeLength);
+        List<Vector2> points = new List<Vector2>();
 
-        List<Vector2> points = WhiskerAcceleration.GetFunctionValues(function, tStart, usedtEnd, resolution);
+        for (int i = 0; i < resolution; i++)
+        {
+            float t = Mathf.Lerp(tStart, usedtEnd, i / (float)(resolution - 1));
+            float y = functionHandler.GetValueAtTime(t);
+            points.Add(new Vector2(t, y));
+        }
+
         lineRenderer.SetPoints(points);
     }
 }
+
 

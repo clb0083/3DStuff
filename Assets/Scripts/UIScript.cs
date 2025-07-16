@@ -99,7 +99,7 @@ public class UIScript : MonoBehaviour
     public float shockPressInterval = 2f;
     public SimulationController simulationController; //reference to the simulation controller script
     private int whiskerCounter; //variable to track whisker numbers
-
+    public FunctionInputHandler functionHandler; // Function Input Math script for Acceleration and Graph
 
     public ScreenshotHandler screenshotManager; // Reference to the Screenshot script
 
@@ -226,18 +226,8 @@ public class UIScript : MonoBehaviour
         if (startSim)
         {
             CircuitBoardFinder circuitBoardFinder = FindObjectOfType<CircuitBoardFinder>();
-            
-            ////Replace with shock start time in simulation
-            //if (isShockActive && shockManager.shockButton.interactable)
-            //{
-            //    shockPressTimer += Time.deltaTime;
-            //    if (shockPressTimer >= shockPressInterval)
-            //    {
-            //        shockManager.shockPressed();
-            //        shockPressTimer = 0f;
-            //    }
-            //}
 
+            // Start Shock at start time, complete for one iteration
             if (float.TryParse(shockStartTime.text, out float shockStartTimeValue) && !ShockIterationComplete)
             {
                 shockTimer += Time.deltaTime;
@@ -248,12 +238,7 @@ public class UIScript : MonoBehaviour
                 }
             }
 
-            ////Replace with vibration start time in simulaiton
-            //if (isVibrationActive && vibrationManager.vibrateButton.interactable)
-            //{
-            //    vibrationManager.vibratePressed();
-            //}
-
+            // Start Vibration at start time, complete for one iteration
             if (float.TryParse(vibrStartTime.text, out float vibrStartTimeValue) && !VibrIterationComplete)
             {
                 vibrTimer += Time.deltaTime;
@@ -272,7 +257,7 @@ public class UIScript : MonoBehaviour
             }
             else
             {
-                Debug.Log("Invalid Accel Time. Please enter a number > 0.");
+                Debug.Log("Invalid Time. Please enter a number > 0.");
             }
 
             // if statement for log time count
@@ -546,16 +531,6 @@ public class UIScript : MonoBehaviour
                 whiskerRigidbody = whiskerClone.AddComponent<Rigidbody>();
             }
 
-            // Apply Acceleration on Whisker Spawn
-            if (FunctionValuesStore.functionPoints != null)
-            {
-                var acc = whiskerClone.GetComponent<WhiskerAcceleration>();
-                if (acc != null)
-                {
-                    acc.SetFunctionData (new List<Vector2>(FunctionValuesStore.functionPoints));
-                }
-            }
-
             //Calculates properties
             MaterialProperties currentProps = materialProperties[currentMaterial];
             float volume = Mathf.PI * Mathf.Pow(diameter / 2, 2) * length;
@@ -612,10 +587,13 @@ public class UIScript : MonoBehaviour
             }
             UpdatePhysicsMaterialFriction(whiskerPhysicsMaterial);
 
-            if (whiskerControl.confirmGravity)
+            // Applies the function to the force/acceleration script,
+            // ApplyForce is false until simulation start
+            WhiskerAcceleration forceScript = whiskerClone.GetComponent<WhiskerAcceleration>();
+            if (forceScript == null)
             {
-                WhiskerData data = new WhiskerData(whiskerCounter, length, diameter, volume, mass, resistance, simIntComplete);
-                SaveWhiskerData(data);
+                forceScript.FunctionSource = functionHandler;
+                forceScript.applyForce = false;
             }
 
             whiskerCounter++; //increment counter for next whisker

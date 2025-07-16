@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.43667564, g: 0.48427135, b: 0.5645233, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5921,6 +5921,7 @@ GameObject:
   - component: {fileID: 230131765}
   - component: {fileID: 230131766}
   - component: {fileID: 230131767}
+  - component: {fileID: 230131768}
   m_Layer: 0
   m_Name: whisker
   m_TagString: Untagged
@@ -6064,7 +6065,7 @@ MonoBehaviour:
   bridges: 0
   confirmGravity: 0
   UIObject: {fileID: 734999895}
-  uiScript: {fileID: 0}
+  uiScript: {fileID: 734999896}
   filePathInputField: {fileID: 1795202879}
   fileNameInputField: {fileID: 717979618}
   saveButton: {fileID: 0}
@@ -6073,7 +6074,8 @@ MonoBehaviour:
   customGravityInputX: {fileID: 1399919630}
   customGravityInputY: {fileID: 2114762867}
   customGravityInputZ: {fileID: 1345437116}
-  WhiskerAcceleration: {fileID: 0}
+  WhiskerAcceleration: {fileID: 230131768}
+  functionHandler: {fileID: 1079959012}
   detectionRadius: 0.5
   rayDistance: 1
   conductorLayer:
@@ -6101,6 +6103,21 @@ ConstantForce:
   m_RelativeForce: {x: 0, y: 0, z: 0}
   m_Torque: {x: 0, y: 0, z: 0}
   m_RelativeTorque: {x: 0, y: 0, z: 0}
+--- !u!114 &230131768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230131760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 271d5e96d7a43b349b71a47fbceb26be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applyForce: 0
+  simTimeStart: 0
+  FunctionSource: {fileID: 1079959012}
 --- !u!1 &230343374
 GameObject:
   m_ObjectHideFlags: 0
@@ -20092,6 +20109,7 @@ MonoBehaviour:
   shockTimer: 0
   shockPressInterval: 2
   simulationController: {fileID: 1689348460}
+  functionHandler: {fileID: 1079959012}
   screenshotManager: {fileID: 1251758247}
   conductor1Dropdown: {fileID: 1656594176}
   conductor2Dropdown: {fileID: 847988679}
@@ -20102,7 +20120,7 @@ MonoBehaviour:
   refreshDropdownsButton: {fileID: 46986848}
   wallCreator: {fileID: 9419109}
   circuitBoardFinder: {fileID: 1805681360}
-  WhiskerAcceleration: {fileID: 0}
+  WhiskerAcceleration: {fileID: 230131768}
   bridgesCount: {fileID: 837250430}
   conductorName: {fileID: 0}
 --- !u!4 &734999897
@@ -26580,53 +26598,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1010245190}
   m_CullTransparentMesh: 1
---- !u!1 &1014881156
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1014881158}
-  - component: {fileID: 1014881157}
-  m_Layer: 0
-  m_Name: AccelerationManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1014881157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1014881156}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ee024741e952d84497e687a63e8dab4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  functionData: []
-  multiplier: 1
-  direction: {x: 0, y: 1, z: 0}
---- !u!4 &1014881158
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1014881156}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 953.62854, y: 480.7873, z: -5.5375443}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1017304216
 GameObject:
   m_ObjectHideFlags: 0
@@ -27612,6 +27583,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1074775930}
   m_CullTransparentMesh: 1
+--- !u!1 &1079959011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1079959013}
+  - component: {fileID: 1079959012}
+  m_Layer: 0
+  m_Name: FunctionInputHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1079959012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1079959011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7c92ba04ad7a4e428654f57e65bbc34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  functionInputField: {fileID: 2117468870}
+  timeLengthInputField: {fileID: 1528840899}
+  timeLength: 5
+--- !u!4 &1079959013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1079959011}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 542.79926, y: 407.83246, z: -985.03674}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1086604503
 GameObject:
   m_ObjectHideFlags: 0
@@ -52535,6 +52553,7 @@ MonoBehaviour:
   generateButton: {fileID: 1702196070}
   lineRenderer: {fileID: 1066821457}
   tEnd: {fileID: 1528840899}
+  functionHandler: {fileID: 1079959012}
   tStart: 0
   resolution: 200
 --- !u!1 &2102738796
@@ -54125,4 +54144,4 @@ SceneRoots:
   - {fileID: 412856318}
   - {fileID: 1689348461}
   - {fileID: 1803900055}
-  - {fileID: 1014881158}
+  - {fileID: 1079959013}

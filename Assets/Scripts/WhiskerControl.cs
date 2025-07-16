@@ -32,7 +32,8 @@ public class WhiskerControl : MonoBehaviour
     public InputField customGravityInputY;
     public InputField customGravityInputZ;
     public WhiskerAcceleration WhiskerAcceleration;
-    
+    public FunctionInputHandler functionHandler;
+    private float simulationStartTime;
 
     //Initializes the UiScript, includes New Stuff 2
     void Start()
@@ -70,7 +71,21 @@ public class WhiskerControl : MonoBehaviour
         
         //confirmGravity = true;
         uiScript.ReloadWhiskersButton();
+
+        // Begins force/acceleration acting on Whisker
+        simulationStartTime = Time.fixedTime;
+        foreach (GameObject whiskerClone in GameObject.FindGameObjectsWithTag("whiskerClone"))
+        {
+            WhiskerAcceleration forceScript = whiskerClone.GetComponent<WhiskerAcceleration>();
+            if (forceScript != null)
+            {
+                forceScript.applyForce = true;
+                forceScript.simTimeStart = simulationStartTime;
+            }
+        }
+
         UIObject.GetComponent<UIScript>().startSim = true;
+        
     }
 
     //Gets gravity selection from dropdown
