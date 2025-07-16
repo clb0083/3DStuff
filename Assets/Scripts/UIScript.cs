@@ -100,6 +100,7 @@ public class UIScript : MonoBehaviour
     public SimulationController simulationController; //reference to the simulation controller script
     private int whiskerCounter; //variable to track whisker numbers
     public FunctionInputHandler functionHandler; // Function Input Math script for Acceleration and Graph
+    private float simStartTime;
 
     public ScreenshotHandler screenshotManager; // Reference to the Screenshot script
 
@@ -614,23 +615,36 @@ public class UIScript : MonoBehaviour
         material.dynamicFriction = currentProps.coefficientOfFriction;
     }
 
-    //Controls the Reload whiskers buttons. Clears out whiskers and generates new.
+    // Deletes old whiskers, makes new whiskers, then applies the acceleration/force waiting for simulation start
     public void ReloadWhiskersButton()
     {
-        // Clear out all whiskers
-        GameObject[] whiskerClones = GameObject.FindGameObjectsWithTag("whiskerClone");
-        GameObject[] bridgedWhiskers = GameObject.FindGameObjectsWithTag("bridgedWhisker");
-        GameObject[] allWhiskers = whiskerClones.Concat(bridgedWhiskers).ToArray();
-        foreach (GameObject whisk in allWhiskers)
+        // Delete all old whiskers (both types)
+        foreach (GameObject whisk in GameObject.FindGameObjectsWithTag("whiskerClone")
+                                              .Concat(GameObject.FindGameObjectsWithTag("bridgedWhisker")))
         {
-            Destroy(whisk.gameObject);
+            Destroy(whisk);
         }
-        bridgesPerRun = 0;
 
-        // Reset the whisker counter before creating new whiskers
-        whiskerCounter = 1; //resets counter to 1 for each iteration
+        bridgesPerRun = 0;
+        whiskerCounter = 1;
+
+        // Generate new whiskers
         MakeWhiskerButton();
+
+        // Start sim time and apply force to new whiskers
+        simStartTime = Time.fixedTime;
+
+        foreach (GameObject whisk in GameObject.FindGameObjectsWithTag("whiskerClone"))
+        {
+            WhiskerAcceleration forceScript = whisk.GetComponent<WhiskerAcceleration>();
+            if (forceScript != null)
+            {
+                forceScript.applyForce = true;
+                forceScript.simTimeStart = simStartTime;
+            }
+        }
     }
+
 
     //Function that sets the error message.
     public void SetErrorMessage(string message)

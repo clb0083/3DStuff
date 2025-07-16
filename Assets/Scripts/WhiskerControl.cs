@@ -33,7 +33,6 @@ public class WhiskerControl : MonoBehaviour
     public InputField customGravityInputZ;
     public WhiskerAcceleration WhiskerAcceleration;
     public FunctionInputHandler functionHandler;
-    private float simulationStartTime;
 
     //Initializes the UiScript, includes New Stuff 2
     void Start()
@@ -54,13 +53,9 @@ public class WhiskerControl : MonoBehaviour
     public float rayDistance = 1.0f;
     public LayerMask conductorLayer;
 
-    //Turns on the gravity
     void Update()
     {
-        //if (confirmGravity) 
-        //{
-        //    GetGravitySelection(gravity.value);
-        //}
+
       ApplyElectrostaticForces(); // Apply electrostatic attraction/repulsion, New Stuff 3
 
     }
@@ -69,102 +64,9 @@ public class WhiskerControl : MonoBehaviour
     public void ConfirmButtonPressed()
     {
         
-        //confirmGravity = true;
         uiScript.ReloadWhiskersButton();
-
-        // Begins force/acceleration acting on Whisker
-        simulationStartTime = Time.fixedTime;
-        foreach (GameObject whiskerClone in GameObject.FindGameObjectsWithTag("whiskerClone"))
-        {
-            WhiskerAcceleration forceScript = whiskerClone.GetComponent<WhiskerAcceleration>();
-            if (forceScript != null)
-            {
-                forceScript.applyForce = true;
-                forceScript.simTimeStart = simulationStartTime;
-            }
-        }
-
         UIObject.GetComponent<UIScript>().startSim = true;
         
-    }
-
-    //Gets gravity selection from dropdown
-    public void GetGravitySelection(int val)
-    {
-        ApplyGravity(val);
-    }
-
-    //Applies correct gravity
-    public void ApplyGravity(int val)
-    {
-        // Find all objects with the tag "whiskerClone"
-        GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag("whiskerClone");
-
-        Vector3 forceDirection = Vector3.zero;
-
-        // Set default values to "0" if the InputFields are null or empty
-        if (customGravityInputX == null || string.IsNullOrEmpty(customGravityInputX.text))
-        {
-            customGravityInputX.text = "0";
-        }
-
-        if (customGravityInputY == null || string.IsNullOrEmpty(customGravityInputY.text))
-        {
-            customGravityInputY.text = "0";
-        }
-
-        if (customGravityInputZ == null || string.IsNullOrEmpty(customGravityInputZ.text))
-        {
-            customGravityInputZ.text = "0";
-        }
-
-        // Validate the input fields
-        if (customGravityInputX != null && customGravityInputY != null && customGravityInputZ != null)
-        {
-            if (float.TryParse(customGravityInputX.text, out float CGIX) &&
-                float.TryParse(customGravityInputY.text, out float CGIY) &&
-                float.TryParse(customGravityInputZ.text, out float CGIZ))
-            {
-                // Proceed with gravity application
-                switch (val)
-                {
-                    case 0:
-                        forceDirection = new Vector3(0, -100, 0);
-                        // This accleration is 0.1m/s^2 any faster and the whisker fly through the board
-
-                        break;
-                    case 1:
-                        forceDirection = new Vector3(0, -20, 0);
-                        // This accleration is 0.02m/s^2 d
-                        break;
-                    case 2:
-                        forceDirection = new Vector3(0, -40, 0);
-                        // This accleration is 0.04m/s^2
-                        break;
-                    case 3:
-                        forceDirection = new Vector3(CGIX * 10, CGIY * 10, CGIZ * 10);
-                        break;
-                    default:
-                        Debug.LogWarning("Invalid gravity value provided.");
-                        return;
-                }
-
-                // Apply the force to each object
-                foreach (GameObject obj in objectsWithTag)
-                {
-                    ConstantForce cForce = obj.GetComponent<ConstantForce>() ?? obj.AddComponent<ConstantForce>();
-                    cForce.force = forceDirection;
-                }
-            }
-            else
-            {
-                Debug.LogError("Failed to parse custom gravity inputs.");
-            }
-        }
-        else
-        {
-            Debug.LogError("One or more custom gravity input fields are not assigned.");
-        }
     }
 
     //New Stuff 4
