@@ -14,7 +14,7 @@ public class WhiskerAcceleration : MonoBehaviour
     // Deactivate gravity on Whisker
     void Start()
     {
-        Rigidbody rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
         rb.useGravity = false;
     }
 
