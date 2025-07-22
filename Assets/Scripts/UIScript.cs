@@ -51,6 +51,7 @@ public class UIScript : MonoBehaviour
     public TMP_Dropdown distributionDropdown;
     public Toggle isShockActiveToggle;
     public Toggle isVibrationActiveToggle;
+    public Toggle electrostaticForceToggle;
 
     public GameObject whisker;
     public TextMeshProUGUI totalBridges;
@@ -122,6 +123,11 @@ public class UIScript : MonoBehaviour
     //Sets the lists for the dimensions/data to be stored in, as well as sets material properties from the dropdown.
     void Start()
     {
+        if (electrostaticForceToggle != null && whiskerControl != null)
+        {
+            electrostaticForceToggle.isOn = whiskerControl.applyElectrostaticForce;
+        }
+
         whiskerCounter = 1; //initialize the counter to 1 when the script starts
 
         lengths = new List<float>();
@@ -146,6 +152,12 @@ public class UIScript : MonoBehaviour
         addPairButton.onClick.AddListener(OnAddPairButtonClicked);
         removePairButton.onClick.AddListener(OnRemovePairButtonClicked);
         refreshDropdownsButton.onClick.AddListener(OnRefreshButtonClicked);
+        electrostaticForceToggle.onValueChanged.AddListener(OnElectrostaticToggleChanged);
+
+        if (electrostaticForceToggle != null && whiskerControl != null)
+        {
+            electrostaticForceToggle.isOn = whiskerControl.applyElectrostaticForce;
+        }
 
         circuitBoard = GameObject.FindGameObjectWithTag("CircuitBoard");
 
@@ -584,6 +596,18 @@ public class UIScript : MonoBehaviour
         MakeWhiskerButton();
     }
 
+<<<<<<< Updated upstream
+=======
+    public void OnElectrostaticToggleChanged(bool isOn)
+    {
+        if (whiskerControl != null)
+        {
+            whiskerControl.applyElectrostaticForce = isOn;
+        }
+    }
+
+
+>>>>>>> Stashed changes
     //Function that sets the error message.
     public void SetErrorMessage(string message)
     {
