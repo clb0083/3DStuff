@@ -16,6 +16,10 @@ using UnityEngine.UI;
 public class WhiskerControl : MonoBehaviour
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 =======
 
 >>>>>>> Stashed changes
@@ -38,10 +42,13 @@ public class WhiskerControl : MonoBehaviour
     public InputField customGravityInputZ;
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
     //Initializes the UiScript
     void Start()
 =======
+=======
+>>>>>>> Stashed changes
     // NEW FIELDS FOR ELECTROSTATIC FORCE
     [Header("Electrostatic Force Settings")]
     public bool applyElectrostaticForce = true;
@@ -90,6 +97,7 @@ public class WhiskerControl : MonoBehaviour
     public LayerMask conductorLayer;
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     //Turns on the gravity
     void Update()
     {
@@ -100,6 +108,10 @@ public class WhiskerControl : MonoBehaviour
 =======
     void FixedUpdate()
     {
+=======
+    void FixedUpdate()
+    {
+>>>>>>> Stashed changes
         if (electroToggle == null || !electroToggle.isOn)
             return;
 
@@ -113,6 +125,53 @@ public class WhiskerControl : MonoBehaviour
         {
             electroAttractorCount = Mathf.Clamp(electroAttractorCount, 0, 5);
         }
+<<<<<<< Updated upstream
+=======
+
+        if (electroAttractorCount == 0)
+            return;   // no attractors -> no force
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null) return;
+
+        Vector3 totalForce = Vector3.zero;
+        // 2) Loop through each active attractor
+        for (int i = 0; i < electroAttractorCount; i++)
+        {
+            // Parse its constant
+            float k = electrostaticConstant;  // fallback
+            if (i < electroConstantInputs.Count
+                && float.TryParse(electroConstantInputs[i].text, out var pi))
+                k = pi;
+
+            // Parse its target position
+            float x = 0, y = 0, z = 0;
+            if (i < electroTargetXInputs.Count)
+                float.TryParse(electroTargetXInputs[i].text, out x);
+            if (i < electroTargetYInputs.Count)
+                float.TryParse(electroTargetYInputs[i].text, out y);
+            if (i < electroTargetZInputs.Count)
+                float.TryParse(electroTargetZInputs[i].text, out z);
+
+            Vector3 target = new Vector3(x, y, z);
+
+            // Compute Coulomb-style force
+            Vector3 dir = (target - transform.position);
+            float distSqr = Mathf.Max(dir.sqrMagnitude, minDistance * minDistance);
+            dir.Normalize();
+            float mag = k / distSqr;
+            Vector3 f = dir * mag;
+
+            // Clamp per-attractor force
+            if (f.magnitude > maxElectrostaticForce)
+                f = f.normalized * maxElectrostaticForce;
+
+            totalForce += f;
+        }
+
+        // 3) Apply the sum of all attractor forces
+        rb.AddForce(totalForce, ForceMode.Force);
+>>>>>>> Stashed changes
 
         if (electroAttractorCount == 0)
             return;   // no attractors -> no force
@@ -170,6 +229,7 @@ public class WhiskerControl : MonoBehaviour
         UIObject.GetComponent<UIScript>().startSim = true;
     }
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     //Gets gravity selection from dropdown
     public void GetGravitySelection(int val)
@@ -250,6 +310,8 @@ public class WhiskerControl : MonoBehaviour
         }
     }
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     //Resets gravity /ResetButton

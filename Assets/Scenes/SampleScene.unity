@@ -39,7 +39,11 @@ RenderSettings:
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   m_IndirectSpecularColor: {r: 0.4366756, g: 0.48427135, b: 0.56452316, a: 1}
+=======
+  m_IndirectSpecularColor: {r: 0.43667564, g: 0.48427135, b: 0.5645233, a: 1}
+>>>>>>> Stashed changes
 =======
   m_IndirectSpecularColor: {r: 0.43667564, g: 0.48427135, b: 0.5645233, a: 1}
 >>>>>>> Stashed changes
@@ -5366,8 +5370,11 @@ GameObject:
   - component: {fileID: 230131765}
   - component: {fileID: 230131766}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   - component: {fileID: 230131767}
 =======
+=======
+>>>>>>> Stashed changes
   - component: {fileID: 230131768}
 >>>>>>> Stashed changes
   m_Layer: 0
@@ -5541,6 +5548,9 @@ MonoBehaviour:
   electroTargetXInputs: []
   electroTargetYInputs: []
   electroTargetZInputs: []
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   detectionRadius: 0.5
   rayDistance: 1
@@ -5558,8 +5568,13 @@ MonoBehaviour:
   colors: []
   haveBridgedBefore: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!75 &230131767
 ConstantForce:
+=======
+--- !u!114 &230131768
+MonoBehaviour:
+>>>>>>> Stashed changes
 =======
 --- !u!114 &230131768
 MonoBehaviour:
@@ -5571,11 +5586,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 230131760}
   m_Enabled: 1
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   m_Force: {x: 0, y: 0, z: 0}
   m_RelativeForce: {x: 0, y: 0, z: 0}
   m_Torque: {x: 0, y: 0, z: 0}
   m_RelativeTorque: {x: 0, y: 0, z: 0}
 =======
+=======
+>>>>>>> Stashed changes
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 271d5e96d7a43b349b71a47fbceb26be, type: 3}
   m_Name: 
@@ -13219,7 +13237,10 @@ CanvasRenderer:
   m_GameObject: {fileID: 496877300}
   m_CullTransparentMesh: 1
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 --- !u!1 &497843953
 GameObject:
   m_ObjectHideFlags: 0
@@ -20287,6 +20308,9 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 789611257}
   m_CullTransparentMesh: 1
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 --- !u!1 &808573824
 GameObject:
@@ -20701,7 +20725,10 @@ MonoBehaviour:
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 --- !u!1 &814337933
 GameObject:
   m_ObjectHideFlags: 0
@@ -23194,6 +23221,9 @@ RectTransform:
 =======
   - {fileID: 1251697535}
   - {fileID: 1209333323}
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

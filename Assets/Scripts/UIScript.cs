@@ -606,6 +606,14 @@ public class UIScript : MonoBehaviour
         }
     }
 
+    public void OnElectrostaticToggleChanged(bool isOn)
+    {
+        if (whiskerControl != null)
+        {
+            whiskerControl.applyElectrostaticForce = isOn;
+        }
+    }
+
 
 >>>>>>> Stashed changes
     //Function that sets the error message.
