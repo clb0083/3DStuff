@@ -4512,7 +4512,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enter text...
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6058,7 +6058,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da550dc286eedf74d815fd97ac7a8342, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  charge: 0.000001
   gravity: {fileID: 657345236}
   selectedIndex: 0
   targetMaterial: {fileID: 5407429153165912631, guid: 29392019c9719224aa04954d32942f76, type: 3}
@@ -6076,6 +6075,22 @@ MonoBehaviour:
   customGravityInputZ: {fileID: 1345437116}
   WhiskerAcceleration: {fileID: 230131768}
   functionHandler: {fileID: 1079959012}
+  applyElectrostaticForce: 1
+  electroToggle: {fileID: 0}
+  electrostaticConstant: 1000
+  electrostaticConstantInput: {fileID: 0}
+  minDistance: 0.5
+  maxElectrostaticForce: 200
+  electrostaticTarget: {x: 0, y: 0, z: 0}
+  electroTargetX: {fileID: 0}
+  electroTargetY: {fileID: 0}
+  electroTargetZ: {fileID: 0}
+  electroAttractorCount: 0
+  electroCountInputField: {fileID: 0}
+  electroConstantInputs: []
+  electroTargetXInputs: []
+  electroTargetYInputs: []
+  electroTargetZInputs: []
   detectionRadius: 0.5
   rayDistance: 1
   conductorLayer:
@@ -20077,6 +20092,7 @@ MonoBehaviour:
   distributionDropdown: {fileID: 1184046050}
   isShockActiveToggle: {fileID: 283945078}
   isVibrationActiveToggle: {fileID: 81336319}
+  electrostaticForceToggle: {fileID: 0}
   whisker: {fileID: 230131760}
   totalBridges: {fileID: 1980591731}
   bridgesDetected: 0
@@ -20087,6 +20103,7 @@ MonoBehaviour:
   startSim: 0
   simIntComplete: 1
   simTimeLength: {fileID: 1528840899}
+  defaultTime: 10
   moveSpeed: 5
   distributionType: 1
   UIisOn: 1
@@ -27613,6 +27630,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   functionInputField: {fileID: 2117468870}
+  defaultFunction: t^2
   timeLengthInputField: {fileID: 1528840899}
   timeLength: 5
 --- !u!4 &1079959013
@@ -31006,7 +31024,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enter text...
+  m_text: '10
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -52850,7 +52870,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 468672273}
   m_HandleRect: {fileID: 468672272}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

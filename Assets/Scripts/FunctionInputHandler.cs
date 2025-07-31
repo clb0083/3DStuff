@@ -5,6 +5,7 @@ using org.mariuszgromada.math.mxparser;
 public class FunctionInputHandler : MonoBehaviour
 {
     public TMP_InputField functionInputField;
+    public string defaultFunction = "t^2";
     public TMP_InputField timeLengthInputField;
 
     private Expression parsedFunction;
@@ -15,6 +16,7 @@ public class FunctionInputHandler : MonoBehaviour
 
     void Start()
     {
+        functionInputField.text = defaultFunction;
         tArg = new Argument("t", 0);
         timeLengthArg = new Argument("timeLength", timeLength);
         RefreshFunction();

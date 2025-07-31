@@ -9,11 +9,6 @@ using UnityEngine.UI;
 //Handles most of script that goes along with the whiskers, such as setting colliders and handling their collisions.
 public class WhiskerControl : MonoBehaviour
 {
-    //New Stuff 1:
-    public float charge = 1e-6f; // Charge of the whisker in Coulombs
-    private const float ke = 8.99e9f; // Coulomb's constant
-    private Rigidbody rb;
-    //End of New Stuff 1
     public Dropdown gravity;
     private ConstantForce cForce;
     private Vector3 forceDirection;
@@ -33,11 +28,35 @@ public class WhiskerControl : MonoBehaviour
     public InputField customGravityInputZ;
     public WhiskerAcceleration WhiskerAcceleration;
     public FunctionInputHandler functionHandler;
+    private float simStartTime;
 
-    //Initializes the UiScript, includes New Stuff 2
+    // NEW FIELDS FOR ELECTROSTATIC FORCE
+    [Header("Electrostatic Force Settings")]
+    public bool applyElectrostaticForce = true;
+    public Toggle electroToggle;
+
+    public float electrostaticConstant = 1000f;  // Adjust this constant to scale the force
+    public TMP_InputField electrostaticConstantInput;
+    public float minDistance = 0.5f; // Minimum distance to prevent extreme forces near origin
+    public float maxElectrostaticForce = 200f;
+    public Vector3 electrostaticTarget = Vector3.zero; // default is origin
+    public TMP_InputField electroTargetX;
+    public TMP_InputField electroTargetY;
+    public TMP_InputField electroTargetZ;
+    [Header("Multiple Electrostatic Attractors")]
+    [Range(0, 5)]
+    public int electroAttractorCount = 0;                 // how many active attractors
+    public TMP_InputField electroCountInputField;         // user types 0–5 here
+
+    // one list per parameter; size each list to 5 in the Inspector
+    public List<TMP_InputField> electroConstantInputs;    // five magnitudes
+    public List<TMP_InputField> electroTargetXInputs;     // five X positions
+    public List<TMP_InputField> electroTargetYInputs;     // five Y positions
+    public List<TMP_InputField> electroTargetZInputs;     // five Z positions
+
+    //Initializes the UiScript
     void Start()
 {
-    rb = GetComponent<Rigidbody>(); // Initialize Rigidbody, New Stuff 2
     uiScript = UIObject.GetComponent<UIScript>();
     if (uiScript == null)
     {
@@ -53,10 +72,66 @@ public class WhiskerControl : MonoBehaviour
     public float rayDistance = 1.0f;
     public LayerMask conductorLayer;
 
-    void Update()
+    // Electrostatic Attraction
+    void FixedUpdate()
     {
+        if (electroToggle == null || !electroToggle.isOn)
+            return;
 
-      ApplyElectrostaticForces(); // Apply electrostatic attraction/repulsion, New Stuff 3
+        // 1) Read & clamp the count
+        if (electroCountInputField != null
+            && int.TryParse(electroCountInputField.text, out var parsedCount))
+        {
+            electroAttractorCount = Mathf.Clamp(parsedCount, 0, 5);
+        }
+        else
+        {
+            electroAttractorCount = Mathf.Clamp(electroAttractorCount, 0, 5);
+        }
+
+        if (electroAttractorCount == 0)
+            return;   // no attractors -> no force
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null) return;
+
+        Vector3 totalForce = Vector3.zero;
+        // 2) Loop through each active attractor
+        for (int i = 0; i < electroAttractorCount; i++)
+        {
+            // Parse its constant
+            float k = electrostaticConstant;  // fallback
+            if (i < electroConstantInputs.Count
+                && float.TryParse(electroConstantInputs[i].text, out var pi))
+                k = pi;
+
+            // Parse its target position
+            float x = 0, y = 0, z = 0;
+            if (i < electroTargetXInputs.Count)
+                float.TryParse(electroTargetXInputs[i].text, out x);
+            if (i < electroTargetYInputs.Count)
+                float.TryParse(electroTargetYInputs[i].text, out y);
+            if (i < electroTargetZInputs.Count)
+                float.TryParse(electroTargetZInputs[i].text, out z);
+
+            Vector3 target = new Vector3(x, y, z);
+
+            // Compute Coulomb-style force
+            Vector3 dir = (target - transform.position);
+            float distSqr = Mathf.Max(dir.sqrMagnitude, minDistance * minDistance);
+            dir.Normalize();
+            float mag = k / distSqr;
+            Vector3 f = dir * mag;
+
+            // Clamp per-attractor force
+            if (f.magnitude > maxElectrostaticForce)
+                f = f.normalized * maxElectrostaticForce;
+
+            totalForce += f;
+        }
+
+        // 3) Apply the sum of all attractor forces
+        rb.AddForce(totalForce, ForceMode.Force);
 
     }
 
@@ -66,31 +141,21 @@ public class WhiskerControl : MonoBehaviour
         
         uiScript.ReloadWhiskersButton();
         UIObject.GetComponent<UIScript>().startSim = true;
-        
+
+        // Start sim time and apply force to new whiskers
+        simStartTime = Time.fixedTime;
+
+        foreach (GameObject whisk in GameObject.FindGameObjectsWithTag("whiskerClone"))
+        {
+            WhiskerAcceleration forceScript = whisk.GetComponent<WhiskerAcceleration>();
+            if (forceScript != null)
+            {
+                forceScript.applyForce = true;
+                forceScript.simTimeStart = simStartTime;
+            }
+        }
+
     }
-
-    //New Stuff 4
-    void ApplyElectrostaticForces()
-{
-    ElectrostaticCharge[] chargedObjects = FindObjectsOfType<ElectrostaticCharge>();
-
-    foreach (ElectrostaticCharge obj in chargedObjects)
-    {
-        Vector3 direction = obj.transform.position - transform.position;
-        float distance = direction.magnitude;
-
-        if (distance < 0.01f) continue; // Avoid division by zero
-
-        float forceMagnitude = (ke * Mathf.Abs(charge * obj.charge)) / (distance * distance);
-        Vector3 force = forceMagnitude * direction.normalized;
-
-        if ((charge * obj.charge) > 0) // Like charges repel
-            rb.AddForce(-force);
-        else // Opposite charges attract
-            rb.AddForce(force);
-    }
-}
-    //End of New Stuff 4
 
     //Resets gravity /ResetButton
     public void ResetGravity()

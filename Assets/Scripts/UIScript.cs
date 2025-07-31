@@ -12,6 +12,8 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.VisualScripting;
+using System.Data.Common;
 
 
 
@@ -53,6 +55,7 @@ public class UIScript : MonoBehaviour
     public TMP_Dropdown distributionDropdown;
     public Toggle isShockActiveToggle;
     public Toggle isVibrationActiveToggle;
+    public Toggle electrostaticForceToggle;
 
     public GameObject whisker;
     public TextMeshProUGUI totalBridges;
@@ -65,6 +68,7 @@ public class UIScript : MonoBehaviour
     public bool startSim = false;
     public int simIntComplete = 1;
     public TMP_InputField simTimeLength;
+    public string defaultTime = "10"; // Default sim time length 
     public float moveSpeed = 5f;
     public DistributionType distributionType = DistributionType.Lognormal;
     public bool UIisOn = true;
@@ -130,6 +134,12 @@ public class UIScript : MonoBehaviour
     //Sets the lists for the dimensions/data to be stored in, as well as sets material properties from the dropdown.
     void Start()
     {
+        simTimeLength.text = defaultTime;
+        if (electrostaticForceToggle != null && whiskerControl != null)
+        {
+            electrostaticForceToggle.isOn = whiskerControl.applyElectrostaticForce;
+        }
+
         whiskerCounter = 1; //initialize the counter to 1 when the script starts
 
         lengths = new List<float>();
@@ -154,6 +164,12 @@ public class UIScript : MonoBehaviour
         addPairButton.onClick.AddListener(OnAddPairButtonClicked);
         removePairButton.onClick.AddListener(OnRemovePairButtonClicked);
         refreshDropdownsButton.onClick.AddListener(OnRefreshButtonClicked);
+        electrostaticForceToggle.onValueChanged.AddListener(OnElectrostaticToggleChanged);
+
+        if (electrostaticForceToggle != null && whiskerControl != null)
+        {
+            electrostaticForceToggle.isOn = whiskerControl.applyElectrostaticForce;
+        }
 
         circuitBoard = GameObject.FindGameObjectWithTag("CircuitBoard");
 
@@ -278,6 +294,20 @@ public class UIScript : MonoBehaviour
                 {
                     simIntComplete++;
                     ReloadWhiskersButton();
+
+                    // Start sim time and apply force to new whiskers
+                    simStartTime = Time.fixedTime;
+
+                    foreach (GameObject whisk in GameObject.FindGameObjectsWithTag("whiskerClone"))
+                    {
+                        WhiskerAcceleration forceScript = whisk.GetComponent<WhiskerAcceleration>();
+                        if (forceScript != null)
+                        {
+                            forceScript.applyForce = true;
+                            forceScript.simTimeStart = simStartTime;
+                        }
+                    }
+
                     simtimeElapsed = 0f;
                     VibrIterationComplete = false;
                     vibrTimer = 0f;
@@ -301,6 +331,16 @@ public class UIScript : MonoBehaviour
                 iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
                 if (simtimeElapsed > simTimeThresh)
                 {
+                    foreach (GameObject whisk in GameObject.FindGameObjectsWithTag("whiskerClone"))
+                    {
+                        WhiskerAcceleration forceScript = whisk.GetComponent<WhiskerAcceleration>();
+                        if (forceScript != null)
+                        {
+                            forceScript.applyForce = false;
+                            
+                        }
+                    }
+
                     if (screenshotManager != null)
                     {
                         screenshotManager.OnIterationEnd();
@@ -631,17 +671,13 @@ public class UIScript : MonoBehaviour
         // Generate new whiskers
         MakeWhiskerButton();
 
-        // Start sim time and apply force to new whiskers
-        simStartTime = Time.fixedTime;
+    }
 
-        foreach (GameObject whisk in GameObject.FindGameObjectsWithTag("whiskerClone"))
+    public void OnElectrostaticToggleChanged(bool isOn)
+    {
+        if (whiskerControl != null)
         {
-            WhiskerAcceleration forceScript = whisk.GetComponent<WhiskerAcceleration>();
-            if (forceScript != null)
-            {
-                forceScript.applyForce = true;
-                forceScript.simTimeStart = simStartTime;
-            }
+            whiskerControl.applyElectrostaticForce = isOn;
         }
     }
 
