@@ -26,7 +26,7 @@ public class WhiskerAcceleration : MonoBehaviour
         {
             float time = Time.time - simTimeStart;
             float force = FunctionSource.GetValueAtTime(time);
-            rb.AddForce(new Vector3(0, -force, 0), ForceMode.Acceleration);
+            rb.AddForce(new Vector3(0, -force*9.81f, 0), ForceMode.Acceleration);
             Debug.Log("t: " + time + ", force: " + force);
         
         }

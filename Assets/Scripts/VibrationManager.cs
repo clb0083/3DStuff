@@ -15,11 +15,11 @@ using System;
 public class VibrationManager : MonoBehaviour
 {
     public TMP_InputField amplitudeInputField; // Input field for vibration amplitude
-    public string defaultAmp = "2";
+    public string defaultAmp = "1";
     public TMP_InputField durationInputField;  // Input field for vibration duration
-    public string defaultDur = "5";
+    public string defaultDur = "90";
     public TMP_InputField frequencyInputField; // Input field for vibration frequency
-    public string defaultFreq = "5";
+    public string defaultFreq = "10";
     public Transform circuitBoard; // Reference to the circuit board transform
     private Rigidbody circuitBoardRigidbody; // Rigidbody of the circuit board
     private Vector3 originalBoardPosition; // Original position of the circuit board
