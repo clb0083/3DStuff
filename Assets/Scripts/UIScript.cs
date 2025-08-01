@@ -678,9 +678,9 @@ public class UIScript : MonoBehaviour
 
     }
 
-    public void OnElectrostaticToggleChanged(bool isOn)
+public void OnElectrostaticToggleChanged(bool isOn)
     {
-        if (whiskerControl != null)
+    if (whiskerControl != null)
         {
             whiskerControl.applyElectrostaticForce = isOn;
         }
