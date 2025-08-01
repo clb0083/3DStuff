@@ -15,28 +15,36 @@ using System;
 public class ShockManager : MonoBehaviour
 {
     public TMP_InputField amplitudeInputField;
+    public string defaultAmpShock = "5";
+    public TMP_InputField halfPeriodInput;
+    public string defaultHalfPeriod = "0.2";
     public Transform circuitBoard; 
     private Rigidbody circuitBoardRigidbody; 
     private Vector3 originalBoardPosition; 
     private float amplitude;
-    private float duration = 0.1f; // Hardcoded duration of the shock
-    private float frequency = 5f; // Hardcoded frequency of the shock
+    private float duration; 
+    private float frequency; 
     private float startTime;
     private bool isShockingX = false;
     private bool isShockingY = false;
     private bool isShockingZ = false;
     public TMP_Dropdown shockAxis;
+    public int defaultShockAxis = 2;
     public Button shockButton;
     public UIScript uiScript;
 
     private void Start()
     {
-        
+        // Shock default values applied on start
+        amplitudeInputField.text = defaultAmpShock;
+        halfPeriodInput.text = defaultHalfPeriod;
+        shockAxis.value = defaultShockAxis;
     }
     
     //Runs the shock force every 2 seconds based on what axis the user has selected.
     private void FixedUpdate()
     {
+        
         if (isShockingX)
         {
             float elapsedTime = Time.time - startTime;
@@ -125,8 +133,9 @@ public class ShockManager : MonoBehaviour
         circuitBoardRigidbody = circuitBoard.GetComponent<Rigidbody>();
         originalBoardPosition = circuitBoard.position;
 
-        if (float.TryParse(amplitudeInputField.text, out amplitude))
+        if (float.TryParse(amplitudeInputField.text, out amplitude) && (float.TryParse(halfPeriodInput.text, out duration)))
         {
+            frequency = 1 / (duration * 2);
             Debug.Log("Starting shock with parameters:");
             Debug.Log("Amplitude: " + amplitude);
             Debug.Log("Duration: " + duration);
@@ -143,8 +152,9 @@ public class ShockManager : MonoBehaviour
         circuitBoardRigidbody = circuitBoard.GetComponent<Rigidbody>();
         originalBoardPosition = circuitBoard.position;
 
-        if (float.TryParse(amplitudeInputField.text, out amplitude))
+        if (float.TryParse(amplitudeInputField.text, out amplitude) && (float.TryParse(halfPeriodInput.text, out duration)))
         {
+            frequency = 1 / (duration * 2);
             Debug.Log("Starting shock with parameters:");
             Debug.Log("Amplitude: " + amplitude);
             Debug.Log("Duration: " + duration);
@@ -161,8 +171,9 @@ public class ShockManager : MonoBehaviour
         circuitBoardRigidbody = circuitBoard.GetComponent<Rigidbody>();
         originalBoardPosition = circuitBoard.position;
 
-        if (float.TryParse(amplitudeInputField.text, out amplitude))
+        if (float.TryParse(amplitudeInputField.text, out amplitude) && (float.TryParse(halfPeriodInput.text, out duration)))
         {
+            frequency = 1 / (duration * 2);
             Debug.Log("Starting shock with parameters:");
             Debug.Log("Amplitude: " + amplitude);
             Debug.Log("Duration: " + duration);
@@ -187,6 +198,7 @@ public class ShockManager : MonoBehaviour
         {
             circuitBoard = circuitBoardObject.transform;
         }
+
         shockButton.interactable = false;
         int selectedAxis = shockAxis.value;
         switch (selectedAxis)

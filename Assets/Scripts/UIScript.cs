@@ -7,13 +7,15 @@ reference.*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
 using System.IO;
+using System.Linq;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 using System.Data.Common;
-using System.Linq;
+
+
 
 //This is the main script that controls many of the objects on the interface, namely the user inputs.
 public class UIScript : MonoBehaviour
@@ -32,9 +34,13 @@ public class UIScript : MonoBehaviour
     public TMP_InputField shockAmp;
     public TMP_InputField shockFreq;
     public TMP_InputField shockDur;
+    public TMP_InputField shockStartTime;
+    public string defaultShockStart = "8";
     public TMP_InputField vibrAmp;
     public TMP_InputField vibrFreq;
     public TMP_InputField vibrDur;
+    public TMP_InputField vibrStartTime;
+    public string defaultVibrStart = "3";
     public TMP_InputField material_input;
     public TMP_InputField WhiskerSpawnPointX;
     public TMP_InputField WhiskerSpawnPointY;
@@ -60,9 +66,11 @@ public class UIScript : MonoBehaviour
     public int bridgesPerRun;
     public TextMeshProUGUI errorMessage;
     public float simtimeElapsed;
+    private float nextLogTime = 0f;
     public bool startSim = false;
     public int simIntComplete = 1;
-    public float simTimeThresh;
+    public TMP_InputField simTimeLength;
+    public string defaultTime = "120"; // Default sim time length 
     public float moveSpeed = 5f;
     public DistributionType distributionType = DistributionType.Lognormal;
     public bool UIisOn = true;
@@ -86,15 +94,19 @@ public class UIScript : MonoBehaviour
     private List<float> resistances;
     public WhiskerControl whiskerControl;   //new
     public bool isVibrationActive = false;
+    public bool VibrIterationComplete = false; // Vibration completed for that iteration
     public bool isShockActive = false;
+    public bool ShockIterationComplete = false; // Shock completed for that iteration
     public bool RotateSpinToggle = false;
     public VibrationManager vibrationManager;
     public ShockManager shockManager;
-    public float shockPressTimer = 0f;
+    public float vibrTimer = 0f;
+    public float shockTimer = 0f;
     public float shockPressInterval = 2f;
     public SimulationController simulationController; //reference to the simulation controller script
     private int whiskerCounter; //variable to track whisker numbers
-
+    public FunctionInputHandler functionHandler; // Function Input Math script for Acceleration and Graph
+    private float simStartTime;
 
     public ScreenshotHandler screenshotManager; // Reference to the Screenshot script
 
@@ -116,6 +128,7 @@ public class UIScript : MonoBehaviour
     private GameObject circuitBoard;
     public WallCreator wallCreator;
     public CircuitBoardFinder circuitBoardFinder;
+    public WhiskerAcceleration WhiskerAcceleration;
 
     private DataManager dataManager;
     private bool dataWritten = false;
@@ -123,6 +136,10 @@ public class UIScript : MonoBehaviour
     //Sets the lists for the dimensions/data to be stored in, as well as sets material properties from the dropdown.
     void Start()
     {
+        simTimeLength.text = defaultTime;
+        shockStartTime.text = defaultShockStart;
+        vibrStartTime.text = defaultVibrStart;
+
         if (electrostaticForceToggle != null && whiskerControl != null)
         {
             electrostaticForceToggle.isOn = whiskerControl.applyElectrostaticForce;
@@ -227,34 +244,80 @@ public class UIScript : MonoBehaviour
         Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
 
+        // If statement for start simulation button
         if (startSim)
         {
             CircuitBoardFinder circuitBoardFinder = FindObjectOfType<CircuitBoardFinder>();
 
-            if (isShockActive && shockManager.shockButton.interactable)
+            // Start Shock at start time, complete for one iteration
+            if (float.TryParse(shockStartTime.text, out float shockStartTimeValue) && !ShockIterationComplete)
             {
-                shockPressTimer += Time.deltaTime;
-                if (shockPressTimer >= shockPressInterval)
+                shockTimer += Time.deltaTime;
+                if (shockTimer >= shockStartTimeValue)
                 {
                     shockManager.shockPressed();
-                    shockPressTimer = 0f;
+                    ShockIterationComplete = true;
                 }
             }
 
-            if (isVibrationActive && vibrationManager.vibrateButton.interactable)
+            // Start Vibration at start time, complete for one iteration
+            if (float.TryParse(vibrStartTime.text, out float vibrStartTimeValue) && !VibrIterationComplete)
             {
-                vibrationManager.vibratePressed();
+                vibrTimer += Time.deltaTime;
+                if (vibrTimer >= vibrStartTimeValue)
+                {
+                    vibrationManager.vibratePressed();
+                    VibrIterationComplete = true;
+                }
             }
 
+            // sim time steps with frame update
             simtimeElapsed += Time.deltaTime;
+            if (float.TryParse(simTimeLength.text, out float simTimeThresh) && simTimeThresh > 0)
+            {
+                
+            }
+            else
+            {
+                Debug.Log("Invalid Time. Please enter a number > 0.");
+            }
+
+            // if statement for log time count
+            if (simtimeElapsed >= nextLogTime)
+            {
+                Debug.Log("Sim time elapsed: " + simtimeElapsed.ToString("F2") + " seconds");
+                nextLogTime += 2f; //Next log in 2 seconds
+            }
+
+            // if statement for sim iterations to continue
             if (simIntComplete <= Convert.ToInt32(totalRuns.text) - 1)
             {
                 iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
+                
+                // restart sim time, reload whiskers and add sim iteration count
                 if (simtimeElapsed > simTimeThresh)
                 {
                     simIntComplete++;
                     ReloadWhiskersButton();
+
+                    // Start sim time and apply force to new whiskers
+                    simStartTime = Time.fixedTime;
+
+                    foreach (GameObject whisk in GameObject.FindGameObjectsWithTag("whiskerClone"))
+                    {
+                        WhiskerAcceleration forceScript = whisk.GetComponent<WhiskerAcceleration>();
+                        if (forceScript != null)
+                        {
+                            forceScript.applyForce = true;
+                            forceScript.simTimeStart = simStartTime;
+                        }
+                    }
+
                     simtimeElapsed = 0f;
+                    VibrIterationComplete = false;
+                    vibrTimer = 0f;
+                    ShockIterationComplete = false;
+                    shockTimer = 0f;
 
                     if (screenshotManager != null)
                     {
@@ -267,11 +330,22 @@ public class UIScript : MonoBehaviour
                     }
                 }
             }
+            // last sim iteration
             else if (simIntComplete == Convert.ToInt32(totalRuns.text))
             {
                 iterationCounter.text = "Iteration Counter: " + simIntComplete.ToString();
                 if (simtimeElapsed > simTimeThresh)
                 {
+                    foreach (GameObject whisk in GameObject.FindGameObjectsWithTag("whiskerClone"))
+                    {
+                        WhiskerAcceleration forceScript = whisk.GetComponent<WhiskerAcceleration>();
+                        if (forceScript != null)
+                        {
+                            forceScript.applyForce = false;
+                            
+                        }
+                    }
+
                     if (screenshotManager != null)
                     {
                         screenshotManager.OnIterationEnd();
@@ -295,11 +369,16 @@ public class UIScript : MonoBehaviour
     {
         simIntComplete = 1;
         simtimeElapsed = 0;
+        VibrIterationComplete = false;
+        vibrTimer = 0f;
+        ShockIterationComplete = false;
+        shockTimer = 0f;
         bridgesDetected = 0;
         bridgesPerRun = 0;
         iterationCompleteMessage.text = "";
         iterationCounter.text = "";
         startSim = false;
+        nextLogTime = 0;
     }
 
     //Takes in Mu and Sigma values for Length to generate values.
@@ -554,10 +633,13 @@ public class UIScript : MonoBehaviour
             }
             UpdatePhysicsMaterialFriction(whiskerPhysicsMaterial);
 
-            if (whiskerControl.confirmGravity)
+            // Applies the function to the force/acceleration script,
+            // ApplyForce is false until simulation start
+            WhiskerAcceleration forceScript = whiskerClone.GetComponent<WhiskerAcceleration>();
+            if (forceScript == null)
             {
-                WhiskerData data = new WhiskerData(whiskerCounter, length, diameter, volume, mass, resistance, simIntComplete);
-                SaveWhiskerData(data);
+                forceScript.FunctionSource = functionHandler;
+                forceScript.applyForce = false;
             }
 
             whiskerCounter++; //increment counter for next whisker
@@ -578,32 +660,22 @@ public class UIScript : MonoBehaviour
         material.dynamicFriction = currentProps.coefficientOfFriction;
     }
 
-    //Controls the Reload whiskers buttons. Clears out whiskers and generates new.
+    // Deletes old whiskers, makes new whiskers, then applies the acceleration/force waiting for simulation start
     public void ReloadWhiskersButton()
     {
-        // Clear out all whiskers
-        GameObject[] whiskerClones = GameObject.FindGameObjectsWithTag("whiskerClone");
-        GameObject[] bridgedWhiskers = GameObject.FindGameObjectsWithTag("bridgedWhisker");
-        GameObject[] allWhiskers = whiskerClones.Concat(bridgedWhiskers).ToArray();
-        foreach (GameObject whisk in allWhiskers)
+        // Delete all old whiskers (both types)
+        foreach (GameObject whisk in GameObject.FindGameObjectsWithTag("whiskerClone")
+                                              .Concat(GameObject.FindGameObjectsWithTag("bridgedWhisker")))
         {
-            Destroy(whisk.gameObject);
+            Destroy(whisk);
         }
+
         bridgesPerRun = 0;
+        whiskerCounter = 1;
 
-        // Reset the whisker counter before creating new whiskers
-        whiskerCounter = 1; //resets counter to 1 for each iteration
+        // Generate new whiskers
         MakeWhiskerButton();
-    }
 
-<<<<<<< Updated upstream
-=======
-    public void OnElectrostaticToggleChanged(bool isOn)
-    {
-        if (whiskerControl != null)
-        {
-            whiskerControl.applyElectrostaticForce = isOn;
-        }
     }
 
     public void OnElectrostaticToggleChanged(bool isOn)
@@ -615,7 +687,6 @@ public class UIScript : MonoBehaviour
     }
 
 
->>>>>>> Stashed changes
     //Function that sets the error message.
     public void SetErrorMessage(string message)
     {

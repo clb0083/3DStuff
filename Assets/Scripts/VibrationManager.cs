@@ -15,8 +15,11 @@ using System;
 public class VibrationManager : MonoBehaviour
 {
     public TMP_InputField amplitudeInputField; // Input field for vibration amplitude
+    public string defaultAmp = "2";
     public TMP_InputField durationInputField;  // Input field for vibration duration
+    public string defaultDur = "5";
     public TMP_InputField frequencyInputField; // Input field for vibration frequency
+    public string defaultFreq = "5";
     public Transform circuitBoard; // Reference to the circuit board transform
     private Rigidbody circuitBoardRigidbody; // Rigidbody of the circuit board
     private Vector3 originalBoardPosition; // Original position of the circuit board
@@ -28,11 +31,17 @@ public class VibrationManager : MonoBehaviour
     private bool isVibratingY = false;
     private bool isVibratingZ = false;
     public TMP_Dropdown fAxis;
+    public int defaultAxis = 0;
     public Button vibrateButton;
     public UIScript uiScript;
 
     private void Start()
     {
+        // Setting default vibration values on start
+        amplitudeInputField.text = defaultAmp;
+        durationInputField.text = defaultDur;
+        frequencyInputField.text = defaultFreq;
+        fAxis.value = defaultAxis;
   
     }
 
@@ -198,12 +207,12 @@ public class VibrationManager : MonoBehaviour
         }
         if(float.Parse(frequencyInputField.text) > 150)
         {
-            uiScript.SetErrorMessage("Vibration frequnecy is too high.");
+            uiScript.SetErrorMessage("Vibration Frequency is too high.");
             return;
         }
-        if(float.Parse(durationInputField.text) > 30)
+        if(float.Parse(durationInputField.text) > 120)
         {
-            uiScript.SetErrorMessage("Vibration Amplitude is too high.");
+            uiScript.SetErrorMessage("Vibration Duration is too high.");
             return;
         }
         
