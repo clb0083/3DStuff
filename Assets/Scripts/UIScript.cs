@@ -35,10 +35,12 @@ public class UIScript : MonoBehaviour
     public TMP_InputField shockFreq;
     public TMP_InputField shockDur;
     public TMP_InputField shockStartTime;
+    public string defaultShockStart = "8";
     public TMP_InputField vibrAmp;
     public TMP_InputField vibrFreq;
     public TMP_InputField vibrDur;
-    public TMP_InputField vibrStartTime; 
+    public TMP_InputField vibrStartTime;
+    public string defaultVibrStart = "3";
     public TMP_InputField material_input;
     public TMP_InputField WhiskerSpawnPointX;
     public TMP_InputField WhiskerSpawnPointY;
@@ -68,7 +70,7 @@ public class UIScript : MonoBehaviour
     public bool startSim = false;
     public int simIntComplete = 1;
     public TMP_InputField simTimeLength;
-    public string defaultTime = "10"; // Default sim time length 
+    public string defaultTime = "120"; // Default sim time length 
     public float moveSpeed = 5f;
     public DistributionType distributionType = DistributionType.Lognormal;
     public bool UIisOn = true;
@@ -135,6 +137,9 @@ public class UIScript : MonoBehaviour
     void Start()
     {
         simTimeLength.text = defaultTime;
+        shockStartTime.text = defaultShockStart;
+        vibrStartTime.text = defaultVibrStart;
+
         if (electrostaticForceToggle != null && whiskerControl != null)
         {
             electrostaticForceToggle.isOn = whiskerControl.applyElectrostaticForce;

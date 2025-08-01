@@ -15,7 +15,9 @@ using System;
 public class ShockManager : MonoBehaviour
 {
     public TMP_InputField amplitudeInputField;
+    public string defaultAmpShock = "5";
     public TMP_InputField halfPeriodInput;
+    public string defaultHalfPeriod = "0.2";
     public Transform circuitBoard; 
     private Rigidbody circuitBoardRigidbody; 
     private Vector3 originalBoardPosition; 
@@ -27,12 +29,16 @@ public class ShockManager : MonoBehaviour
     private bool isShockingY = false;
     private bool isShockingZ = false;
     public TMP_Dropdown shockAxis;
+    public int defaultShockAxis = 2;
     public Button shockButton;
     public UIScript uiScript;
 
     private void Start()
     {
-        
+        // Shock default values applied on start
+        amplitudeInputField.text = defaultAmpShock;
+        halfPeriodInput.text = defaultHalfPeriod;
+        shockAxis.value = defaultShockAxis;
     }
     
     //Runs the shock force every 2 seconds based on what axis the user has selected.

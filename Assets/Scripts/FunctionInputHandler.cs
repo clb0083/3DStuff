@@ -5,14 +5,14 @@ using org.mariuszgromada.math.mxparser;
 public class FunctionInputHandler : MonoBehaviour
 {
     public TMP_InputField functionInputField;
-    public string defaultFunction = "t^2";
+    public string defaultFunction = "0.83*(exp(0.03*t)-1)"; // Falcon 9 launch Accel Profile (Basic)
     public TMP_InputField timeLengthInputField;
 
     private Expression parsedFunction;
     private Argument tArg;
     private Argument timeLengthArg;
 
-    public float timeLength = 5f;
+    public float timeLength = 5;
 
     void Start()
     {
